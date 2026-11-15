@@ -102,6 +102,10 @@ if (clientDist) {
     ) {
       return next();
     }
+    // Do not send HTML for missing static assets (images, fonts, scripts, stylesheets)
+    if (/\.(png|jpe?g|gif|svg|webp|ico|css|js|map|woff2?|ttf|eot|pdf)$/i.test(req.path)) {
+      return res.status(404).end();
+    }
     res.sendFile(path.join(clientDist, 'index.html'));
   });
 }
