@@ -1,0 +1,19 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Proxy /api requests to local Node.js backend if running on port 8789
+  <IfModule mod_proxy.c>
+    RewriteRule ^api/(.*)$ http://127.0.0.1:8789/api/$1 [P,L]
+    RewriteRule ^uploads/(.*)$ http://127.0.0.1:8789/uploads/$1 [P,L]
+    RewriteRule ^health(.*)$ http://127.0.0.1:8789/health$1 [P,L]
+  </IfModule>
+
+  # Do not rewrite existing files or directories
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # SPA fallback for React Router (send all other paths to index.html)
+  RewriteRule ^ index.html [L]
+</IfModule>

@@ -76,13 +76,37 @@ app.get('/health/db', async (req, res) => {
   });
 });
 
-// Primary Web Backend API Routes mounted under /api and /
+// Primary Web Backend API Routes mounted strictly under /api
 app.use('/api', customerRoutes);
-app.use('/', customerRoutes);
 app.use('/api', apiRoutes);
-app.use('/', apiRoutes);
 
-// Fallback 404 handler
+// Static frontend serving for single-domain deployment (Hostinger / cPanel)
+const frontendCandidates = [
+  path.join(__dirname, 'public'),
+  path.join(__dirname, 'dist'),
+  path.join(__dirname, '../web-ui/dist'),
+];
+
+const clientDist = frontendCandidates.find((dir) => fs.existsSync(path.join(dir, 'index.html')));
+
+if (clientDist) {
+  logger.info(`Serving static frontend build from: ${clientDist}`);
+  app.use(express.static(clientDist));
+
+  // SPA fallback: any non-API, non-uploads, non-health GET request serves index.html
+  app.get('*', (req, res, next) => {
+    if (
+      req.originalUrl.startsWith('/api') ||
+      req.originalUrl.startsWith('/uploads') ||
+      req.originalUrl.startsWith('/health')
+    ) {
+      return next();
+    }
+    res.sendFile(path.join(clientDist, 'index.html'));
+  });
+}
+
+// Fallback 404 handler for API routes or unhandled requests
 app.use((req, res) => {
   res.status(404).json({
     success: false,
