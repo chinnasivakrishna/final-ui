@@ -17,3 +17,4 @@
   # SPA fallback for React Router (send all other paths to index.html)
   RewriteRule ^ index.html [L]
 </IfModule>
+
