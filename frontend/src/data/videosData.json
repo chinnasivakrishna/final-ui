@@ -1,0 +1,118 @@
+{
+  "hero": {
+    "kicker": "TAITON VIDEOS",
+    "title": "IDEAS. INNOVATION. EXPERTISE.",
+    "subtitle": "Explore TAITON through product demonstrations, installation guides, projects, expert insights, events and company stories.",
+    "bgImage": "/images/videos_hero_banner.png"
+  },
+  "featured": {
+    "main": {
+      "id": "feat-1",
+      "tag": "PRODUCTS",
+      "title": "Premium Door Handle Range",
+      "subtitle": "Discover the elegance and durability of TAITON's premium door handle collection, designed for modern spaces.",
+      "duration": "04:32",
+      "thumbnail": "https://images.unsplash.com/photo-1558997519-83ea9252def8?auto=format&fit=crop&w=900&q=80",
+      "videoUrl": "https://www.youtube.com/embed/dQw4w9WgXcQ"
+    },
+    "sub": [
+      {
+        "id": "feat-2",
+        "category": "EVENTS",
+        "year": "2026",
+        "title": "TAITON at INFRAME EXPO 2026",
+        "description": "A glimpse of our showcase, innovations and interactions at INFRAME EXPO.",
+        "duration": "02:18",
+        "thumbnail": "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        "id": "feat-3",
+        "category": "INSTALLATION",
+        "year": "2026",
+        "title": "Glass Door Installation Guide",
+        "description": "Step-by-step guide for safe and precise installation of glass doors.",
+        "duration": "02:45",
+        "thumbnail": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=600&q=80"
+      }
+    ]
+  },
+  "categories": [
+    { "id": "all", "label": "All Videos", "icon": "fas fa-th-large" },
+    { "id": "products", "label": "Products", "icon": "fas fa-box" },
+    { "id": "functionality", "label": "Functionality", "icon": "fas fa-cogs" },
+    { "id": "installation", "label": "Installation", "icon": "fas fa-tools" },
+    { "id": "projects", "label": "Projects", "icon": "fas fa-building" },
+    { "id": "events", "label": "Events", "icon": "fas fa-calendar-alt" },
+    { "id": "company", "label": "Company", "icon": "fas fa-city" },
+    { "id": "stories", "label": "Stories", "icon": "fas fa-users" },
+    { "id": "insights", "label": "Insights", "icon": "fas fa-lightbulb" }
+  ],
+  "subCategories": [
+    "Glass Fittings",
+    "Patch Fittings",
+    "Door Closing Devices",
+    "Glass Door Handles",
+    "Glass Door Accessories",
+    "Sliding Systems for Glass Doors",
+    "Specialized Slidings",
+    "Spider & Canopy Fittings",
+    "Spider Accessories"
+  ],
+  "videos": [
+    {
+      "id": "v-1",
+      "category": "EVENTS",
+      "year": "2025",
+      "title": "TAITON at INFRAME EXPO 2025",
+      "description": "Innovations, solutions, great conversations and industry connections.",
+      "duration": "02:45",
+      "thumbnail": "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": "v-2",
+      "category": "INSTALLATION",
+      "year": "2025",
+      "title": "Glass Door Installation Guide",
+      "description": "Professional installation tips for flawless performance and safety.",
+      "duration": "04:12",
+      "thumbnail": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": "v-3",
+      "category": "COMPANY",
+      "year": "2024",
+      "title": "Inside TAITON Experience Centre",
+      "description": "Explore our design philosophy, innovation and product range.",
+      "duration": "03:30",
+      "thumbnail": "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": "v-4",
+      "category": "PROJECTS",
+      "year": "2024",
+      "title": "Completed Project",
+      "description": "Real spaces. Real solutions. TAITON in action.",
+      "duration": "04:35",
+      "thumbnail": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": "v-5",
+      "category": "INSIGHTS",
+      "year": "2024",
+      "title": "Expert Insight",
+      "description": "Industry trends, design tips and expert advice from our specialists.",
+      "duration": "06:12",
+      "thumbnail": "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": "v-6",
+      "category": "STORIES",
+      "year": "2024",
+      "title": "Customer Story",
+      "description": "How TAITON helped create better spaces and lasting relationships.",
+      "duration": "03:46",
+      "thumbnail": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80"
+    }
+  ]
+}
+

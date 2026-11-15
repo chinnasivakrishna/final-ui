@@ -1,0 +1,14 @@
+@import './styles/variables.css';
+@import './styles/common.css';
+@import './styles/layout.css';
+@import './styles/components.css';
+
+#root {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-height: 100vh;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex;
+  flex-direction: column;
+}

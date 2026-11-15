@@ -1,0 +1,270 @@
+{
+  "spaces": [
+    {
+      "id": "kitchen",
+      "name": "Kitchen",
+      "icon": "fas fa-utensils",
+      "image": "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1600&q=80",
+      "hotspots": [
+        {
+          "code": "TAP-ALP-01",
+          "label": "Aluminium Profile",
+          "x": 30.5,
+          "y": 30.5
+        },
+        {
+          "code": "THB-SCH-01",
+          "label": "Soft Close Hinge",
+          "x": 53.5,
+          "y": 32.5
+        },
+        {
+          "code": "TAL-LED-02",
+          "label": "LED Profile",
+          "x": 36.5,
+          "y": 42.5
+        },
+        {
+          "code": "THA-HDL-05",
+          "label": "Handle",
+          "x": 38.0,
+          "y": 55.5
+        },
+        {
+          "code": "TGL-FL0-01",
+          "label": "Fluted Glass",
+          "x": 66.0,
+          "y": 51.5
+        },
+        {
+          "code": "TAL-SKP-01",
+          "label": "Skirting Profile",
+          "x": 47.5,
+          "y": 63.5
+        }
+      ],
+      "products": [
+        {
+          "code": "THB-SCH-01",
+          "name": "Soft Close Concealed Hinge",
+          "desc": "110° soft close concealed hinge for cabinet doors with clip-on system.",
+          "image": "/images/products/hinge_main.png",
+          "thumbnails": [
+            "/images/products/hinge_th1.png",
+            "/images/products/hinge_th2.png",
+            "/images/products/hinge_th3.png"
+          ],
+          "type": "hinge",
+          "finishes": [
+            { "name": "SSS", "hex": "#c4c8cd" },
+            { "name": "PSS", "hex": "#e4e6e9" },
+            { "name": "BLACK", "hex": "#26272a" },
+            { "name": "GOLD", "hex": "#d2a24c" }
+          ],
+          "specs": [
+            { "icon": "far fa-clock", "label": "Opening Angle", "value": "110°" },
+            { "icon": "fas fa-layer-group", "label": "Material", "value": "Stainless Steel 304" },
+            { "icon": "fas fa-door-closed", "label": "Door Thickness", "value": "14mm – 24mm" },
+            { "icon": "fas fa-tools", "label": "Mounting Type", "value": "Clip-On" },
+            { "icon": "fas fa-shield-alt", "label": "Warranty", "value": "5 Years" }
+          ]
+        },
+        {
+          "code": "THB-CH-02",
+          "name": "Concealed Hinge",
+          "desc": "105° concealed hinge with adjustable cup depth for framed and frameless doors.",
+          "image": "",
+          "type": "hinge2",
+          "finishes": [
+            { "name": "SSS", "hex": "#c4c8cd" },
+            { "name": "BLACK", "hex": "#26272a" }
+          ],
+          "specs": [
+            { "icon": "far fa-clock", "label": "Opening Angle", "value": "105°" },
+            { "icon": "fas fa-layer-group", "label": "Material", "value": "Cold Rolled Steel" },
+            { "icon": "fas fa-door-closed", "label": "Door Thickness", "value": "16mm – 22mm" },
+            { "icon": "fas fa-tools", "label": "Mounting Type", "value": "Screw-On" },
+            { "icon": "fas fa-shield-alt", "label": "Warranty", "value": "3 Years" }
+          ]
+        },
+        {
+          "code": "THA-HDL-05",
+          "name": "Aluminium Handle",
+          "desc": "Slim anodised aluminium bar handle for drawers and tall cabinet doors.",
+          "image": "",
+          "type": "handle",
+          "finishes": [
+            { "name": "SILVER", "hex": "#c4c8cd" },
+            { "name": "BLACK", "hex": "#26272a" },
+            { "name": "GOLD", "hex": "#d2a24c" }
+          ],
+          "specs": [
+            { "icon": "fas fa-ruler-horizontal", "label": "Length", "value": "320 mm" },
+            { "icon": "fas fa-layer-group", "label": "Material", "value": "Aluminium 6063" },
+            { "icon": "fas fa-tools", "label": "Mounting Type", "value": "Screw Fix" },
+            { "icon": "fas fa-shield-alt", "label": "Warranty", "value": "5 Years" }
+          ]
+        },
+        {
+          "code": "TAP-ALP-01",
+          "name": "Aluminium Profile",
+          "desc": "Rectangular aluminium channel for cabinet edges and open shelving accents.",
+          "image": "",
+          "type": "prof",
+          "finishes": [
+            { "name": "SILVER", "hex": "#c4c8cd" },
+            { "name": "BLACK", "hex": "#26272a" }
+          ],
+          "specs": [
+            { "icon": "fas fa-ruler-horizontal", "label": "Length", "value": "3000 mm" },
+            { "icon": "fas fa-layer-group", "label": "Material", "value": "Aluminium 6063" },
+            { "icon": "fas fa-shield-alt", "label": "Warranty", "value": "5 Years" }
+          ]
+        },
+        {
+          "code": "TAL-LED-02",
+          "name": "LED Profile",
+          "desc": "Recessed aluminium profile with frosted diffuser for seamless cabinet illumination.",
+          "image": "",
+          "type": "led",
+          "finishes": [
+            { "name": "WHITE", "hex": "#f8fafc" },
+            { "name": "BLACK", "hex": "#26272a" }
+          ],
+          "specs": [
+            { "icon": "fas fa-lightbulb", "label": "Colour Temp", "value": "3000K / 4000K" },
+            { "icon": "fas fa-layer-group", "label": "Material", "value": "Aluminium + PC" },
+            { "icon": "fas fa-shield-alt", "label": "Warranty", "value": "3 Years" }
+          ]
+        },
+        {
+          "code": "TGL-FL0-01",
+          "name": "Fluted Glass",
+          "desc": "Architectural reeded glass insert for premium glass cabinet doors.",
+          "image": "",
+          "type": "glass",
+          "finishes": [
+            { "name": "CLEAR", "hex": "#cfe0e6" },
+            { "name": "BRONZE", "hex": "#a98a64" },
+            { "name": "GREY", "hex": "#9aa4ab" }
+          ],
+          "specs": [
+            { "icon": "fas fa-layer-group", "label": "Glass Thickness", "value": "6mm / 8mm" },
+            { "icon": "fas fa-shield-alt", "label": "Warranty", "value": "5 Years" }
+          ]
+        },
+        {
+          "code": "TAL-SKP-01",
+          "name": "Aluminium Skirting Profile",
+          "desc": "Waterproof modular aluminium skirting board with rubber sealing lip.",
+          "image": "",
+          "type": "skirt",
+          "finishes": [
+            { "name": "SILVER", "hex": "#c4c8cd" },
+            { "name": "BLACK", "hex": "#26272a" }
+          ],
+          "specs": [
+            { "icon": "fas fa-ruler-horizontal", "label": "Height", "value": "100 mm" },
+            { "icon": "fas fa-layer-group", "label": "Material", "value": "Aluminium 6063" },
+            { "icon": "fas fa-shield-alt", "label": "Warranty", "value": "5 Years" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bathroom",
+      "name": "Bathroom",
+      "icon": "fas fa-bath",
+      "image": "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1600&q=80",
+      "hotspots": [
+        { "code": "THA-HDL-05", "label": "Glass Shower Handle", "x": 42.0, "y": 48.0 },
+        { "code": "THB-SCH-01", "label": "Glass Hinge 90°", "x": 58.0, "y": 35.0 },
+        { "code": "TAP-ALP-01", "label": "U-Channel Header", "x": 62.0, "y": 20.0 }
+      ],
+      "products": []
+    },
+    {
+      "id": "wardrobe",
+      "name": "Wardrobe",
+      "icon": "fas fa-door-closed",
+      "image": "https://images.unsplash.com/photo-1558997519-83ea9252def8?auto=format&fit=crop&w=1600&q=80",
+      "hotspots": [
+        { "code": "TAL-LED-02", "label": "Wardrobe Sensor LED", "x": 35.0, "y": 25.0 },
+        { "code": "THB-SCH-01", "label": "Soft Close Hinge", "x": 50.0, "y": 45.0 }
+      ],
+      "products": []
+    },
+    {
+      "id": "living-room",
+      "name": "Living Room",
+      "icon": "fas fa-couch",
+      "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80",
+      "hotspots": [
+        { "code": "TAP-ALP-01", "label": "Sliding Partition", "x": 55.0, "y": 40.0 },
+        { "code": "THA-HDL-05", "label": "Floor Spring Pivot", "x": 52.0, "y": 80.0 }
+      ],
+      "products": []
+    },
+    {
+      "id": "sliding-doors",
+      "name": "Sliding Doors",
+      "icon": "fas fa-sliders-h",
+      "image": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1600&q=80",
+      "hotspots": [
+        { "code": "TAP-ALP-01", "label": "Heavy Duty Top Track", "x": 50.0, "y": 18.0 }
+      ],
+      "products": []
+    },
+    {
+      "id": "office",
+      "name": "Office",
+      "icon": "fas fa-building",
+      "image": "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1600&q=80",
+      "hotspots": [
+        { "code": "THA-HDL-05", "label": "Access Pull Handle", "x": 48.0, "y": 55.0 }
+      ],
+      "products": []
+    },
+    {
+      "id": "hotel",
+      "name": "Hotel",
+      "icon": "fas fa-hotel",
+      "image": "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1600&q=80",
+      "hotspots": [
+        { "code": "THB-SCH-01", "label": "Pivot Mechanism", "x": 52.0, "y": 50.0 }
+      ],
+      "products": []
+    },
+    {
+      "id": "retail-store",
+      "name": "Retail Store",
+      "icon": "fas fa-store",
+      "image": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1600&q=80",
+      "hotspots": [
+        { "code": "TAP-ALP-01", "label": "Spider Glass Canopy", "x": 50.0, "y": 30.0 }
+      ],
+      "products": []
+    },
+    {
+      "id": "main-door",
+      "name": "Main Door",
+      "icon": "fas fa-door-open",
+      "image": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1600&q=80",
+      "hotspots": [
+        { "code": "THA-HDL-05", "label": "Smart Digital Lock", "x": 54.0, "y": 48.0 }
+      ],
+      "products": []
+    },
+    {
+      "id": "balcony",
+      "name": "Balcony",
+      "icon": "fas fa-sun",
+      "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1600&q=80",
+      "hotspots": [
+        { "code": "TAP-ALP-01", "label": "Frameless Balustrade", "x": 50.0, "y": 65.0 }
+      ],
+      "products": []
+    }
+  ]
+}
+

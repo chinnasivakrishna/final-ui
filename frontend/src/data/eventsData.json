@@ -1,0 +1,58 @@
+{
+  "years": ["2026", "2025", "2024"],
+  "categories": ["All Events", "Exhibition", "Conference", "Expo"],
+  "events": [
+    {
+      "id": "acetech-hyderabad-2026",
+      "title": "ACETECH HYDERABAD 2026",
+      "location": "Hyderabad, India",
+      "city": "Hyderabad",
+      "year": "2026",
+      "category": "Exhibition",
+      "image": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80",
+      "description": "TAITON participated in ACETECH Hyderabad 2026, showcasing our premium architectural hardware solutions, innovative products, and advanced systems to architects, designers, builders, and industry professionals. The pavilion attracted over 5,000 architectural trade visitors who experienced our live working models of hydraulic floor springs, synchro sliding systems, and touchless smart entrance automation.",
+      "collage": [
+        "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=600&q=80",
+        "https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=600&q=80",
+        "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=600&q=80",
+        "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=600&q=80",
+        "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80"
+      ]
+    },
+    {
+      "id": "indiawood-2026",
+      "title": "INDIAWOOD 2026",
+      "location": "Bengaluru, India",
+      "city": "Bengaluru",
+      "year": "2026",
+      "category": "Exhibition",
+      "image": "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=800&q=80",
+      "description": "At INDIAWOOD 2026, TAITON revealed groundbreaking concealed sliding systems and commercial glass facade hardware, drawing architectural consultants and contractors from all over South Asia.",
+      "collage": [
+        "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=600&q=80",
+        "https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=600&q=80",
+        "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=600&q=80",
+        "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=600&q=80",
+        "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80"
+      ]
+    },
+    {
+      "id": "chennaiwood-2026",
+      "title": "CHENNAIWOOD 2026",
+      "location": "Chennai, India",
+      "city": "Chennai",
+      "year": "2026",
+      "category": "Exhibition",
+      "image": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80",
+      "description": "Showcasing luxury shower enclosures, magnetic locks, and frameless railing base shoe profiles at CHENNAIWOOD 2026, establishing key distributor ties in coastal Tamil Nadu.",
+      "collage": [
+        "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=600&q=80",
+        "https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=600&q=80",
+        "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=600&q=80",
+        "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=600&q=80",
+        "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80"
+      ]
+    }
+  ]
+}
+

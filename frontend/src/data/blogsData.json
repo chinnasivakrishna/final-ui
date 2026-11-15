@@ -1,0 +1,119 @@
+{
+  "pills": ["All", "PRODUCTS", "PROJECTS EVENTS", "AWARDS", "ARTICLES", "GENERAL"],
+  "featured": {
+    "badge": "FEATURED",
+    "title": "Minimal Frames. Maximum Views.",
+    "subtitle": "How slim aluminium systems are redefining modern architecture.",
+    "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "link": "/blogs/minimal-frames"
+  },
+  "sidebarCategories": [
+    "Door Handles",
+    "Door Locks",
+    "Floor Springs",
+    "Glass Fittings",
+    "Patch Fittings",
+    "Sliding Systems",
+    "Shower Solutions",
+    "Automatic Doors",
+    "Architectural Trends",
+    "Maintenance & Care"
+  ],
+  "posts": [
+    {
+      "id": 1,
+      "title": "Choosing the Right Door Handle for Your Space",
+      "date": "Mar 18, 2025",
+      "category": "Door Handles",
+      "excerpt": "A complete guide to selecting door handles that blend style, function and durability.",
+      "image": "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": 2,
+      "title": "Glass Fittings That Elevate Modern Interiors",
+      "date": "May 13, 2025",
+      "category": "Glass Fittings",
+      "excerpt": "Explore the latest glass fitting solutions that deliver elegance and reliability.",
+      "image": "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": 3,
+      "title": "TAITON Wins Excellence in Innovation Award 2025",
+      "date": "Mar 10, 2025",
+      "category": "AWARDS",
+      "excerpt": "Recognized for our commitment to innovation, quality and design excellence.",
+      "image": "https://images.unsplash.com/photo-1578269174936-2709b6aeb913?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": 4,
+      "title": "Top 5 Shower Enclosures Design Trends in 2025",
+      "date": "May 15, 2025",
+      "category": "Shower Solutions",
+      "excerpt": "Modern, minimal and made for luxury bathrooms.",
+      "image": "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": 5,
+      "title": "Why Stainless Steel 304 Matters in Architectural Hardware",
+      "date": "Apr 30, 2025",
+      "category": "PRODUCTS",
+      "excerpt": "Understanding the importance of material quality and longevity.",
+      "image": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": 6,
+      "title": "Expanding Horizons: TAITON Experience Center in Pune",
+      "date": "Apr 25, 2025",
+      "category": "PROJECTS EVENTS",
+      "excerpt": "A new destination for architects and interior professionals.",
+      "image": "https://images.unsplash.com/photo-1541123437800-1bb1317badc2?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": 7,
+      "title": "Top 5 Shower Enclosures Design Trends in 2025",
+      "date": "May 15, 2025",
+      "category": "Shower Solutions",
+      "excerpt": "Modern, minimal and made for luxury bathrooms.",
+      "image": "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": 8,
+      "title": "Why Stainless Steel 304 Matters in Architectural Hardware",
+      "date": "Apr 30, 2025",
+      "category": "PRODUCTS",
+      "excerpt": "Understanding the importance of material quality and longevity.",
+      "image": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": 9,
+      "title": "Expanding Horizons: TAITON Experience Center in Pune",
+      "date": "Apr 25, 2025",
+      "category": "PROJECTS EVENTS",
+      "excerpt": "A new destination for architects and interior professionals.",
+      "image": "https://images.unsplash.com/photo-1541123437800-1bb1317badc2?auto=format&fit=crop&w=600&q=80"
+    }
+  ],
+  "trending": [
+    {
+      "num": "01",
+      "title": "Frameless Glass Railings - A Complete Guide",
+      "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=200&q=80"
+    },
+    {
+      "num": "02",
+      "title": "Decorative Glass Ideas for Modern Interiors",
+      "image": "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=200&q=80"
+    },
+    {
+      "num": "03",
+      "title": "How to Choose the Right Digital Lock for Your Home",
+      "image": "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=200&q=80"
+    },
+    {
+      "num": "04",
+      "title": "Small Space Pooja Room Ideas That Inspire Peace",
+      "image": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=200&q=80"
+    }
+  ]
+}
+

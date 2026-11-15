@@ -1,0 +1,169 @@
+{
+  "hero": {
+    "kicker": "OUR TEAM",
+    "title": "THE PEOPLE BEHIND TAITON",
+    "subtitle": "Leadership, expertise and teamwork driving TAITON forward.",
+    "bgImage": "/images/our_team_hero_banner.png"
+  },
+  "leadership": {
+    "md": {
+      "role": "Managing Director",
+      "name": "Mr. Nageswara Reddy",
+      "image": "/images/team_md.png",
+      "bio": "With a vision for growth and a passion for excellence.With a vision for growth and a passion for excellence.With a vision for growth and a passion for excellence.With a vision for growth and a passion for excellence."
+    },
+    "gms": [
+      {
+        "role": "General Manager",
+        "name": "Mr. Shiva Reddy",
+        "image": "/images/about_leader_1.webp",
+        "bio": "With a vision for growth and a passion for excellence.With a vision for growth and a passion for excellence.With a vision for growth."
+      },
+      {
+        "role": "General Manager",
+        "name": "Ms. Ananya Sharma",
+        "image": "/images/team_gm2.webp",
+        "bio": "With a vision for growth and a passion for excellence.With a vision for growth and a passion for excellence.With a vision for growth."
+      }
+    ]
+  },
+  "branchLeaders": [
+    { "dept": "Sales", "name": "Priya Menon", "role": "Sales Manager", "image": "/images/team_member_1.png" },
+    { "dept": "Operations", "name": "Karthik Reddy", "role": "Operations Head", "image": "/images/team_member_2.png" },
+    { "dept": "Digital", "name": "Neha Sharma", "role": "Digital Marketing Lead", "image": "/images/team_member_3.png" },
+    { "dept": "Design", "name": "Arun Patel", "role": "Design Lead", "image": "/images/team_member_4.png" },
+    { "dept": "CRM", "name": "Sneha Iyer", "role": "CRM Manager", "image": "/images/team_member_5.png" },
+    { "dept": "Technical", "name": "Vikram Singh", "role": "Technical Lead", "image": "/images/team_member_6.png" },
+    { "dept": "Sales", "name": "Priya Menon", "role": "Sales Manager", "image": "/images/team_member_1.png" },
+    { "dept": "Operations", "name": "Karthik Reddy", "role": "Operations Head", "image": "/images/team_member_2.png" },
+    { "dept": "Digital", "name": "Neha Sharma", "role": "Digital Marketing Lead", "image": "/images/team_member_3.png" },
+    { "dept": "Design", "name": "Arun Patel", "role": "Design Lead", "image": "/images/team_member_4.png" },
+    { "dept": "CRM", "name": "Sneha Iyer", "role": "CRM Manager", "image": "/images/team_member_5.png" },
+    { "dept": "Technical", "name": "Vikram Singh", "role": "Technical Lead", "image": "/images/team_member_6.png" }
+  ],
+  "locationSpotlight": [
+    {
+      "id": "hyderabad",
+      "city": "Hyderabad",
+      "manager": {
+        "name": "Rohit Sharma",
+        "role": "Branch Manager",
+        "location": "Hyderabad, Telangana",
+        "exp": "8+ Years with TAITON",
+        "image": "/images/team_rohit.png",
+        "quote": "Our focus is to build strong customer relationships and deliver the right architectural solutions for every project.",
+        "timeline": [
+          { "year": "2016", "milestone": "Joined TAITON as Sales Executive" },
+          { "year": "2020", "milestone": "Senior Sales Executive" },
+          { "year": "2023", "milestone": "Regional Sales Lead" },
+          { "year": "2025", "milestone": "Branch Manager" }
+        ]
+      },
+      "branch": {
+        "hasExperienceCenter": true,
+        "address": "Plot No. 12, 3rd Floor, Prestige Corner, Banjara Hills, Hyderabad - 500034, Telangana, India."
+      }
+    },
+    {
+      "id": "new-delhi",
+      "city": "New Delhi",
+      "manager": {
+        "name": "Amit Saxena",
+        "role": "Branch Manager",
+        "location": "New Delhi, NCR",
+        "exp": "9+ Years with TAITON",
+        "image": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80",
+        "quote": "Delivering high-performance architectural solutions across residential and government projects in North India.",
+        "timeline": [
+          { "year": "2015", "milestone": "Joined as Territory Lead" },
+          { "year": "2019", "milestone": "Area Sales Manager" },
+          { "year": "2024", "milestone": "Delhi NCR Branch Manager" }
+        ]
+      },
+      "branch": {
+        "hasExperienceCenter": true,
+        "address": "B-42, Okhla Industrial Area, Phase-II, New Delhi - 110020, India."
+      }
+    },
+    {
+      "id": "bengaluru",
+      "city": "Bengaluru",
+      "manager": {
+        "name": "Suresh Gowda",
+        "role": "Branch Manager",
+        "location": "Bengaluru, Karnataka",
+        "exp": "7+ Years with TAITON",
+        "image": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&q=80",
+        "quote": "Transforming South India's commercial workspaces with smart architectural fittings.",
+        "timeline": [
+          { "year": "2017", "milestone": "Senior Technical Consultant" },
+          { "year": "2021", "milestone": "Key Account Manager" },
+          { "year": "2025", "milestone": "Branch Manager" }
+        ]
+      },
+      "branch": {
+        "hasExperienceCenter": true,
+        "address": "45/1, 100 Feet Road, Indiranagar, Bengaluru - 560038, Karnataka, India."
+      }
+    },
+    {
+      "id": "mumbai",
+      "city": "Mumbai",
+      "manager": {
+        "name": "Deepak Kulkarni",
+        "role": "Branch Manager",
+        "location": "Mumbai, Maharashtra",
+        "exp": "10+ Years with TAITON",
+        "image": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=80",
+        "quote": "Setting benchmarks in precision and luxury hardware for Western India's premier developers.",
+        "timeline": [
+          { "year": "2014", "milestone": "Design Liaison" },
+          { "year": "2018", "milestone": "Senior Project Manager" },
+          { "year": "2023", "milestone": "Branch Manager" }
+        ]
+      },
+      "branch": {
+        "hasExperienceCenter": true,
+        "address": "Unit 201, Trade Avenue, Andheri East, Mumbai - 400069, Maharashtra, India."
+      }
+    },
+    {
+      "id": "chennai",
+      "city": "Chennai",
+      "manager": {
+        "name": "Venkatesh Raman",
+        "role": "Branch Manager",
+        "location": "Chennai, Tamil Nadu",
+        "exp": "6+ Years with TAITON",
+        "image": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80",
+        "quote": "Building lasting architect relationships through technical reliability and superior glass solutions.",
+        "timeline": [
+          { "year": "2018", "milestone": "Sales Representative" },
+          { "year": "2022", "milestone": "Area Manager" },
+          { "year": "2024", "milestone": "Branch Manager" }
+        ]
+      },
+      "branch": {
+        "hasExperienceCenter": true,
+        "address": "Anna Salai, Teynampet, Chennai - 600018, Tamil Nadu, India."
+      }
+    }
+  ],
+  "teamBehindWork": [
+    { "dept": "Sales", "name": "Priya Menon", "role": "Sales Manager", "image": "/images/team_member_1.png" },
+    { "dept": "Operations", "name": "Karthik Reddy", "role": "Operations Head", "image": "/images/team_member_2.png" },
+    { "dept": "Digital", "name": "Neha Sharma", "role": "Digital Marketing Lead", "image": "/images/team_member_3.png" },
+    { "dept": "Design", "name": "Arun Patel", "role": "Design Lead", "image": "/images/team_member_4.png" },
+    { "dept": "CRM", "name": "Sneha Iyer", "role": "CRM Manager", "image": "/images/team_member_5.png" },
+    { "dept": "Technical", "name": "Vikram Singh", "role": "Technical Lead", "image": "/images/team_member_6.png" },
+    { "dept": "Customer Support", "name": "Ananya Das", "role": "Support Manager", "image": "/images/team_member_7.png" }
+  ],
+  "stats": [
+    { "value": "25+", "label": "Branches" },
+    { "value": "15+", "label": "Experience Centres" },
+    { "value": "25+", "label": "Years of Experience" },
+    { "value": "500+", "label": "Team Members" },
+    { "value": "100+", "label": "Cities Served" }
+  ]
+}
+

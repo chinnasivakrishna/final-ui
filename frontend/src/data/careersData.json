@@ -1,0 +1,196 @@
+{
+  "hero": {
+    "kicker": "CAREERS",
+    "title": "Build Your Future with TAITON",
+    "subtitle": "Join a growing team shaping better spaces through innovation and craftsmanship.",
+    "bgImage": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80"
+  },
+  "whyTaiton": {
+    "title": "Why Build Your Career With TAITON?",
+    "subtitle": "We don't just offer jobs, we build long-term careers where your skills, ambition, and creativity are recognized and rewarded.",
+    "pillars": [
+      {
+        "id": "learning",
+        "icon": "fas fa-chart-line",
+        "title": "Personal Learning",
+        "description": "We offer continuous learning & certification opportunities."
+      },
+      {
+        "id": "innovation",
+        "icon": "fas fa-lightbulb",
+        "title": "Innovation",
+        "description": "Work with cutting-edge architectural hardware and interior design technologies."
+      },
+      {
+        "id": "culture",
+        "icon": "fas fa-users",
+        "title": "Transparent Culture",
+        "description": "Open communication, flat hierarchy, and recognition for your contributions."
+      },
+      {
+        "id": "collaboration",
+        "icon": "fas fa-handshake",
+        "title": "Team Collaboration",
+        "description": "Collaborative spirit where every member's input is valued and respected."
+      },
+      {
+        "id": "growth",
+        "icon": "fas fa-arrow-trend-up",
+        "title": "Career Opportunities",
+        "description": "Clear progression paths and internal mobility across departments."
+      }
+    ]
+  },
+  "lifeAtTaiton": {
+    "title": "Life at TAITON",
+    "subtitle": "A culture of continuous learning, collaboration, and shared success.",
+    "images": [
+      {
+        "url": "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=800&q=80",
+        "alt": "Team meeting at TAITON"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1531497865144-0464ef8fb9a9?auto=format&fit=crop&w=800&q=80",
+        "alt": "Collaborative project review"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=800&q=80",
+        "alt": "Training session at TAITON"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=800&q=80",
+        "alt": "Experience center showcase"
+      }
+    ]
+  },
+  "peopleMakeTaiton": {
+    "title": "People Make TAITON",
+    "subtitle": "Our people are our greatest strength. We empower every individual to take ownership, innovate fearlessly, and grow together.",
+    "images": [
+      {
+        "url": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80",
+        "alt": "Team member at workstation"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=800&q=80",
+        "alt": "Engineering team lead"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=800&q=80",
+        "alt": "Design discussions"
+      }
+    ]
+  },
+  "openPositions": [
+    {
+      "id": "sales-executive",
+      "title": "Sales Executive",
+      "department": "Sales Executive",
+      "location": "Hyderabad",
+      "qualification": "Any Graduate / B.Tech / MBA",
+      "jobDescriptions": [
+        "Acknowledging the New customers / fielding customer queries / using this to create interest in the Sales.",
+        "Routing the customer order flow & closing sales of accounts received by account payable transactions.",
+        "Taking care of accounting tasks written & assisting in VAT reconciliations.",
+        "Coordinating with internal group departments for Material Delivery / Material enquiry / Material Availability & coordinating the same to the customers.",
+        "Meeting customer/order relevant meetings, provides quotation to customers/reviews new policy.",
+        "Ensuring the product knowledge to all our products / New entries."
+      ],
+      "requiredSkills": [
+        "Strong commitments towards customers.",
+        "Commanding & Pleasing skills.",
+        "Excellent Listening & Communication skills.",
+        "Strong communication with clients.",
+        "Basic MS office."
+      ]
+    },
+    {
+      "id": "design-consultant",
+      "title": "Design Consultant - Architectural Hardware",
+      "department": "Design & Architecture",
+      "location": "Mumbai / Delhi",
+      "qualification": "B.Arch / Interior Design / Diploma in Architecture",
+      "jobDescriptions": [
+        "Assisting architects and interior designers in hardware specifications for prestige projects.",
+        "Providing customized hardware solutions for residential, hospitality, and commercial spaces.",
+        "Conducting technical presentations and walkthroughs at TAITON Experience Centers.",
+        "Coordinating with project managers and site consultants for seamless installation."
+      ],
+      "requiredSkills": [
+        "Strong understanding of architectural blueprints and fittings.",
+        "Proficiency in CAD and architectural drafting tools.",
+        "Excellent consultative communication and client relationship skills."
+      ]
+    },
+    {
+      "id": "quality-logistics",
+      "title": "Quality & Operations Coordinator",
+      "department": "Operations & Logistics",
+      "location": "Hyderabad",
+      "qualification": "Any Graduate / Diploma in Logistics / Supply Chain",
+      "jobDescriptions": [
+        "Inspecting incoming inventory and ensuring zero-defect standards for dispatched architectural hardware.",
+        "Coordinating with regional distribution hubs across India for rapid dispatch within 24-48 hours.",
+        "Managing stock replenishment and warehouse logistics software tracking."
+      ],
+      "requiredSkills": [
+        "Attention to detail and quality control processes.",
+        "Experience with ERP and inventory management tools.",
+        "Strong organizational and problem-solving abilities."
+      ]
+    },
+    {
+      "id": "regional-account-manager",
+      "title": "Regional Key Account Manager",
+      "department": "Corporate & Channel Sales",
+      "location": "Bengaluru / Chennai",
+      "qualification": "MBA / Any Graduate with 3+ years experience in building materials",
+      "jobDescriptions": [
+        "Developing long-term relationships with tier-1 builders, contractors, and corporate clients.",
+        "Managing regional dealer network performance and expanding distribution footprint.",
+        "Achieving quarterly revenue targets and securing high-value project tenders."
+      ],
+      "requiredSkills": [
+        "High negotiation capability and account management experience.",
+        "Deep familiarity with architectural hardware distribution.",
+        "Proven track record of B2B sales success."
+      ]
+    },
+    {
+      "id": "technical-specialist",
+      "title": "Technical Hardware Specialist (Digital Locks & Automation)",
+      "department": "Technical Support & Products",
+      "location": "Hyderabad / Pune",
+      "qualification": "Diploma / Degree in Electronics / Mechanical Engineering",
+      "jobDescriptions": [
+        "Providing on-site and remote technical support for automatic doors and smart digital locks.",
+        "Training dealer technician teams on installation, programming, and maintenance.",
+        "Troubleshooting complex electronic access and glass sliding mechanisms."
+      ],
+      "requiredSkills": [
+        "Hands-on technical knowledge of digital access control systems.",
+        "Problem diagnosis and electro-mechanical repair proficiency.",
+        "Customer-centric attitude and clear technical instruction skills."
+      ]
+    }
+  ],
+  "testimonial": {
+    "quote": "At TAITON, every project gives us opportunity to learn, contribute and grow.",
+    "author": "Rohan Varma",
+    "role": "Senior Architect",
+    "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
+    "image": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80"
+  },
+  "locations": [
+    "Hyderabad",
+    "Mumbai",
+    "Delhi",
+    "Bengaluru",
+    "Chennai",
+    "Kolkata",
+    "Pune",
+    "Ahmedabad",
+    "Other"
+  ]
+}
+

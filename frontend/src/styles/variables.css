@@ -1,0 +1,65 @@
+:root {
+  /* Brand Color Palette */
+  --taiton-blue: #0054a6;
+  --taiton-blue-dark: #003875;
+  --taiton-blue-light: #ebf4ff;
+  --taiton-accent: #0077cc;
+  --taiton-cyan: #00d2ff;
+  --taiton-gray: #f8fafc;
+  --taiton-dark: #0b1f3a;
+  --taiton-navy: #002b5c;
+  --taiton-highlight: #2a76be;
+  --taiton-gold: #e0a638;
+  --taiton-gold-hover: #c9932b;
+  --taiton-black: #000000;
+  --taiton-dark-hover: #0f172a;
+
+  /* Theme Tokens: Surfaces, Backgrounds, and Borders */
+  --taiton-bg-main: #ffffff;
+  --taiton-bg-light: #f8fafc;
+  --taiton-bg-dark: #0b1f3a;
+  --taiton-bg-navy: #002b5c;
+  --taiton-surface: #ffffff;
+  --taiton-surface-subtle: #f1f5f9;
+  --taiton-border: #e2e8f0;
+  --taiton-border-light: #f1f5f9;
+  --taiton-border-dark: #cbd5e1;
+
+  /* Typography: Families, Weights, and Colors */
+  --taiton-font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --taiton-font-heading: 'Outfit', 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --taiton-text-dark: #1e293b;
+  --taiton-text-body: #333333;
+  --taiton-text-muted: #64748b;
+  --taiton-text-light: #ffffff;
+  --taiton-text-dim: #94a3b8;
+
+  /* Common Spacing Tokens */
+  --taiton-space-xs: 0.25rem;
+  --taiton-space-sm: 0.5rem;
+  --taiton-space-md: 1rem;
+  --taiton-space-lg: 1.5rem;
+  --taiton-space-xl: 2.5rem;
+  --taiton-space-2xl: 4rem;
+
+  /* Border Radii */
+  --taiton-radius-xs: 2px;
+  --taiton-radius-sm: 4px;
+  --taiton-radius-md: 8px;
+  --taiton-radius-lg: 12px;
+  --taiton-radius-xl: 16px;
+  --taiton-radius-pill: 50px;
+  --taiton-radius-full: 9999px;
+
+  /* Elevation & Shadows */
+  --taiton-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --taiton-shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.04);
+  --taiton-shadow-md: 0 4px 14px rgba(0, 56, 117, 0.08);
+  --taiton-shadow-lg: 0 10px 25px rgba(0, 84, 166, 0.15);
+  --taiton-shadow-hover: 0 12px 30px rgba(0, 84, 166, 0.2);
+
+  /* Transitions */
+  --taiton-transition-fast: 0.15s ease;
+  --taiton-transition-base: 0.25s ease;
+  --taiton-transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}

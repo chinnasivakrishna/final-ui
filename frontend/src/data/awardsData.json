@@ -1,0 +1,86 @@
+{
+  "stats": [
+    { "value": "25+", "label": "Years of Excellence", "icon": "fa-trophy" },
+    { "value": "25+", "label": "Years of Excellence", "icon": "fa-handshake" },
+    { "value": "25+", "label": "Years of Excellence", "icon": "fa-award" },
+    { "value": "25+", "label": "Years of Excellence", "icon": "fa-map-location-dot" }
+  ],
+  "featuredAward": {
+    "badge": "Featured Recognition",
+    "title": "Excellence in Architectural Hardware",
+    "presenter": "Awarded by Indian Interior & Design Council",
+    "year": "2024",
+    "description": "In recognition of outstanding Innovation, Quality and Contribution to the architectural hardware and interior solutions industry. In recognition of outstanding Innovation, Quality and Contribution to the architectural hardware and interior solutions industry.",
+    "image": "/images/awards_featured_trophy.png",
+    "link": "/awards"
+  },
+  "awardsList": [
+    {
+      "id": 1,
+      "title": "Best Architectural Hardware Brand",
+      "presenter": "By Indian Designs",
+      "location": "Delhi",
+      "year": "2023",
+      "image": "/images/awards_card_1.png"
+    },
+    {
+      "id": 2,
+      "title": "Best Architectural Hardware Brand",
+      "presenter": "By Indian Designs",
+      "location": "Delhi",
+      "year": "2023",
+      "image": "/images/awards_card_2.png"
+    },
+    {
+      "id": 3,
+      "title": "Best Architectural Hardware Brand",
+      "presenter": "By Indian Designs",
+      "location": "Delhi",
+      "year": "2023",
+      "image": "/images/awards_card_3.png"
+    },
+    {
+      "id": 4,
+      "title": "Best Architectural Hardware Brand",
+      "presenter": "By Indian Designs",
+      "location": "Delhi",
+      "year": "2023",
+      "image": "/images/awards_card_4.png"
+    }
+  ],
+  "milestones": [
+    {
+      "year": "2015",
+      "title": "Journey Begins",
+      "desc": "Expansion into architectural hardware"
+    },
+    {
+      "year": "2018",
+      "title": "Growing Stronger",
+      "desc": "Wider Product portfolio"
+    },
+    {
+      "year": "2021",
+      "title": "Industry Recognition",
+      "desc": "Quality & Innovation awards"
+    },
+    {
+      "year": "2024",
+      "title": "Excellence Award",
+      "desc": "Leadership in Architectural Solutions"
+    },
+    {
+      "year": "2026",
+      "title": "Continued Success",
+      "desc": "New Innovations & market expansion"
+    }
+  ],
+  "certifications": [
+    { "name": "ISO 9001:2015", "code": "ISO 9001:2015", "tag": "Quality Assured" },
+    { "name": "CE Certified", "code": "CE", "tag": "European Standards" },
+    { "name": "Make in India", "code": "MAKE IN INDIA", "tag": "Indigenous Manufacturing" },
+    { "name": "Indian Interior & Design Council", "code": "IIDC", "tag": "Industry Certified" },
+    { "name": "Institute of Indian Interior Designers", "code": "IIID", "tag": "Architectural Partner" }
+  ]
+}
+

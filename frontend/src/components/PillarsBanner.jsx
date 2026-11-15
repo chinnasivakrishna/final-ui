@@ -1,0 +1,52 @@
+import React from 'react';
+
+export default function PillarsBanner() {
+  return (
+    <section className="pillars-banner text-white w-100 m-0 p-0">
+      <div className="taiton-layout-container w-100 m-0 p-0">
+        <div className="row g-0 text-center align-items-center m-0 p-0">
+          <div className="col-6 col-md pillar-item px-2 m-0">
+            <div className="d-flex align-items-center justify-content-center gap-2 gap-lg-3">
+              <i className="fas fa-lightbulb pillar-icon"></i>
+              <div className="text-start fw-bold text-uppercase pillar-title">
+                INNOVATIVE<br />SOLUTIONS
+              </div>
+            </div>
+          </div>
+          <div className="col-6 col-md pillar-item px-2 m-0">
+            <div className="d-flex align-items-center justify-content-center gap-2 gap-lg-3">
+              <i className="fas fa-award pillar-icon"></i>
+              <div className="text-start fw-bold text-uppercase pillar-title">
+                PREMIUM<br />QUALITY
+              </div>
+            </div>
+          </div>
+          <div className="col-6 col-md pillar-item px-2 m-0">
+            <div className="d-flex align-items-center justify-content-center gap-2 gap-lg-3">
+              <i className="fas fa-cog pillar-icon"></i>
+              <div className="text-start fw-bold text-uppercase pillar-title">
+                ADVANCED<br />TECHNOLOGY
+              </div>
+            </div>
+          </div>
+          <div className="col-6 col-md pillar-item px-2 m-0">
+            <div className="d-flex align-items-center justify-content-center gap-2 gap-lg-3">
+              <i className="fas fa-compass pillar-icon"></i>
+              <div className="text-start fw-bold text-uppercase pillar-title">
+                ELEGANT<br />DESIGNS
+              </div>
+            </div>
+          </div>
+          <div className="col-12 col-md pillar-item px-2 m-0">
+            <div className="d-flex align-items-center justify-content-center gap-2 gap-lg-3">
+              <i className="fas fa-shield-alt pillar-icon"></i>
+              <div className="text-start fw-bold text-uppercase pillar-title">
+                RELIABLE<br />PERFORMANCE
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

@@ -1,0 +1,9 @@
+[
+  { "target": 15, "suffix": "+", "labelLine1": "Years of", "labelLine2": "Experience", "borderEnd": true, "borderBottom": true },
+  { "target": 2500, "suffix": "+", "labelLine1": "Product", "labelLine2": "Range", "borderEnd": true, "borderBottom": true },
+  { "target": 500, "suffix": "+", "labelLine1": "Completed", "labelLine2": "Projects", "borderEnd": false, "borderBottom": true },
+  { "target": 800, "suffix": "+", "labelLine1": "Dealer", "labelLine2": "Network", "borderEnd": true, "borderBottom": false },
+  { "target": 50, "suffix": "+", "labelLine1": "Cities", "labelLine2": "Pan India", "borderEnd": true, "borderBottom": false },
+  { "target": 98, "suffix": "%", "labelLine1": "Customer", "labelLine2": "Satisfaction", "borderEnd": false, "borderBottom": false }
+]
+

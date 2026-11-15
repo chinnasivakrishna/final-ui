@@ -1,0 +1,401 @@
+@import './variables.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  max-width: 100%;
+  overflow-x: clip;
+  overflow-y: visible;
+}
+
+body {
+  font-family: var(--taiton-font-main);
+  color: var(--taiton-text-body);
+  background-color: var(--taiton-bg-main);
+  overflow-x: clip;
+  overflow-y: visible;
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+  margin: 0;
+  padding: 0;
+}
+
+img,
+svg,
+video,
+canvas,
+iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+button,
+.btn,
+a.btn {
+  touch-action: manipulation;
+}
+
+/* Ensure smooth touch scrolling */
+.overflow-x-auto,
+.table-responsive,
+.journey-scroll-wrapper,
+.filter-scroll-wrapper,
+.gallery-scroll-wrapper {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+/* Master Site Container */
+.site-container {
+  width: 100% !important;
+  max-width: 1240px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: clamp(12px, 3vw, 24px) !important;
+  padding-right: clamp(12px, 3vw, 24px) !important;
+}
+
+/* Master Taiton Layout Container */
+.taiton-layout-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding-left: clamp(16px, 3.5vw, 48px) !important;
+  padding-right: clamp(16px, 3.5vw, 48px) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Custom Brand Typography & Color Utilities */
+.text-taiton-blue {
+  color: var(--taiton-blue) !important;
+}
+
+.text-taiton-blue-dark {
+  color: var(--taiton-blue-dark) !important;
+}
+
+.text-taiton-navy {
+  color: var(--taiton-navy) !important;
+}
+
+.text-taiton-accent {
+  color: var(--taiton-accent) !important;
+}
+
+.text-taiton-cyan {
+  color: var(--taiton-cyan) !important;
+}
+
+.text-taiton-muted {
+  color: var(--taiton-text-muted) !important;
+}
+
+.text-taiton-dark {
+  color: var(--taiton-text-dark) !important;
+}
+
+/* Headings Typography */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6,
+.section-main-title,
+.prod-detail-code,
+.product-list-title,
+.section-title-navy,
+.subcat-card-title,
+.cat-title,
+.recent-section-title,
+.display-6,
+.display-5,
+.display-4 {
+  font-family: var(--taiton-font-heading);
+}
+
+/* Section Titles & Home Page Typography Matching backup/home */
+.section-main-title {
+  font-family: var(--taiton-font-heading);
+  font-size: clamp(1.75rem, 2.25vw, 2.15rem);
+  font-weight: 700;
+  color: var(--taiton-navy, #002b5c) !important;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  margin-bottom: 0.4rem;
+}
+
+.section-subtitle {
+  font-family: var(--taiton-font-main);
+  font-size: clamp(0.92rem, 1.05vw, 1rem);
+  font-weight: 400;
+  color: var(--taiton-text-muted, #64748b) !important;
+  line-height: 1.6;
+}
+
+.section-kicker,
+.section-tag-kicker {
+  font-family: var(--taiton-font-heading);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #0084B4;
+  margin-bottom: 0.35rem;
+}
+
+.title-underline-center {
+  width: 48px;
+  height: 3px;
+  background-color: var(--taiton-blue, #0054a6) !important;
+  border-radius: 10px;
+  margin: 0.5rem auto 1.5rem auto;
+}
+
+.btn-action-link {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--taiton-blue, #0054a6) !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.btn-action-link:hover {
+  color: var(--taiton-blue-dark, #003875) !important;
+  transform: translateX(3px);
+}
+
+.cat-title {
+  color: var(--taiton-text-dark, #1e293b) !important;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.35;
+  margin-top: 0.5rem;
+  transition: color 0.2s ease;
+}
+
+.cat-item:hover .cat-title,
+.cat-item:focus .cat-title {
+  color: var(--taiton-blue, #0054a6) !important;
+}
+
+.project-card-title {
+  color: var(--taiton-dark, #0b1f3a) !important;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.project-card-location {
+  color: var(--taiton-text-muted, #64748b) !important;
+  font-size: 0.75rem;
+}
+
+.project-card-loc-icon {
+  color: var(--taiton-blue, #0054a6) !important;
+}
+
+.recent-section-title {
+  color: var(--taiton-blue-dark, #003875) !important;
+  font-weight: 800;
+}
+
+.recent-product-code {
+  color: var(--taiton-blue, #0054a6) !important;
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+
+.recent-product-name {
+  color: var(--taiton-text-dark, #1e293b) !important;
+  font-size: 0.85rem;
+}
+
+.recent-action-link {
+  color: var(--taiton-blue, #0054a6) !important;
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+
+/* Home Contact Us card typography */
+.contact-tag {
+  color: var(--taiton-blue-dark, #003875) !important;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.contact-heading {
+  color: var(--taiton-dark, #0b1f3a) !important;
+  font-weight: 800;
+}
+
+.contact-desc {
+  color: var(--taiton-text-muted, #64748b) !important;
+}
+
+.contact-phone {
+  color: var(--taiton-blue-dark, #003875) !important;
+  font-weight: 700;
+}
+
+.contact-email {
+  color: var(--taiton-blue, #0054a6) !important;
+  font-weight: 600;
+}
+
+.contact-form-title {
+  color: var(--taiton-dark, #0b1f3a) !important;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* Background Color Utilities */
+.bg-taiton-blue {
+  background-color: var(--taiton-blue) !important;
+}
+
+.bg-taiton-dark {
+  background-color: var(--taiton-blue-dark) !important;
+}
+
+.bg-taiton-navy {
+  background-color: var(--taiton-navy) !important;
+}
+
+.bg-taiton-light {
+  background-color: var(--taiton-blue-light) !important;
+}
+
+.bg-taiton-gray {
+  background-color: var(--taiton-gray) !important;
+}
+
+.bg-taiton-surface {
+  background-color: var(--taiton-surface) !important;
+}
+
+/* Primary Overrides (Bootstrap Integration) */
+.text-primary {
+  color: var(--taiton-blue) !important;
+}
+
+.bg-primary {
+  background-color: var(--taiton-blue) !important;
+}
+
+.border-primary {
+  border-color: var(--taiton-blue) !important;
+}
+
+.btn-primary {
+  background-color: var(--taiton-blue) !important;
+  border-color: var(--taiton-blue) !important;
+  color: var(--taiton-text-light) !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--taiton-blue-dark) !important;
+  border-color: var(--taiton-blue-dark) !important;
+}
+
+.btn-outline-primary {
+  color: var(--taiton-blue) !important;
+  border-color: var(--taiton-blue) !important;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+  background-color: var(--taiton-blue) !important;
+  border-color: var(--taiton-blue) !important;
+  color: var(--taiton-text-light) !important;
+}
+
+/* Hover Utilities */
+.hover-blue:hover {
+  color: var(--taiton-blue) !important;
+}
+
+.hover-cyan:hover {
+  color: var(--taiton-cyan) !important;
+}
+
+.hover-white:hover {
+  color: var(--taiton-text-light) !important;
+}
+
+.hover-lift {
+  transition: transform var(--taiton-transition-base), box-shadow var(--taiton-transition-base);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--taiton-shadow-lg) !important;
+}
+
+.hover-scale {
+  transition: transform var(--taiton-transition-base);
+}
+
+.hover-scale:hover {
+  transform: scale(1.06);
+}
+
+/* Reusable Radius & Elevation Tokens */
+.rounded-taiton-sm {
+  border-radius: var(--taiton-radius-sm) !important;
+}
+
+.rounded-taiton-md {
+  border-radius: var(--taiton-radius-md) !important;
+}
+
+.rounded-taiton-lg {
+  border-radius: var(--taiton-radius-lg) !important;
+}
+
+.rounded-taiton-pill {
+  border-radius: var(--taiton-radius-pill) !important;
+}
+
+.shadow-taiton-sm {
+  box-shadow: var(--taiton-shadow-sm) !important;
+}
+
+.shadow-taiton-md {
+  box-shadow: var(--taiton-shadow-md) !important;
+}
+
+.shadow-taiton-lg {
+  box-shadow: var(--taiton-shadow-lg) !important;
+}
+
+/* Typography & Sizing Helpers */
+.fs-7 {
+  font-size: 0.75rem !important;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.max-w-600 {
+  max-width: 600px;
+}
+
+/* Mobile iOS Zoom Prevention on Form Inputs */
+@media (max-width: 767.98px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="search"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
