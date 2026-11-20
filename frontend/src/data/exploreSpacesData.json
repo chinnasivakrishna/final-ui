@@ -48,11 +48,11 @@
           "code": "THB-SCH-01",
           "name": "Soft Close Concealed Hinge",
           "desc": "110° soft close concealed hinge for cabinet doors with clip-on system.",
-          "image": "/images/products/hinge_main.png",
+          "image": "/placeholder-hardware.png",
           "thumbnails": [
-            "/images/products/hinge_th1.png",
-            "/images/products/hinge_th2.png",
-            "/images/products/hinge_th3.png"
+            "/placeholder-hardware.png",
+            "/placeholder-hardware.png",
+            "/placeholder-hardware.png"
           ],
           "type": "hinge",
           "finishes": [

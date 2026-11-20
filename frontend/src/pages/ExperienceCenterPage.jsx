@@ -68,17 +68,24 @@ export default function ExperienceCenterPage() {
             <div className="mx-auto mt-2" style={{ width: '96px', height: '1.5px', backgroundColor: '#475569' }}></div>
           </div>
 
-          {/* City Tabs */}
-          <div className="d-flex flex-wrap justify-content-center gap-3 mb-4">
+          {/* City Tabs - Single Line Horizontally Scrollable on Mobile */}
+          <div
+            className="d-flex flex-nowrap overflow-x-auto gap-2 gap-md-3 mb-4 pb-2 px-1 justify-content-start justify-content-md-center align-items-center"
+            style={{
+              WebkitOverflowScrolling: 'touch',
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none'
+            }}
+          >
             {experienceCentersData.map((center) => (
               <button
                 key={center.id}
                 type="button"
-                className="btn px-4 py-2 fw-semibold transition-all"
+                className="btn px-3 px-md-4 py-2 fw-semibold text-nowrap flex-shrink-0 transition-all"
                 style={
                   activeCityId === center.id
-                    ? { backgroundColor: '#00458b', color: '#ffffff', border: '1px solid #00458b', borderRadius: '6px', fontSize: '0.88rem', minWidth: '126px' }
-                    : { backgroundColor: '#f3f4f6', color: '#374151', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '0.88rem', minWidth: '126px' }
+                    ? { backgroundColor: '#00458b', color: '#ffffff', border: '1px solid #00458b', borderRadius: '6px', fontSize: '0.88rem' }
+                    : { backgroundColor: '#f3f4f6', color: '#374151', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '0.88rem' }
                 }
                 onClick={() => handleCityChange(center.id)}
               >
@@ -88,7 +95,7 @@ export default function ExperienceCenterPage() {
           </div>
 
           {/* Experience Center Card */}
-          <div className="card border p-4 p-md-5 mb-5" style={{ backgroundColor: '#f3f6fb', borderColor: '#e2e8f0', borderRadius: '16px' }}>
+          <div className="card border p-3 p-sm-4 p-md-5 mb-5" style={{ backgroundColor: '#f3f6fb', borderColor: '#e2e8f0', borderRadius: '16px' }}>
             <div className="row g-4 align-items-center">
               {/* Left Column: Details & Contact */}
               <div className="col-12 col-lg-5">
@@ -176,9 +183,10 @@ export default function ExperienceCenterPage() {
                 </div>
               </div>
 
-              {/* Right Column: Main Image & Vertical Thumbnails */}
+              {/* Right Column: Main Image & Thumbnails */}
               <div className="col-12 col-lg-7">
-                <div className="row g-2 align-items-stretch">
+                {/* Desktop layout: Side-by-side vertical thumbnails */}
+                <div className="d-none d-md-flex row g-2 align-items-stretch">
                   <div className="col-9 col-sm-10">
                     <div className="rounded-3 overflow-hidden border shadow-sm h-100" style={{ minHeight: '340px' }}>
                       <img
@@ -196,6 +204,38 @@ export default function ExperienceCenterPage() {
                         className={`rounded-2 overflow-hidden border cursor-pointer ${selectedImage === imgUrl ? 'border-primary shadow-sm ring-2 ring-primary' : 'opacity-75'
                           }`}
                         style={{ height: '62px' }}
+                        onClick={() => setSelectedImage(imgUrl)}
+                      >
+                        <img
+                          src={imgUrl}
+                          alt={`Thumbnail ${idx + 1}`}
+                          className="w-100 h-100 object-fit-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Mobile layout: Main image on top, horizontally scrollable thumbnails below */}
+                <div className="d-block d-md-none">
+                  <div className="rounded-3 overflow-hidden border shadow-sm mb-2" style={{ height: '220px' }}>
+                    <img
+                      src={selectedImage}
+                      alt={activeCenter.title}
+                      className="w-100 h-100 object-fit-cover"
+                      style={{ display: 'block' }}
+                    />
+                  </div>
+                  <div
+                    className="d-flex flex-nowrap overflow-x-auto gap-2 pb-1"
+                    style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}
+                  >
+                    {activeCenter.gallery.map((imgUrl, idx) => (
+                      <div
+                        key={idx}
+                        className={`rounded-2 overflow-hidden border flex-shrink-0 cursor-pointer ${selectedImage === imgUrl ? 'border-primary shadow-sm' : 'opacity-75'
+                          }`}
+                        style={{ width: '68px', height: '52px' }}
                         onClick={() => setSelectedImage(imgUrl)}
                       >
                         <img
@@ -333,6 +373,7 @@ export default function ExperienceCenterPage() {
                     borderBottomRightRadius: '0px'
                   }}
                   onError={(e) => {
+                    e.currentTarget.onerror = null;
                     e.currentTarget.src = 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=900&q=80';
                   }}
                 />

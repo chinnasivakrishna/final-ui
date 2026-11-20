@@ -13,23 +13,46 @@
   background-color: var(--taiton-dark);
 }
 
-/* Desktop: Fits Header + Hero Carousel + 5 Pillars Banner into exact 100% viewport */
+/* Fits Header + Hero Carousel + 5 Pillars Banner into exact 100vh / 100dvh viewport on every screen */
+.hero-fold-wrapper {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: var(--taiton-dark);
+  height: calc(100vh - var(--header-height, 106px));
+  height: calc(100dvh - var(--header-height, 106px));
+  min-height: calc(100vh - var(--header-height, 106px));
+  min-height: calc(100dvh - var(--header-height, 106px));
+  max-height: calc(100vh - var(--header-height, 106px));
+  max-height: calc(100dvh - var(--header-height, 106px));
+}
+
 @media (min-width: 992px) {
   .hero-fold-wrapper {
-    height: calc(100vh - 206px);
-    min-height: calc(100vh - 106px);
-    max-height: calc(100vh - 106px);
+    height: calc(100vh - var(--header-height, 110px));
+    height: calc(100dvh - var(--header-height, 110px));
+    min-height: calc(100vh - var(--header-height, 110px));
+    min-height: calc(100dvh - var(--header-height, 110px));
+    max-height: calc(100vh - var(--header-height, 110px));
+    max-height: calc(100dvh - var(--header-height, 110px));
   }
 }
 
-@media (max-width: 991px) {
+@media (max-width: 991.98px) {
   .hero-fold-wrapper {
-    height: auto;
-    min-height: auto;
+    height: calc(100vh - var(--header-height, 98px));
+    height: calc(100dvh - var(--header-height, 98px));
+    min-height: calc(100vh - var(--header-height, 98px));
+    min-height: calc(100dvh - var(--header-height, 98px));
+    max-height: calc(100vh - var(--header-height, 98px));
+    max-height: calc(100dvh - var(--header-height, 98px));
   }
 
   .hero-fold-wrapper.hero-variation-clean {
-    min-height: 480px;
+    min-height: calc(100dvh - var(--header-height, 98px));
   }
 }
 
@@ -440,19 +463,28 @@
   }
 }
 
-@media (max-width: 991px) {
+@media (max-width: 991.98px) {
   .pillars-banner {
     height: auto;
     min-height: auto;
     max-height: none;
-    padding: 8px 0 !important;
+    padding: 6px 0 !important;
   }
 
   .pillar-item {
     border-right: none;
     border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-    padding-top: 8px !important;
-    padding-bottom: 8px !important;
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+  }
+
+  .pillar-title {
+    font-size: 0.68rem !important;
+    line-height: 1.15 !important;
+  }
+
+  .pillar-icon {
+    font-size: 1.05rem !important;
   }
 
   .pillar-item:nth-child(odd) {
@@ -1084,7 +1116,26 @@
   }
 
   .testimonial-nav-btn {
-    display: none !important;
+    display: flex !important;
+    width: 34px !important;
+    height: 34px !important;
+    font-size: 0.8rem !important;
+    z-index: 25 !important;
+    background: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+    color: #003875 !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 50% !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .testimonial-nav-prev {
+    left: -12px !important;
+  }
+
+  .testimonial-nav-next {
+    right: -12px !important;
   }
 
   .why-taiton-title {
@@ -1195,21 +1246,13 @@
 @media (max-width: 991.98px) {
   .contact-left-card {
     min-height: 380px;
-    border-top-left-radius: 16px !important;
-    border-top-right-radius: 16px !important;
-    border-bottom-left-radius: 0 !important;
-    border-bottom-right-radius: 0 !important;
-    border-right: 1px solid var(--taiton-border, #e2e8f0) !important;
-    border-bottom: none !important;
+    border-radius: 16px !important;
+    border: 1px solid var(--taiton-border, #e2e8f0) !important;
   }
 
   .contact-form-card {
-    border-top-left-radius: 0 !important;
-    border-top-right-radius: 0 !important;
-    border-bottom-left-radius: 16px !important;
-    border-bottom-right-radius: 16px !important;
-    border-left: 1px solid var(--taiton-border, #e2e8f0) !important;
-    border-top: none !important;
+    border-radius: 16px !important;
+    border: 1px solid var(--taiton-border, #e2e8f0) !important;
   }
 }
 
@@ -1753,7 +1796,11 @@
   border-top: 1px solid #e2e8f0;
   text-transform: uppercase;
   margin-top: 0 !important;
-  flex-shrink: 0;
+  margin-bottom: 0 !important;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   transition: all 0.2s ease;
 }
@@ -1904,14 +1951,85 @@
   color: #ffffff !important;
 }
 
-/* Catalogue Download Banner matching subcategory 4.png */
+/* Full-Width Catalogue Download Section matching Figma 02 - Product Series.png / subcategory 4.png */
+.cat-download-fullwidth-section {
+  width: 100% !important;
+  max-width: 100% !important;
+  background-color: #e8effa;
+  position: relative;
+  overflow: visible;
+  margin-top: 60px;
+}
+
+.cat-download-section {
+  overflow: visible;
+}
+
 .cat-download-banner {
   background: linear-gradient(135deg, #eef5fc 0%, #e2effa 100%);
   border-radius: 16px;
-  padding: 3rem;
+  padding: 3rem 3rem 2.8rem 3rem;
   border: 1px solid #cbd5e1;
   position: relative;
-  overflow: hidden;
+  overflow: visible !important;
+}
+
+.cat-download-img-col {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.cat-download-book-img {
+  max-height: 290px;
+  width: auto;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+@media (min-width: 992px) {
+  .cat-download-fullwidth-section {
+    margin-top: 65px;
+  }
+
+  .cat-download-section {
+    padding-top: 4.8rem !important;
+  }
+
+  .cat-download-book-img {
+    margin-top: -65px;
+    margin-bottom: 0;
+    max-height: 300px;
+    filter: drop-shadow(0 14px 28px rgba(0, 56, 117, 0.12));
+  }
+
+  .cat-download-fullwidth-section:hover .cat-download-book-img,
+  .cat-download-banner:hover .cat-download-book-img {
+    transform: translateY(-4px);
+  }
+}
+
+@media (max-width: 991.98px) {
+  .cat-download-fullwidth-section {
+    margin-top: 30px;
+  }
+
+  .cat-download-banner {
+    padding: 2.2rem 1.6rem 2rem;
+    overflow: hidden !important;
+  }
+
+  .cat-download-img-col {
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+
+  .cat-download-book-img {
+    max-height: 210px;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
 }
 
 /* Content Flow Layout for Category/Subcategory Description */
@@ -2642,13 +2760,15 @@
 
 .contact-input {
   border-color: #cbd5e1;
-  border-radius: 8px;
-  font-size: 0.95rem;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  padding: 6px 12px !important;
+  line-height: 1.4;
 }
 
 .contact-input:focus {
   border-color: var(--taiton-blue-dark);
-  box-shadow: 0 0 0 3px rgba(0, 56, 117, 0.15);
+  box-shadow: 0 0 0 2px rgba(0, 56, 117, 0.12);
 }
 
 @media (min-width: 992px) {
@@ -2693,32 +2813,26 @@
 /* Page Hero Banner Wrapper - Pure Banner Images Across All Pages */
 .page-hero-banner-wrap {
   width: 100%;
-  height: 30vh !important;
-  min-height: 140px;
-  max-height: 30vh !important;
   overflow: hidden;
   background-color: var(--taiton-surface-subtle, #f8fafc);
   border-bottom: 1px solid var(--taiton-border, #e2e8f0);
 }
 
 .page-hero-banner-img {
-  width: 100%;
-  height: 100% !important;
-  object-fit: cover;
-  object-position: center;
+  width: 100% !important;
+  height: auto !important;
   display: block;
 }
 
 /* Responsive Enhancements across all pages */
 @media (max-width: 991.98px) {
   .page-hero-banner-wrap {
-    height: 20vh !important;
-    min-height: 130px;
-    max-height: 20vh !important;
+    width: 100%;
   }
 
   .page-hero-banner-img {
-    height: 100% !important;
+    width: 100% !important;
+    height: auto !important;
   }
 
   h1,
@@ -3001,10 +3115,6 @@
 }
 
 @media (max-width: 575.98px) {
-  .page-hero-banner-img {
-    max-height: 200px;
-  }
-
   h1,
   .h1 {
     font-size: 1.35rem !important;
@@ -3503,6 +3613,24 @@
   padding: 8px 0;
 }
 
+@media (max-width: 991px) {
+  .cat-filter-bar {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    justify-content: flex-start !important;
+    padding: 6px 4px 10px 4px !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .cat-filter-bar::-webkit-scrollbar {
+    display: none;
+  }
+  .cat-filter-bar .filter-btn {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+  }
+}
+
 .cat-filter-bar .filter-btn,
 .filter-btn {
   background-color: #ffffff;
@@ -3679,6 +3807,55 @@
   border-radius: 3px;
   text-transform: uppercase;
   pointer-events: none;
+}
+
+@media (max-width: 575px) {
+  .cat-doc-card {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    padding: 8px 6px !important;
+    gap: 8px !important;
+    min-height: auto !important;
+  }
+  .cat-doc-thumb-container {
+    width: 100% !important;
+    height: 120px !important;
+  }
+  .cat-doc-thumb {
+    width: auto !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+  }
+  .cat-card-title {
+    font-size: 0.74rem !important;
+    line-height: 1.2 !important;
+    margin-bottom: 2px !important;
+  }
+  .cat-meta-text {
+    font-size: 0.65rem !important;
+    margin-bottom: 2px !important;
+  }
+  .cat-badge-pages {
+    font-size: 0.62rem !important;
+    padding: 1px 3px !important;
+    margin-bottom: 2px !important;
+  }
+  .cat-updated-text {
+    font-size: 0.6rem !important;
+    margin-bottom: 4px !important;
+  }
+  .cat-btn-view {
+    padding: 4px 6px !important;
+    font-size: 0.7rem !important;
+    gap: 3px !important;
+  }
+  .cat-btn-download {
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 0.7rem !important;
+  }
 }
 
 /* ==========================================================================
@@ -4098,9 +4275,17 @@
   max-height: 92vh;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   animation: appModalFadeIn 0.25s ease-out;
+}
+
+@media (max-width: 767.98px) {
+  .app-modal-dialog {
+    max-height: 94vh;
+    border-radius: 16px;
+    margin: 10px;
+  }
 }
 
 @keyframes appModalFadeIn {
@@ -4690,6 +4875,15 @@
 
 .pdt-detail-main-img-wrap:hover .pdt-detail-main-img {
   transform: scale(1.02);
+}
+
+.pdt-img-action-btn {
+  transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.pdt-img-action-btn:hover {
+  transform: scale(1.08);
+  background-color: #ffffff !important;
 }
 
 .pdt-detail-angle-pill {

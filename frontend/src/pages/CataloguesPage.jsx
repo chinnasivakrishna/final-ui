@@ -169,13 +169,16 @@ export default function CataloguesPage() {
       {/* Main Content Area in site-container for proper site margins */}
       <section className="py-4 bg-white">
         <div className="site-container">
-          {/* Centered Filter Tabs */}
-          <div className="cat-filter-bar mb-4">
+          {/* Centered Filter Tabs - Single Line Horizontally Scrollable on Mobile */}
+          <div
+            className="cat-filter-bar mb-4 overflow-x-auto flex-nowrap justify-content-start justify-content-md-center"
+            style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}
+          >
             {FILTER_TABS.map((tab) => (
               <button
                 key={tab.id}
                 type="button"
-                className={`filter-btn ${activeFilter === tab.id ? 'active' : ''}`}
+                className={`filter-btn flex-shrink-0 text-nowrap ${activeFilter === tab.id ? 'active' : ''}`}
                 onClick={() => setActiveFilter(tab.id)}
               >
                 {tab.label}
@@ -193,9 +196,9 @@ export default function CataloguesPage() {
               <p className="text-muted mb-0">No catalogues found matching "{searchQuery || activeFilter}".</p>
             </div>
           ) : (
-            <div className="row g-3" id="cataloguesGrid">
+            <div className="row g-2 g-md-3" id="cataloguesGrid">
               {filteredItems.map((item) => (
-                <div className="col-12 col-sm-6 col-lg-3" key={item.id}>
+                <div className="col-6 col-md-6 col-lg-3" key={item.id}>
                   <div className="cat-doc-card h-100">
                     {/* Cover Thumbnail Container - exact 108x158 dimension matching UI */}
                     <Link
@@ -208,6 +211,7 @@ export default function CataloguesPage() {
                         alt={item.title}
                         className="cat-doc-thumb"
                         onError={(e) => {
+                          e.currentTarget.onerror = null;
                           e.currentTarget.src = '/images/catalogues/master_catalogue.png';
                         }}
                       />

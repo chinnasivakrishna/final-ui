@@ -16,6 +16,18 @@ export default function ProductCategoryPage({ categoryKey }) {
   const [latestCatalog, setLatestCatalog] = useState(null);
   const [failedCardImages, setFailedCardImages] = useState({});
   const [loading, setLoading] = useState(true);
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+
+  useEffect(() => {
+    if (mobileFilterOpen) {
+      document.body.classList.add('mobile-filter-open');
+    } else {
+      document.body.classList.remove('mobile-filter-open');
+    }
+    return () => {
+      document.body.classList.remove('mobile-filter-open');
+    };
+  }, [mobileFilterOpen]);
 
   useEffect(() => {
     let mounted = true;
@@ -189,8 +201,8 @@ export default function ProductCategoryPage({ categoryKey }) {
         <div className="site-container py-2">
 
           <div className="row g-4">
-            {/* Left Sidebar */}
-            <div className="col-12 col-lg-3">
+            {/* Left Sidebar (Desktop Only) */}
+            <div className="col-12 col-lg-3 d-none d-lg-block">
               <div className="subcat-sidebar border rounded-3 overflow-hidden shadow-sm">
                 <div className="subcat-sidebar-header p-3 bg-light fw-bold text-taiton-navy border-bottom" style={{ fontSize: '0.95rem' }}>
                   {sidebarTitle}
@@ -311,39 +323,109 @@ export default function ProductCategoryPage({ categoryKey }) {
         </section>
       )}
 
-      {/* 5. Download Catalogue Banner (Dynamic from Catalogues API) */}
-      {latestCatalog && (
-        <section className="py-5 bg-white">
-          <div className="site-container">
-            <div className="cat-download-banner">
-              <div className="row align-items-center gy-4">
-                <div className="col-12 col-lg-7">
-                  <h3 className="section-main-title mb-2 text-uppercase" style={{ fontSize: '1.5rem' }}>
-                    {latestCatalog.title || 'DOWNLOAD OUR LATEST CATALOGUE'}
-                  </h3>
-                  <p className="text-secondary mb-4 fs-6">
-                    {latestCatalog.category
-                      ? `Explore the complete ${latestCatalog.category} range from TAITON architectural hardware.`
-                      : 'Explore the complete range of TAITON architectural hardware.'}
-                  </p>
-                  <Link to="/catalogues" className="btn-taiton-pill">
-                    Download Catalogue <i className="fas fa-arrow-right ms-1"></i>
-                  </Link>
+      {/* 5. Download Catalogue Section - 100% Full Screen Width as per UI screens */}
+      <section className="cat-download-fullwidth-section">
+        <div className="site-container">
+          <div className="row align-items-center">
+            <div className="col-12 col-lg-7 py-4 py-lg-5">
+              <h3 className="section-main-title mb-2 text-uppercase" style={{ fontSize: '1.5rem' }}>
+                DOWNLOAD OUR LATEST CATALOGUE
+              </h3>
+              <p className="text-secondary mb-4 fs-6">
+                Explore the complete range of TAITON architectural hardware.
+              </p>
+              <Link to="/catalogues" className="btn-taiton-pill">
+                Download Catalogue <i className="fas fa-arrow-right ms-1"></i>
+              </Link>
+            </div>
+            <div className="col-12 col-lg-5 text-center text-lg-end cat-download-img-col">
+              <img
+                src="/images/cat_download_hero_book.png"
+                alt="TAITON Architectural Hardware Catalogue"
+                className="img-fluid cat-download-book-img"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Mobile Floating Filter Button */}
+      {sidebarItems.length > 0 && (
+        <div className="d-lg-none position-fixed start-50 translate-middle-x" style={{ bottom: '24px', zIndex: 1020 }}>
+          <button
+            type="button"
+            className="btn btn-dark rounded-pill px-4 py-2 shadow-lg d-flex align-items-center gap-2 fw-semibold"
+            style={{ backgroundColor: '#002b5c', borderColor: '#002b5c', fontSize: '0.88rem' }}
+            onClick={() => setMobileFilterOpen(true)}
+            aria-label="Open Category Filters"
+          >
+            <i className="fas fa-filter text-warning"></i>
+            <span>Filters</span>
+          </button>
+        </div>
+      )}
+
+      {/* Mobile Filter Bottom Sheet Drawer */}
+      {sidebarItems.length > 0 && (
+        <>
+          <div
+            className={`mobile-filter-backdrop ${mobileFilterOpen ? 'open' : ''}`}
+            onClick={() => setMobileFilterOpen(false)}
+            aria-hidden="true"
+          />
+
+          <div
+            className={`mobile-filter-drawer ${mobileFilterOpen ? 'open' : ''}`}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Category Filters"
+          >
+            <div className="mobile-filter-handle" />
+
+            <div className="mobile-filter-header">
+              <div className="d-flex align-items-center gap-2">
+                <i className="fas fa-filter text-primary"></i>
+                <h5 className="mb-0 fw-bold text-dark" style={{ fontSize: '1.05rem' }}>{sidebarTitle}</h5>
+              </div>
+            </div>
+
+            <div className="mobile-filter-body">
+              <div className="mb-3">
+                <div
+                  className="fw-bold text-uppercase mb-2 text-dark"
+                  style={{ fontSize: '0.82rem', letterSpacing: '0.5px' }}
+                >
+                  Select {sidebarTitle}
                 </div>
-                <div className="col-12 col-lg-5 text-center">
-                  <img
-                    src={resolveImageUrl(latestCatalog.image) || '/images/catalogues_hero_stack.png'}
-                    alt={latestCatalog.title || 'TAITON Architectural Hardware Catalogue'}
-                    className="img-fluid catalogue-stack-img"
-                    onError={(e) => {
-                      e.currentTarget.src = '/images/catalogues_hero_stack.png';
-                    }}
-                  />
+                <div className="d-flex flex-column gap-1">
+                  {sidebarItems.map((item) => (
+                    <Link
+                      key={item.id}
+                      to={item.url}
+                      className={`btn text-start w-100 py-2 px-3 rounded-2 text-decoration-none border-0 ${
+                        item.active ? 'bg-primary text-white fw-bold' : 'bg-light text-dark'
+                      }`}
+                      style={{ fontSize: '0.88rem' }}
+                      onClick={() => setMobileFilterOpen(false)}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
                 </div>
               </div>
             </div>
+
+            <div className="mobile-filter-footer p-3 border-top bg-white d-flex gap-2">
+              <button
+                type="button"
+                className="btn btn-primary flex-fill fw-bold"
+                onClick={() => setMobileFilterOpen(false)}
+              >
+                Close
+              </button>
+            </div>
           </div>
-        </section>
+        </>
       )}
     </div>
   );

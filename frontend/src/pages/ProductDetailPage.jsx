@@ -241,6 +241,57 @@ export default function ProductDetailPage() {
                 </div>
 
                 <div className="pdt-detail-main-img-wrap flex-grow-1 w-100 order-2 order-md-2 position-relative">
+                  {/* Floating Action Buttons on Top Right of Main Image */}
+                  <div className="position-absolute top-0 end-0 m-3 d-flex flex-column gap-2" style={{ zIndex: 5 }}>
+                    {/* Wishlist Button */}
+                    <button
+                      type="button"
+                      className={`btn rounded-circle shadow-sm d-flex align-items-center justify-content-center pdt-img-action-btn ${isFavorite ? 'active text-danger' : 'text-secondary'
+                        }`}
+                      style={{
+                        width: '40px',
+                        height: '40px',
+                        backgroundColor: '#ffffff',
+                        border: '1px solid #e2e8f0',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                        transition: 'all 0.2s ease',
+                        padding: 0
+                      }}
+                      title={isFavorite ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                      aria-label={isFavorite ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                      onClick={handleWishlistToggle}
+                    >
+                      <i className={`${isFavorite ? 'fas text-danger' : 'far'} fa-heart fs-6`}></i>
+                    </button>
+
+                    {/* Share Button */}
+                    <button
+                      type="button"
+                      className="btn rounded-circle shadow-sm d-flex align-items-center justify-content-center pdt-img-action-btn text-secondary"
+                      style={{
+                        width: '40px',
+                        height: '40px',
+                        backgroundColor: '#ffffff',
+                        border: '1px solid #e2e8f0',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                        transition: 'all 0.2s ease',
+                        padding: 0
+                      }}
+                      title="Share Product"
+                      aria-label="Share Product"
+                      onClick={() => {
+                        if (navigator.share) {
+                          navigator.share({ title: product.code, url: window.location.href });
+                        } else {
+                          navigator.clipboard?.writeText(window.location.href);
+                          alert('Product link copied to clipboard!');
+                        }
+                      }}
+                    >
+                      <i className="fas fa-share-alt fs-6"></i>
+                    </button>
+                  </div>
+
                   <img
                     id="main-product-img"
                     className="pdt-detail-main-img"
@@ -254,42 +305,10 @@ export default function ProductDetailPage() {
 
             <div className="col-12 col-lg-6">
 
-              <div className="d-flex flex-wrap align-items-start justify-content-between gap-2 mb-1">
+              <div className="mb-1">
                 <h1 className="prod-detail-code mb-0">
                   {formattedCode}
                 </h1>
-
-                <div className="d-flex align-items-center gap-2">
-                  <a href="/catalogues" className="prod-util-btn text-decoration-none" title="Download PDF">
-                    <i className="fas fa-file-download"></i>
-                    <span>Download PDF</span>
-                  </a>
-                  <button
-                    type="button"
-                    className="prod-util-btn border-0"
-                    title="Share Product"
-                    onClick={() => {
-                      if (navigator.share) {
-                        navigator.share({ title: product.code, url: window.location.href });
-                      } else {
-                        navigator.clipboard?.writeText(window.location.href);
-                        alert('Product link copied to clipboard!');
-                      }
-                    }}
-                  >
-                    <i className="fas fa-share-alt"></i>
-                    <span>Share</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={`prod-util-btn border-0 ${isFavorite ? 'active text-danger' : ''}`}
-                    title={isFavorite ? 'Remove from Wishlist' : 'Add to Wishlist'}
-                    onClick={handleWishlistToggle}
-                  >
-                    <i className={`${isFavorite ? 'fas text-danger' : 'far'} fa-heart`}></i>
-                    <span className={isFavorite ? 'text-danger fw-semibold' : ''}>Wishlist</span>
-                  </button>
-                </div>
               </div>
 
               <div className="prod-detail-fullname mb-2">
@@ -334,27 +353,29 @@ export default function ProductDetailPage() {
                 </Link>
               </div>
 
-              <div className="d-flex flex-wrap gap-2 mb-3">
+              <div className="d-flex align-items-center gap-2 mb-3">
                 <button
                   type="button"
-                  className="btn-outline-action"
-                  onClick={handleCartClick}
-                >
-                  <i className={`fas ${cartAdded ? 'fa-check text-success' : 'fa-shopping-cart'}`}></i>
-                  {cartAdded ? 'Added to Cart!' : 'Add to Cart'}
-                </button>
-                <button
-                  type="button"
-                  className="btn-outline-action"
+                  className="btn-outline-action flex-fill text-center justify-content-center"
+                  style={{ width: 'auto', flex: '1 1 0', minWidth: 0, padding: '8px 12px', fontSize: '0.85rem', whiteSpace: 'nowrap' }}
                   onClick={handleQuoteClick}
                 >
                   <i className={`fas ${quoteRequested ? 'fa-check text-success' : 'fa-file-alt'}`}></i>
-                  {quoteRequested ? 'Quote Requested!' : 'Get a Quote'}
+                  <span>{quoteRequested ? 'Quote Requested!' : 'Get a Quote'}</span>
+                </button>
+                <button
+                  type="button"
+                  className="btn-outline-action flex-fill text-center justify-content-center"
+                  style={{ width: 'auto', flex: '1 1 0', minWidth: 0, padding: '8px 12px', fontSize: '0.85rem', whiteSpace: 'nowrap' }}
+                  onClick={handleCartClick}
+                >
+                  <i className={`fas ${cartAdded ? 'fa-check text-success' : 'fa-shopping-cart'}`}></i>
+                  <span>{cartAdded ? 'Added to Cart!' : 'Add to Cart'}</span>
                 </button>
               </div>
 
               <div className="mb-2 pt-1">
-                <div className="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <div className="d-flex flex-wrap align-items-center justify-content-start gap-2 gap-sm-3">
                   <div className="d-flex align-items-center gap-2">
                     <div className="rounded-circle d-flex align-items-center justify-content-center shadow-xs flex-shrink-0" style={{ width: '30px', height: '30px', background: 'linear-gradient(135deg, #f43f5e 0%, #a855f7 100%)', color: '#fff', fontSize: '0.78rem' }}>
                       <i className="fas fa-mobile-alt"></i>
@@ -608,7 +629,10 @@ export default function ProductDetailPage() {
                           src={item.img || '/placeholder-hardware.png'}
                           alt={`${item.code} ${item.title}`}
                           className="product-listing-card-img"
-                          onError={(e) => { e.currentTarget.src = '/placeholder-hardware.png'; }}
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = '/placeholder-hardware.png';
+                          }}
                         />
                       </Link>
                     </div>

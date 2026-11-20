@@ -66,25 +66,25 @@ export default function OurTeamPage() {
               </div>
             </div>
 
-            {/* General Managers Row */}
-            <div className="row g-4">
+            {/* General Managers Row (Two in single line in mobile view also) */}
+            <div className="row g-2 g-sm-3 g-md-4">
               {teamData.leadership.gms.map((gm, idx) => (
-                <div className="col-12 col-md-6" key={idx}>
-                  <div className="d-flex flex-column flex-sm-row align-items-start gap-4">
+                <div className="col-6 col-md-6" key={idx}>
+                  <div className="d-flex flex-column flex-lg-row align-items-center align-items-lg-start text-center text-lg-start gap-2 gap-md-3 h-100">
                     <img
                       src={gm.image}
                       alt={gm.name}
-                      className="object-fit-cover flex-shrink-0 d-block"
-                      style={{ width: '215px', height: '165px', borderRadius: '8px' }}
+                      className="object-fit-cover flex-shrink-0 d-block w-100"
+                      style={{ maxWidth: '215px', height: 'clamp(130px, 32vw, 175px)', borderRadius: '8px', objectPosition: 'top center' }}
                     />
-                    <div className="pt-1">
-                      <span className="fw-semibold d-block mb-1" style={{ color: '#0054a6', fontSize: '0.78rem' }}>
+                    <div className="pt-1 w-100">
+                      <span className="fw-semibold d-block mb-1" style={{ color: '#0054a6', fontSize: 'clamp(0.7rem, 2.2vw, 0.78rem)' }}>
                         {gm.role}
                       </span>
-                      <h3 className="fw-bold mb-2" style={{ color: '#004282', fontSize: '1.25rem' }}>
+                      <h3 className="fw-bold mb-1 mb-md-2" style={{ color: '#004282', fontSize: 'clamp(0.95rem, 3vw, 1.25rem)' }}>
                         {gm.name}
                       </h3>
-                      <p className="mb-0" style={{ color: '#1e293b', lineHeight: '1.6', fontSize: '0.82rem' }}>
+                      <p className="mb-0" style={{ color: '#1e293b', lineHeight: '1.5', fontSize: 'clamp(0.72rem, 2vw, 0.82rem)' }}>
                         {gm.bio}
                       </p>
                     </div>
@@ -108,12 +108,12 @@ export default function OurTeamPage() {
             </p>
           </div>
 
-          <div className="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-4 mb-5">
+          <div className="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3 g-md-4 mb-5">
             {teamData.branchLeaders.map((leader, idx) => (
               <div className="col" key={idx}>
                 <div className="text-start">
-                  <div className="overflow-hidden mb-2" style={{ width: '100%', height: '172px', borderRadius: '6px' }}>
-                    <img src={leader.image} alt={leader.name} className="w-100 h-100 object-fit-cover d-block" />
+                  <div className="overflow-hidden mb-2 shadow-2xs" style={{ width: '100%', height: '172px', borderRadius: '6px' }}>
+                    <img src={leader.image} alt={leader.name} className="w-100 h-100 object-fit-cover d-block" style={{ objectPosition: 'top center' }} />
                   </div>
                   <div className="fw-bold" style={{ color: '#0f172a', fontSize: '0.78rem' }}>
                     {leader.dept}
@@ -133,7 +133,7 @@ export default function OurTeamPage() {
           <div className="mt-5 p-3 p-md-4 bg-white" style={{ border: '1px solid #e2e8f0', borderRadius: '10px', boxShadow: '0 4px 18px rgba(15, 23, 42, 0.04)' }}>
             <div className="row g-4 align-items-stretch">
               {/* Select Location Left Column */}
-              <div className="col-12 col-md-3 col-lg-2 border-end-md">
+              <div className="col-12 col-md-3 col-lg-2 border-end-md pb-3 pb-md-0">
                 <div className="d-flex align-items-center gap-2 text-uppercase fw-bold mb-2 pb-1" style={{ color: '#004282', fontSize: '0.74rem', letterSpacing: '0.4px' }}>
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
@@ -141,14 +141,17 @@ export default function OurTeamPage() {
                   </svg>
                   <span>SELECT LOCATION</span>
                 </div>
-                <div className="d-flex flex-column gap-1 overflow-y-auto" style={{ maxHeight: '350px' }}>
+                <div
+                  className="d-flex flex-row flex-md-column flex-nowrap overflow-x-auto gap-1 pb-1"
+                  style={{ maxHeight: '350px', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}
+                >
                   {locationsList.map((loc) => {
                     const isLocActive = activeLocationId === loc.id;
                     return (
                       <button
                         key={loc.id}
                         type="button"
-                        className="btn text-start py-1 px-2 border-0 d-flex align-items-center justify-content-between"
+                        className="btn text-start py-1 px-2 border-0 d-flex align-items-center justify-content-between flex-shrink-0 text-nowrap"
                         style={
                           isLocActive
                             ? {
@@ -186,12 +189,12 @@ export default function OurTeamPage() {
                 <div className="row g-4 align-items-stretch">
                   {/* Manager Photo + Bio */}
                   <div className="col-12 col-lg-8">
-                    <div className="d-flex flex-column flex-sm-row gap-4 align-items-start">
+                    <div className="d-flex flex-column flex-sm-row gap-3 gap-sm-4 align-items-center align-items-sm-start text-center text-sm-start">
                       <img
                         src={currentSpotlight.manager.image}
                         alt={currentSpotlight.manager.name}
-                        className="object-fit-cover flex-shrink-0 d-block"
-                        style={{ width: '215px', height: '215px', borderRadius: '6px' }}
+                        className="object-fit-cover flex-shrink-0 d-block mx-auto mx-sm-0"
+                        style={{ width: '100%', maxWidth: '215px', height: '215px', borderRadius: '6px', objectPosition: 'top center' }}
                       />
                       <div className="pt-1">
                         <span
@@ -331,9 +334,14 @@ export default function OurTeamPage() {
           <div className="team-grid-7 mb-4">
             {teamData.teamBehindWork.map((member, idx) => (
               <div key={idx}>
-                <div className="text-start">
-                  <div className="overflow-hidden mb-2" style={{ width: '100%', height: '152px', borderRadius: '6px' }}>
-                    <img src={member.image} alt={member.name} className="w-100 h-100 object-fit-cover d-block" />
+                <div className="text-start h-100 d-flex flex-column">
+                  <div className="overflow-hidden mb-2 bg-light shadow-2xs" style={{ width: '100%', height: '160px', borderRadius: '6px' }}>
+                    <img
+                      src={member.image}
+                      alt={member.name}
+                      className="w-100 h-100 object-fit-cover d-block"
+                      style={{ objectPosition: 'top center' }}
+                    />
                   </div>
                   <div className="fw-bold" style={{ color: '#0f172a', fontSize: '0.76rem' }}>
                     {member.dept}

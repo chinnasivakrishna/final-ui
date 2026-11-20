@@ -122,12 +122,12 @@ export default function AwardsPage() {
             </span>
 
             <div className="row g-0 align-items-stretch">
-              <div className="col-12 col-md-5 p-0">
+              <div className="col-12 col-md-5 p-0 overflow-hidden">
                 <img
                   src={featuredAward.image}
                   alt={featuredAward.title}
-                  className="w-100 h-100 object-fit-cover d-block"
-                  style={{ minHeight: '280px', borderRadius: '14px' }}
+                  className="w-100 h-100 object-fit-cover d-block featured-award-img"
+                  style={{ minHeight: '260px', maxHeight: '360px' }}
                 />
               </div>
 
@@ -173,12 +173,12 @@ export default function AwardsPage() {
       {/* 5. Our Awards & Recognitions with SIDE LINES */}
       <section className="py-5 bg-white">
         <div className="site-container">
-          <div className="d-flex align-items-center justify-content-center gap-3 mb-5">
-            <div style={{ width: '96px', height: '1.5px', backgroundColor: '#004282' }}></div>
-            <h2 className="section-main-title mb-0 text-uppercase" style={{ color: '#003875' }}>
+          <div className="d-flex align-items-center justify-content-center gap-3 mb-4 mb-md-5 text-center px-2">
+            <span style={{ display: 'inline-block', width: '48px', height: '2px', backgroundColor: '#004282', flexShrink: 0 }}></span>
+            <h2 className="section-main-title mb-0 text-uppercase text-center" style={{ color: '#003875' }}>
               OUR AWARDS &amp; RECOGNITIONS
             </h2>
-            <div style={{ width: '96px', height: '1.5px', backgroundColor: '#004282' }}></div>
+            <span style={{ display: 'inline-block', width: '48px', height: '2px', backgroundColor: '#004282', flexShrink: 0 }}></span>
           </div>
 
           <div className="row g-4">
@@ -233,12 +233,12 @@ export default function AwardsPage() {
       {/* 6. Our Milestones with SIDE LINES */}
       <section className="py-5 bg-white">
         <div className="site-container">
-          <div className="d-flex align-items-center justify-content-center gap-3 mb-5">
-            <div style={{ width: '96px', height: '1.5px', backgroundColor: '#004282' }}></div>
-            <h2 className="section-main-title mb-0 text-uppercase" style={{ color: '#003875' }}>
+          <div className="d-flex align-items-center justify-content-center gap-3 mb-4 mb-md-5 text-center px-2">
+            <span style={{ display: 'inline-block', width: '48px', height: '2px', backgroundColor: '#004282', flexShrink: 0 }}></span>
+            <h2 className="section-main-title mb-0 text-uppercase text-center" style={{ color: '#003875' }}>
               OUR MILESTONES
             </h2>
-            <div style={{ width: '96px', height: '1.5px', backgroundColor: '#004282' }}></div>
+            <span style={{ display: 'inline-block', width: '48px', height: '2px', backgroundColor: '#004282', flexShrink: 0 }}></span>
           </div>
 
           {/* Timeline visualization */}
@@ -277,12 +277,12 @@ export default function AwardsPage() {
       {/* 7. Certifications & Recognition with SIDE LINES */}
       <section className="py-5 bg-white">
         <div className="site-container">
-          <div className="d-flex align-items-center justify-content-center gap-3 mb-4">
-            <div style={{ width: '96px', height: '1.5px', backgroundColor: '#004282' }}></div>
-            <h2 className="section-main-title mb-0 text-uppercase" style={{ color: '#003875' }}>
+          <div className="d-flex align-items-center justify-content-center gap-3 mb-4 text-center px-2">
+            <span style={{ display: 'inline-block', width: '48px', height: '2px', backgroundColor: '#004282', flexShrink: 0 }}></span>
+            <h2 className="section-main-title mb-0 text-uppercase text-center" style={{ color: '#003875' }}>
               CERTIFICATIONS &amp; RECOGNITION
             </h2>
-            <div style={{ width: '96px', height: '1.5px', backgroundColor: '#004282' }}></div>
+            <span style={{ display: 'inline-block', width: '48px', height: '2px', backgroundColor: '#004282', flexShrink: 0 }}></span>
           </div>
 
           <div className="text-center">

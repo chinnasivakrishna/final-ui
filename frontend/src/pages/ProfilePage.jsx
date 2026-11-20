@@ -1,401 +1,687 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/authContext.js';
-import { ProfileBrandingEditor } from './ProfileBrandingEditor.jsx';
-import { roleMatchesCsv } from '../utils/roleAccess.js';
-import { formatRoleName } from '../utils/displayLabels.js';
-import { enterpriseApi } from '../api/enterpriseApi.js';
-import { notify } from '../utils/notify.js';
-import { PageBreadcrumb } from '../components/PageBreadcrumb.jsx';
-import { SidebarNavIcon } from '../components/SidebarNavIcon.jsx';
+import React, { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { resolveImageUrl } from '../api/catalogApi';
+import { extractVariantSwatches } from '../utils/swatchUtils';
+import Breadcrumb from '../components/Breadcrumb';
 
-const BRANDING_EDITORS = 'super_admin,sys_admin';
+export default function ProfilePage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTabParam = searchParams.get('tab') || 'profile';
+  const [activeTab, setActiveTab] = useState(activeTabParam);
 
-export function ProfilePage() {
-  const navigate = useNavigate();
-  const { user, activeOrganization, branding, token, refreshSession } = useAuth();
+  const {
+    user,
+    isAuthenticated,
+    openLoginModal,
+    updateProfile,
+    cart,
+    cartCount,
+    updateCartQty,
+    removeFromCart,
+    clearCart,
+    wishlist,
+    wishlistCount,
+    addToWishlist,
+    removeFromWishlist,
+    isWishlisted,
+    addToCart,
+    recentlyViewed,
+    recentlyViewedCount,
+    clearRecentlyViewed,
+  } = useAuth();
 
-  const [oldPassword, setOldPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [savingPassword, setSavingPassword] = useState(false);
-
-  const brandingKey = `${activeOrganization?.id ?? ''}-${branding?.appName ?? ''}-${branding?.logoUrl ?? ''}-${branding?.logoProfile ?? ''}`;
-
-  async function onChangePassword(e) {
-    e.preventDefault();
-    if (!token) return;
-    if (newPassword !== confirmPassword) {
-      notify.error('New passwords do not match');
-      return;
-    }
-    if (newPassword.length < 6) {
-      notify.error('New password must be at least 6 characters long');
-      return;
-    }
-    setSavingPassword(true);
-    try {
-      await enterpriseApi.changePassword(token, { oldPassword, newPassword });
-      notify.success('Password updated successfully');
-      setOldPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-    } catch (err) {
-      notify.apiError(err, 'Failed to update password');
-    } finally {
-      setSavingPassword(false);
-    }
-  }
-
-  // Release / Go For Live state
-  const [showReleaseModal, setShowReleaseModal] = useState(false);
-  const [loadingReady, setLoadingReady] = useState(false);
-  const [readyData, setReadyData] = useState(null);
-  const [selectedItems, setSelectedItems] = useState([]);
-  const [publishing, setPublishing] = useState(false);
-  const [reverting, setReverting] = useState(false);
-
-  const rawRole = String(activeOrganization?.roleCode || activeOrganization?.roleLabel || user?.roleCode || user?.role || '').toLowerCase().trim().replace(/[\s-]+/g, '_');
-  const canGoLive = rawRole === 'org_admin' || rawRole === 'organization_admin' || rawRole === 'admin' || rawRole === 'super_admin' || rawRole === 'sys_admin' || roleMatchesCsv(activeOrganization?.roleCode, 'org_admin,organization_admin,admin,sys_admin,super_admin');
-  const canEditBranding = rawRole === 'org_admin' || rawRole === 'organization_admin' || rawRole === 'super_admin' || rawRole === 'sys_admin' || roleMatchesCsv(activeOrganization?.roleCode, BRANDING_EDITORS);
+  const [isEditing, setIsEditing] = useState(false);
+  const [nameInput, setNameInput] = useState('');
+  const [mobileInput, setMobileInput] = useState('');
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [profileSuccessMsg, setProfileSuccessMsg] = useState('');
 
   useEffect(() => {
-    if (!token || !canGoLive) return;
-    enterpriseApi.getReadyForReleaseItems(token)
-      .then((res) => {
-        setReadyData(res.data);
-        if (res.data?.allItems) {
-          setSelectedItems(res.data.allItems.map((item) => `${item.type}:${item.id}`));
-        }
-      })
-      .catch(() => {});
-  }, [token, canGoLive]);
+    setActiveTab(activeTabParam);
+  }, [activeTabParam]);
 
-  async function openReleaseModal() {
-    if (!token) return;
-    setLoadingReady(true);
-    setShowReleaseModal(true);
-    try {
-      const res = await enterpriseApi.getReadyForReleaseItems(token);
-      setReadyData(res.data);
-      if (res.data?.allItems) {
-        setSelectedItems(res.data.allItems.map((item) => `${item.type}:${item.id}`));
-      }
-    } catch (err) {
-      notify.apiError(err, 'Failed to fetch release items');
-    } finally {
-      setLoadingReady(false);
+  useEffect(() => {
+    if (user) {
+      setNameInput(user.name || '');
+      setMobileInput(user.mobile || '');
     }
-  }
+  }, [user]);
 
-  function toggleSelectItem(key) {
-    setSelectedItems((prev) =>
-      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+  const switchTab = (tabName) => {
+    setActiveTab(tabName);
+    setSearchParams({ tab: tabName });
+  };
+
+  const handleSaveProfile = async (e) => {
+    e.preventDefault();
+    setSavingProfile(true);
+    setProfileSuccessMsg('');
+    try {
+      await updateProfile({ name: nameInput, mobile: mobileInput });
+      setIsEditing(false);
+      setProfileSuccessMsg('Profile updated successfully!');
+      setTimeout(() => setProfileSuccessMsg(''), 3000);
+    } catch (err) {
+      alert(err.message || 'Failed to update profile');
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
+  const tabTitles = {
+    profile: 'My Profile',
+    wishlist: 'Wishlist',
+    'recently-viewed': 'Recently Viewed',
+    cart: 'My Cart',
+  };
+
+  const breadcrumbItems = [
+    { label: tabTitles[activeTab] || 'My Profile' },
+  ];
+
+  if (!isAuthenticated) {
+    return (
+      <div className="profile-page-wrapper bg-white min-vh-70">
+        <Breadcrumb items={breadcrumbItems} />
+        <div className="site-container py-5 text-center">
+          <div
+            className="p-5 mx-auto rounded-4 bordezr bg-light shadow-xs"
+            style={{ maxWidth: '520px' }}
+          >
+            <div
+              className="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3 text-primary"
+              style={{ width: '70px', height: '70px', backgroundColor: '#eef5fc', fontSize: '1.8rem' }}
+            >
+              <i className="fas fa-user-lock"></i>
+            </div>
+            <h3
+              className="fw-bold mb-2"
+              style={{ fontFamily: 'var(--taiton-font-heading)', color: '#002b5c' }}
+            >
+              Sign In to Your Account
+            </h3>
+            <p className="text-muted mb-4 small">
+              Continue with Google to view your Profile, Cart, Wishlist, and your last 10 Recently Viewed items.
+            </p>
+            <button
+              type="button"
+              className="btn btn-primary rounded-pill px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2 shadow-sm"
+              style={{ backgroundColor: '#0054a6', borderColor: '#0054a6' }}
+              onClick={openLoginModal}
+            >
+              <i className="fab fa-google"></i> Continue with Google
+            </button>
+          </div>
+        </div>
+      </div>
     );
   }
 
-  function toggleSelectAll() {
-    if (!readyData?.allItems) return;
-    if (selectedItems.length === readyData.allItems.length) {
-      setSelectedItems([]);
-    } else {
-      setSelectedItems(readyData.allItems.map((item) => `${item.type}:${item.id}`));
-    }
-  }
-
-  async function onExecuteGoLive() {
-    if (!token) return;
-    setPublishing(true);
-    try {
-      const res = await enterpriseApi.goLiveRelease(token, selectedItems);
-      notify.success(`Successfully published ${res.data?.syncedCount ?? 0} items live! Backup snapshot created.`);
-      setShowReleaseModal(false);
-      setReadyData(null);
-    } catch (err) {
-      notify.apiError(err, 'Go to Live is failed');
-    } finally {
-      setPublishing(false);
-    }
-  }
-
-  async function onRevertLastRelease() {
-    if (!token) return;
-    if (!window.confirm('Are you sure you want to revert the last website release? This will restore previous published states.')) {
-      return;
-    }
-    setReverting(true);
-    try {
-      const res = await enterpriseApi.rollbackRelease(token);
-      notify.success(res.message || 'Successfully reverted last release');
-    } catch (err) {
-      notify.apiError(err, 'Failed to revert release');
-    } finally {
-      setReverting(false);
-    }
-  }
+  // Calculate cart subtotal
+  const cartSubtotal = cart.reduce((sum, item) => {
+    const rawPrice = item.variant?.price || item.product?.price || 0;
+    const numPrice = typeof rawPrice === 'number' ? rawPrice : parseFloat(String(rawPrice).replace(/[^\d.]/g, '')) || 0;
+    return sum + numPrice * (item.qty || 1);
+  }, 0);
 
   return (
-    <div className="cp-stack">
-      <PageBreadcrumb current="Profile" />
-      <h1 className="cp-page-title">Profile</h1>
-      <p className="cp-page-lead">Your account and company appearance (where permitted).</p>
+    <div className="profile-page-wrapper bg-white">
+      <Breadcrumb items={breadcrumbItems} />
 
-      <section className="cp-card cp-card-pad">
-        <div className="cp-profile-row">
-          <div className="cp-profile-row__name">
-            <div className="cp-card-kicker">Full name</div>
-            <div className="cp-profile-value">{user?.displayName ?? '—'}</div>
+      <section className="py-4">
+        <div className="site-container">
+          {/* Tab Navigation */}
+          <div className="d-flex flex-wrap align-items-center gap-2 mb-4 border-bottom pb-3">
+            <button
+              type="button"
+              className={`btn rounded-pill px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2 ${activeTab === 'profile'
+                ? 'btn-primary text-white shadow-sm'
+                : 'btn-outline-secondary bg-white text-dark border'
+                }`}
+              style={activeTab === 'profile' ? { backgroundColor: '#0054a6', borderColor: '#0054a6' } : {}}
+              onClick={() => switchTab('profile')}
+            >
+              <i className="far fa-user"></i> My Profile
+            </button>
+            <button
+              type="button"
+              className={`btn rounded-pill px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2 ${activeTab === 'wishlist'
+                ? 'btn-primary text-white shadow-sm'
+                : 'btn-outline-secondary bg-white text-dark border'
+                }`}
+              style={activeTab === 'wishlist' ? { backgroundColor: '#0054a6', borderColor: '#0054a6' } : {}}
+              onClick={() => switchTab('wishlist')}
+            >
+              <i className="far fa-heart"></i> Wishlist
+              <span className={`badge rounded-pill ${activeTab === 'wishlist' ? 'bg-white text-primary' : 'bg-light text-dark border'}`}>
+                {wishlistCount}
+              </span>
+            </button>
+            <button
+              type="button"
+              className={`btn rounded-pill px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2 ${activeTab === 'recently-viewed'
+                ? 'btn-primary text-white shadow-sm'
+                : 'btn-outline-secondary bg-white text-dark border'
+                }`}
+              style={activeTab === 'recently-viewed' ? { backgroundColor: '#0054a6', borderColor: '#0054a6' } : {}}
+              onClick={() => switchTab('recently-viewed')}
+            >
+              <i className="far fa-clock"></i> Recently Viewed
+              <span className={`badge rounded-pill ${activeTab === 'recently-viewed' ? 'bg-white text-primary' : 'bg-light text-dark border'}`}>
+                {recentlyViewedCount}
+              </span>
+            </button>
+            <button
+              type="button"
+              className={`btn rounded-pill px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2 ${activeTab === 'cart'
+                ? 'btn-primary text-white shadow-sm'
+                : 'btn-outline-secondary bg-white text-dark border'
+                }`}
+              style={activeTab === 'cart' ? { backgroundColor: '#0054a6', borderColor: '#0054a6' } : {}}
+              onClick={() => switchTab('cart')}
+            >
+              <i className="fas fa-shopping-cart"></i> My Cart
+              <span className={`badge rounded-pill ${activeTab === 'cart' ? 'bg-white text-primary' : 'bg-light text-dark border'}`}>
+                {cartCount}
+              </span>
+            </button>
           </div>
-          <div className="cp-profile-row__email">
-            <div className="cp-card-kicker">Email</div>
-            <div className="cp-profile-value">{user?.email ?? '—'}</div>
-          </div>
-          <div className="cp-profile-row__role">
-            <div className="cp-card-kicker">Your role</div>
-            <div className="cp-profile-value">
-              {formatRoleName(activeOrganization?.roleCode, activeOrganization?.roleName)}
+
+
+          {profileSuccessMsg && (
+            <div className="alert alert-success alert-dismissible fade show rounded-3 py-2" role="alert">
+              <i className="fas fa-check-circle me-2"></i> {profileSuccessMsg}
             </div>
-          </div>
-        </div>
-      </section>
+          )}
 
-      {canGoLive ? (
-        <section className="cp-card cp-card-pad" style={{ marginTop: '24px', borderLeft: '4px solid #16a34a' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <h2 className="cp-section-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
-                  <SidebarNavIcon name="Rocket" />
-                  <span>Production Website Release ("Go For Live")</span>
-                </h2>
-                <span className={`cp-tag ${(readyData?.allItems?.length || 0) > 0 ? 'cp-tag-warning' : 'cp-tag-success'}`} style={{ fontWeight: '700', fontSize: '11px' }}>
-                  {(readyData?.allItems?.length || 0) > 0 ? `${readyData.allItems.length} Ready To Live` : 'All Content Live'}
-                </span>
-              </div>
-              <p className="cp-page-lead" style={{ margin: '6px 0 0 0', fontSize: '13px' }}>
-                Publish approved products, categories, blogs, catalogs, and content from <code>taiton_cpanel</code> to the live website (<code>web_schema</code>) with automated undo logs and instant rollback.
-              </p>
-            </div>
-            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-              <button
-                type="button"
-                className="cp-btn cp-btn-secondary"
-                onClick={() => navigate('/app/release')}
-                style={{ fontWeight: '600' }}
-              >
-                📊 Release Dashboard & Manifest
-              </button>
-              <button
-                type="button"
-                className="cp-btn"
-                style={{ border: '1px solid var(--cp-border)', color: 'var(--cp-text-muted)' }}
-                onClick={onRevertLastRelease}
-                disabled={reverting}
-              >
-                {reverting ? 'Reverting…' : '⏪ Revert Last Release'}
-              </button>
-              <button
-                type="button"
-                className="cp-btn cp-btn-primary"
-                onClick={openReleaseModal}
-                style={{ backgroundColor: '#0f172a', fontWeight: '600' }}
-              >
-                <SidebarNavIcon name="Rocket" style={{ width: 16, height: 16, marginRight: 6 }} />
-                Go For Live {(readyData?.allItems?.length || 0) > 0 ? `(${readyData.allItems.length})` : ''}
-              </button>
-            </div>
-          </div>
-        </section>
-      ) : null}
+          {/* TAB 1: Profile Details */}
+          {activeTab === 'profile' && (
+            <div className="row g-4">
+              <div className="col-12 col-md-7">
+                <div className="border rounded-4 p-4 bg-white shadow-xs">
+                  <div className="d-flex align-items-center justify-content-between mb-4">
+                    <h5
+                      className="fw-bold mb-0"
+                      style={{ fontFamily: 'var(--taiton-font-heading)', color: '#002b5c' }}
+                    >
+                      Personal Information
+                    </h5>
+                    {!isEditing && (
+                      <button
+                        type="button"
+                        className="btn btn-outline-primary btn-sm rounded-pill px-3"
+                        onClick={() => setIsEditing(true)}
+                      >
+                        <i className="fas fa-edit me-1"></i> Edit Details
+                      </button>
+                    )}
+                  </div>
 
-      <section className="cp-card cp-card-pad" style={{ marginTop: '24px' }}>
-        <h2 className="cp-section-title">Change Password</h2>
-        <p className="cp-page-lead" style={{ marginBottom: '20px' }}>Update your account password.</p>
-
-        <form onSubmit={onChangePassword} className="cp-branding-form" style={{ width: '100%', maxWidth: 'none' }}>
-          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
-            <label className="cp-field" style={{ flex: '1 1 200px' }}>
-              <span>Old Password</span>
-              <input
-                type="password"
-                value={oldPassword}
-                onChange={(e) => setOldPassword(e.target.value)}
-                required
-                placeholder="Enter current password"
-              />
-            </label>
-            <label className="cp-field" style={{ flex: '1 1 200px' }}>
-              <span>New Password</span>
-              <input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                required
-                placeholder="Enter new password"
-              />
-            </label>
-            <label className="cp-field" style={{ flex: '1 1 200px' }}>
-              <span>Confirm New Password</span>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                placeholder="Confirm new password"
-              />
-            </label>
-            <div style={{ flex: '0 0 auto' }}>
-              <button
-                type="submit"
-                className="cp-btn cp-btn-primary"
-                style={{ margin: 0, height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                disabled={savingPassword}
-              >
-                {savingPassword ? 'Updating…' : 'Update Password'}
-              </button>
-            </div>
-          </div>
-        </form>
-      </section>
-
-      {canEditBranding ? (
-        <ProfileBrandingEditor
-          key={brandingKey}
-          branding={branding}
-          activeOrganization={activeOrganization}
-          token={token}
-          refreshSession={refreshSession}
-        />
-      ) : null}
-
-      {/* Go For Live Release Modal */}
-      {showReleaseModal ? (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(15, 23, 42, 0.45)',
-          backdropFilter: 'blur(4px)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 9999,
-          padding: '20px'
-        }}>
-          <div className="cp-card" style={{
-            width: '100%',
-            maxWidth: '680px',
-            maxHeight: '85vh',
-            display: 'flex',
-            flexDirection: 'column',
-            padding: '24px',
-            background: 'var(--cp-surface-elevated, #ffffff)',
-            borderRadius: 'var(--cp-radius-md, 8px)',
-            border: '1px solid var(--cp-border)',
-            boxShadow: 'var(--cp-shadow)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid var(--cp-border)', paddingBottom: '14px' }}>
-              <h2 style={{ fontSize: '1.15rem', fontWeight: 700, margin: 0, display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--cp-primary-muted)' }}>
-                <SidebarNavIcon name="Rocket" />
-                <span>Go For Live - Release Manager</span>
-              </h2>
-              <button
-                onClick={() => setShowReleaseModal(false)}
-                style={{ background: 'none', border: 'none', color: 'var(--cp-text-muted)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
-                aria-label="Close"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="6" x2="6" y2="18"/>
-                  <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-              </button>
-            </div>
-
-            <p style={{ color: 'var(--cp-text-muted)', fontSize: '0.875rem', marginBottom: '16px', lineHeight: 1.5 }}>
-              Select the approved items you want to sync to the live website. The system will automatically generate a database snapshot before publishing.
-            </p>
-
-            {loadingReady ? (
-              <div style={{ padding: '40px', textAlign: 'center', color: 'var(--cp-text-muted)' }}>Loading items ready for release…</div>
-            ) : readyData?.allItems?.length === 0 ? (
-              <div style={{ padding: '30px', textAlign: 'center', background: 'var(--cp-surface)', borderRadius: 'var(--cp-radius-sm)', border: '1px dashed var(--cp-border)' }}>
-                <p style={{ fontWeight: 600, color: 'var(--cp-primary-muted)', margin: '0 0 4px 0' }}>No Items Ready to Go Live</p>
-                <span style={{ fontSize: '0.85rem', color: 'var(--cp-text-muted)' }}>Ensure items are approved by checkers (status set to <code>ready_to_live</code>).</span>
-              </div>
-            ) : (
-              <>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', background: 'var(--cp-surface)', padding: '10px 14px', borderRadius: 'var(--cp-radius-sm)', border: '1px solid var(--cp-border)' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem', color: 'var(--cp-primary-muted)' }}>
-                    <input
-                      type="checkbox"
-                      checked={selectedItems.length === (readyData?.allItems?.length || 0)}
-                      onChange={toggleSelectAll}
-                    />
-                    Select All ({selectedItems.length} / {readyData?.allItems?.length || 0} selected)
-                  </label>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--cp-text-muted)' }}>{readyData?.total || 0} Total Ready Items</span>
-                </div>
-
-                <div style={{ flex: 1, overflowY: 'auto', border: '1px solid var(--cp-border)', borderRadius: 'var(--cp-radius-sm)', padding: '8px 12px', marginBottom: '16px' }}>
-                  {readyData?.allItems?.map((item) => {
-                    const itemKey = `${item.type}:${item.id}`;
-                    const isChecked = selectedItems.includes(itemKey);
-                    return (
-                      <div key={itemKey} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 8px', borderBottom: '1px solid var(--cp-border)' }}>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', flex: 1 }}>
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={() => toggleSelectItem(itemKey)}
-                          />
-                          <div>
-                            <span style={{ fontWeight: 600, color: 'var(--cp-primary-muted)', fontSize: '0.9rem' }}>{item.name}</span>
-                            <div style={{ fontSize: '0.78rem', color: 'var(--cp-text-muted)' }}>{item.summary || item.type}</div>
-                          </div>
-                        </label>
-                        <span style={{
-                          textTransform: 'uppercase',
-                          fontSize: '0.7rem',
-                          padding: '2px 8px',
-                          borderRadius: '4px',
-                          fontWeight: 600,
-                          letterSpacing: '0.04em',
-                          background: 'var(--cp-surface)',
-                          color: 'var(--cp-text-muted)',
-                          border: '1px solid var(--cp-border)'
-                        }}>
-                          {item.type}
+                  {isEditing ? (
+                    <form onSubmit={handleSaveProfile}>
+                      <div className="mb-3">
+                        <label className="form-label small fw-semibold text-dark">Full Name</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={nameInput}
+                          onChange={(e) => setNameInput(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label small fw-semibold text-dark">Email Address</label>
+                        <input
+                          type="email"
+                          className="form-control bg-light"
+                          value={user.email}
+                          disabled
+                        />
+                        <span className="text-muted" style={{ fontSize: '0.75rem' }}>
+                          Email linked to your Google Account cannot be altered.
                         </span>
+                      </div>
+                      <div className="mb-4">
+                        <label className="form-label small fw-semibold text-dark">Contact Phone / Mobile</label>
+                        <input
+                          type="tel"
+                          className="form-control"
+                          placeholder="Enter your phone number"
+                          value={mobileInput}
+                          onChange={(e) => setMobileInput(e.target.value)}
+                        />
+                      </div>
+                      <div className="d-flex gap-2">
+                        <button
+                          type="submit"
+                          className="btn btn-primary rounded-pill px-4 fw-semibold"
+                          style={{ backgroundColor: '#0054a6', borderColor: '#0054a6' }}
+                          disabled={savingProfile}
+                        >
+                          {savingProfile ? 'Saving...' : 'Save Changes'}
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-secondary rounded-pill px-4"
+                          onClick={() => setIsEditing(false)}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
+                  ) : (
+                    <div className="row g-3">
+                      <div className="col-12 col-sm-6">
+                        <div className="text-muted small">Full Name</div>
+                        <div className="fw-semibold text-dark">{user.name}</div>
+                      </div>
+                      <div className="col-12 col-sm-6">
+                        <div className="text-muted small">Email Address</div>
+                        <div className="fw-semibold text-dark">{user.email}</div>
+                      </div>
+                      <div className="col-12 col-sm-6">
+                        <div className="text-muted small">Phone / Mobile</div>
+                        <div className="fw-semibold text-dark">{user.mobile || 'Not provided'}</div>
+                      </div>
+                      <div className="col-12 col-sm-6">
+                        <div className="text-muted small">Member Since</div>
+                        <div className="fw-semibold text-dark">
+                          {user.created_at ? new Date(user.created_at).toLocaleDateString() : 'Active Member'}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="col-12 col-md-5">
+                <div className="border rounded-4 p-4 bg-white shadow-xs">
+                  <h5
+                    className="fw-bold mb-3"
+                    style={{ fontFamily: 'var(--taiton-font-heading)', color: '#002b5c' }}
+                  >
+                    Account Summary
+                  </h5>
+                  <div className="d-flex flex-column gap-3">
+                    <div
+                      className="d-flex align-items-center justify-content-between p-3 rounded-3 bg-light cursor-pointer"
+                      onClick={() => switchTab('cart')}
+                      role="button"
+                    >
+                      <div className="d-flex align-items-center gap-2">
+                        <i className="fas fa-shopping-cart text-dark"></i>
+                        <span className="fw-semibold text-dark">Cart Items</span>
+                      </div>
+                      <span className="badge bg-light text-dark border rounded-pill">{cartCount}</span>
+                    </div>
+
+                    <div
+                      className="d-flex align-items-center justify-content-between p-3 rounded-3 bg-light cursor-pointer"
+                      onClick={() => switchTab('wishlist')}
+                      role="button"
+                    >
+                      <div className="d-flex align-items-center gap-2">
+                        <i className="far fa-heart text-dark"></i>
+                        <span className="fw-semibold text-dark">Wishlist Items</span>
+                      </div>
+                      <span className="badge bg-light text-dark border rounded-pill">{wishlistCount}</span>
+                    </div>
+
+                    <div
+                      className="d-flex align-items-center justify-content-between p-3 rounded-3 bg-light cursor-pointer"
+                      onClick={() => switchTab('recently-viewed')}
+                      role="button"
+                    >
+                      <div className="d-flex align-items-center gap-2">
+                        <i className="far fa-clock text-dark"></i>
+                        <span className="fw-semibold text-dark">Recently Viewed (Last 10)</span>
+                      </div>
+                      <span className="badge bg-light text-dark border rounded-pill">{recentlyViewedCount}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 2: My Cart */}
+          {activeTab === 'cart' && (
+            <div>
+              {cart.length === 0 ? (
+                <div className="text-center py-5 border rounded-4 bg-light">
+                  <i className="fas fa-shopping-cart fa-3x text-muted mb-3 opacity-50"></i>
+                  <h5 className="fw-bold text-dark mb-2">Your Cart is Empty</h5>
+                  <p className="text-muted small mb-4">Explore our architectural hardware collections and add items to your cart.</p>
+                  <Link to="/products" className="btn btn-primary rounded-pill px-4 py-2 fw-semibold" style={{ backgroundColor: '#0054a6' }}>
+                    Browse Products
+                  </Link>
+                </div>
+              ) : (
+                <div className="row g-4">
+                  <div className="col-12 col-lg-8">
+                    <div className="d-flex justify-content-between align-items-center mb-3">
+                      <h5 className="fw-bold mb-0" style={{ fontFamily: 'var(--taiton-font-heading)', color: '#002b5c' }}>
+                        Cart Items ({cartCount})
+                      </h5>
+                      <button
+                        type="button"
+                        className="btn btn-link text-danger text-decoration-none small p-0"
+                        onClick={clearCart}
+                      >
+                        <i className="fas fa-trash-alt me-1"></i> Clear Cart
+                      </button>
+                    </div>
+
+                    <div className="d-flex flex-column gap-3">
+                      {cart.map((item) => (
+                        <div key={item.id} className="border rounded-3 p-3 bg-white shadow-xs d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3">
+                          <div className="d-flex align-items-center gap-3">
+                            <div style={{ width: '80px', height: '80px', flexShrink: 0 }}>
+                              <img
+                                src={resolveImageUrl(item.variant?.image || item.product?.image)}
+                                alt={item.product?.code || 'Product'}
+                                className="w-100 h-100 object-fit-contain rounded border p-1"
+                              />
+                            </div>
+                            <div>
+                              <Link
+                                to={`/product-detail?code=${encodeURIComponent(item.product?.code || '')}`}
+                                className="fw-bold text-dark text-decoration-none hover-blue"
+                              >
+                                {item.product?.code}
+                              </Link>
+                              <div className="text-muted small mb-1">{item.product?.name}</div>
+                              {item.variant?.color && (
+                                <span className="badge bg-light text-dark border small me-2">
+                                  Finish: {item.variant.color}
+                                </span>
+                              )}
+                              {item.product?.price && (
+                                <div className="fw-bold text-primary small">
+                                  {item.product.price}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="d-flex align-items-center gap-3">
+                            <div className="input-group input-group-sm" style={{ width: '110px' }}>
+                              <button
+                                className="btn btn-outline-secondary"
+                                type="button"
+                                onClick={() => updateCartQty(item.id, Math.max(1, item.qty - 1))}
+                              >
+                                -
+                              </button>
+                              <span className="input-group-text bg-white fw-bold px-3">{item.qty}</span>
+                              <button
+                                className="btn btn-outline-secondary"
+                                type="button"
+                                onClick={() => updateCartQty(item.id, item.qty + 1)}
+                              >
+                                +
+                              </button>
+                            </div>
+
+                            <button
+                              type="button"
+                              className="btn btn-link text-danger p-1"
+                              title="Remove item"
+                              onClick={() => removeFromCart(item.id)}
+                            >
+                              <i className="fas fa-trash-alt"></i>
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="col-12 col-lg-4">
+                    <div className="border rounded-4 p-4 bg-white shadow-xs position-sticky" style={{ top: '100px' }}>
+                      <h5 className="fw-bold mb-3" style={{ fontFamily: 'var(--taiton-font-heading)', color: '#002b5c' }}>
+                        Cart Summary
+                      </h5>
+                      <div className="d-flex justify-content-between py-2 border-bottom">
+                        <span className="text-muted">Total Products:</span>
+                        <span className="fw-bold text-dark">{cart.length}</span>
+                      </div>
+                      <div className="d-flex justify-content-between py-2 border-bottom">
+                        <span className="text-muted">Total Quantity:</span>
+                        <span className="fw-bold text-dark">{cartCount} items</span>
+                      </div>
+                      {cartSubtotal > 0 && (
+                        <div className="d-flex justify-content-between py-2 border-bottom">
+                          <span className="text-muted">Estimated Price:</span>
+                          <span className="fw-bold text-primary fs-5">₹{cartSubtotal.toLocaleString()}</span>
+                        </div>
+                      )}
+                      <div className="mt-4 d-grid gap-2">
+                        <Link
+                          to="/contact-us"
+                          className="btn btn-primary rounded-pill py-2 fw-semibold"
+                          style={{ backgroundColor: '#0054a6', borderColor: '#0054a6' }}
+                        >
+                          Request Project Quote
+                        </Link>
+                        <Link to="/products" className="btn btn-outline-secondary rounded-pill py-2 small">
+                          Continue Shopping
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB 3: Wishlist */}
+          {activeTab === 'wishlist' && (
+            <div>
+              {wishlist.length === 0 ? (
+                <div className="text-center py-5 border rounded-4 bg-light">
+                  <i className="far fa-heart fa-3x text-muted mb-3 opacity-50"></i>
+                  <h5 className="fw-bold text-dark mb-2">Your Wishlist is Empty</h5>
+                  <p className="text-muted small mb-4">Click the heart icon on any product to save it to your wishlist.</p>
+                  <Link to="/products" className="btn btn-primary rounded-pill px-4 py-2 fw-semibold" style={{ backgroundColor: '#0054a6' }}>
+                    Browse Products
+                  </Link>
+                </div>
+              ) : (
+                <div className="row g-2 g-sm-3 g-md-4 mb-4">
+                  {wishlist.map((item) => {
+                    const code = item.code || item.product?.code || item.product_code || '';
+                    const title = item.name || item.product?.name || item.product_name || '';
+                    const img = resolveImageUrl(item.image || item.product?.image || item.product_image || item.variant?.image);
+                    const pdtId = item.pdt_id || item.id;
+
+                    return (
+                      <div className="col-6 col-md-4 col-lg-3" key={item.id}>
+                        <div className="product-listing-card">
+                          <button
+                            type="button"
+                            className="product-listing-card-fav active"
+                            aria-label="Remove from Wishlist"
+                            title="Remove from Wishlist"
+                            onClick={() => removeFromWishlist(item.id || pdtId)}
+                          >
+                            <i className="fas fa-heart text-danger"></i>
+                          </button>
+
+                          <div className="product-listing-card-img-wrap">
+                            <Link
+                              to={`/product-detail?code=${encodeURIComponent(code)}`}
+                              className="text-decoration-none d-flex align-items-center justify-content-center w-100 h-100"
+                            >
+                              <img
+                                src={img || '/placeholder-hardware.png'}
+                                alt={`${code} ${title}`}
+                                className="product-listing-card-img"
+                                onError={(e) => {
+                                  e.currentTarget.onerror = null;
+                                  e.currentTarget.src = '/placeholder-hardware.png';
+                                }}
+                              />
+                            </Link>
+                          </div>
+
+                          <div className="product-listing-card-body">
+                            <Link to={`/product-detail?code=${encodeURIComponent(code)}`} className="text-decoration-none">
+                              <div className="product-listing-card-code">{code}</div>
+                              <div className="product-listing-card-title" title={title}>
+                                {title}
+                              </div>
+                            </Link>
+
+                            {item.variantName && (
+                              <div className="mb-2">
+                                <span className="badge bg-light text-secondary border small" style={{ fontSize: '0.72rem' }}>
+                                  Finish: {item.variantName}
+                                </span>
+                              </div>
+                            )}
+
+                            <div className="pt-2 border-top mt-auto">
+                              <button
+                                type="button"
+                                className="btn btn-outline-primary btn-sm rounded-pill w-100 fw-semibold d-flex align-items-center justify-content-center gap-2"
+                                style={{ fontSize: '0.8rem' }}
+                                onClick={() => {
+                                  addToCart(pdtId, item.variant_id, 1);
+                                  removeFromWishlist(item.id || pdtId);
+                                }}
+                              >
+                                <i className="fas fa-shopping-cart"></i> Move to Cart
+                              </button>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     );
                   })}
                 </div>
-              </>
-            )}
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', paddingTop: '14px', borderTop: '1px solid var(--cp-border)' }}>
-              <button
-                type="button"
-                className="cp-btn"
-                style={{ border: '1px solid var(--cp-border)' }}
-                onClick={() => setShowReleaseModal(false)}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                className="cp-btn cp-btn-primary"
-                onClick={onExecuteGoLive}
-                disabled={publishing || selectedItems.length === 0}
-              >
-                {publishing ? 'Publishing Live…' : `Publish Selected (${selectedItems.length})`}
-              </button>
+              )}
             </div>
-          </div>
+          )}
+
+          {/* TAB 4: Recently Viewed (Strictly Last 10 items) */}
+          {activeTab === 'recently-viewed' && (
+            <div>
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                  <h5 className="fw-bold mb-0" style={{ fontFamily: 'var(--taiton-font-heading)', color: '#002b5c' }}>
+                    Recently Viewed Products
+                  </h5>
+                  <span className="text-muted" style={{ fontSize: '0.8rem' }}>
+                    Showing your browsing history ({recentlyViewed.length} {recentlyViewed.length === 1 ? 'product' : 'products'})
+                  </span>
+                </div>
+                {recentlyViewed.length > 0 && (
+                  <button
+                    type="button"
+                    className="btn btn-link text-danger text-decoration-none small p-0"
+                    onClick={clearRecentlyViewed}
+                  >
+                    <i className="fas fa-trash-alt me-1"></i> Clear History
+                  </button>
+                )}
+              </div>
+
+              {recentlyViewed.length === 0 ? (
+                <div className="text-center py-5 border rounded-4 bg-light">
+                  <i className="fas fa-history fa-3x text-muted mb-3 opacity-50"></i>
+                  <h5 className="fw-bold text-dark mb-2">No Recently Viewed Products</h5>
+                  <p className="text-muted small mb-4">Products you browse will automatically appear here.</p>
+                  <Link to="/products" className="btn btn-primary rounded-pill px-4 py-2 fw-semibold" style={{ backgroundColor: '#0054a6' }}>
+                    Browse Products
+                  </Link>
+                </div>
+              ) : (
+                <div className="row g-2 g-sm-3 g-md-4 mb-4">
+                  {recentlyViewed.map((item, idx) => {
+                    const code = item.product?.code || item.product_code || item.code || '';
+                    const title = item.product?.fullname || item.product?.name || item.product_name || item.name || '';
+                    const img = resolveImageUrl(item.product?.image || item.product_image || item.image);
+                    const pdtId = item.pdt_id || item.product?.id || item.id;
+                    const isFav = isWishlisted ? isWishlisted(pdtId) : false;
+
+                    return (
+                      <div className="col-6 col-md-4 col-lg-3" key={idx}>
+                        <div className="product-listing-card">
+                          <button
+                            type="button"
+                            className={`product-listing-card-fav ${isFav ? 'active' : ''}`}
+                            aria-label={isFav ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                            title={isFav ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                            onClick={async () => {
+                              if (isFav) {
+                                await removeFromWishlist(pdtId);
+                              } else {
+                                await addToWishlist(pdtId, null);
+                              }
+                            }}
+                          >
+                            <i className={`${isFav ? 'fas text-danger' : 'far'} fa-heart`}></i>
+                          </button>
+
+                          <div className="product-listing-card-img-wrap">
+                            <Link
+                              to={`/product-detail?code=${encodeURIComponent(code)}`}
+                              className="text-decoration-none d-flex align-items-center justify-content-center w-100 h-100"
+                            >
+                              <img
+                                src={img || '/placeholder-hardware.png'}
+                                alt={`${code} ${title}`}
+                                className="product-listing-card-img"
+                                onError={(e) => {
+                                  e.currentTarget.onerror = null;
+                                  e.currentTarget.src = '/placeholder-hardware.png';
+                                }}
+                              />
+                            </Link>
+                          </div>
+
+                          <div className="product-listing-card-body">
+                            <Link to={`/product-detail?code=${encodeURIComponent(code)}`} className="text-decoration-none">
+                              <div className="product-listing-card-code">{code}</div>
+                              <div className="product-listing-card-title" title={title}>
+                                {title}
+                              </div>
+                            </Link>
+
+                            {(() => {
+                              const swatches = extractVariantSwatches(item.product?.variants || item.variants);
+                              if (!Array.isArray(swatches) || swatches.length === 0) return null;
+                              return (
+                                <div className="product-listing-card-swatches">
+                                  {swatches.slice(0, 5).map((sw) => (
+                                    <span
+                                      key={sw.name}
+                                      className={`product-listing-swatch ${sw.dotClass}`}
+                                      title={sw.label}
+                                      style={sw.style || {}}
+                                    />
+                                  ))}
+                                  {swatches.length > 5 && (
+                                    <span className="product-listing-swatch-count">
+                                      +{swatches.length - 5}
+                                    </span>
+                                  )}
+                                </div>
+                              );
+                            })()}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
         </div>
-      ) : null}
+      </section>
     </div>
   );
 }

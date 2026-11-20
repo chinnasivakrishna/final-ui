@@ -11,17 +11,17 @@ export default function LandmarkProjectsSection({ config }) {
 
   const title = config?.title || 'Landmark Projects';
   const knowMoreText = config?.knowMoreText || 'Know More';
-  const knowMoreUrl = config?.knowMoreUrl || '/about#landmark-sec';
+  const knowMoreUrl = config?.knowMoreUrl || '/about#locations-sec';
 
-  const projects = Array.isArray(config?.items) && config.items.length > 0
-    ? config.items.map((item, idx) => ({
-        id: item.id || idx,
-        title: item.title,
-        location: item.location || '',
-        image: resolveImageUrl(item.image),
-        link: item.link || '/about#landmark-sec'
-      }))
-    : [];
+  const itemsSource = Array.isArray(config?.items) ? config.items : [];
+
+  const projects = itemsSource.map((item, idx) => ({
+    id: item.id || idx,
+    title: item.title,
+    location: item.location || '',
+    image: resolveImageUrl(item.image),
+    link: item.link || '/about#locations-sec'
+  }));
 
   const scrollProjects = (direction) => {
     if (!trackRef.current) return;
@@ -117,7 +117,7 @@ export default function LandmarkProjectsSection({ config }) {
                 {projects.map((project, idx) => (
                   <div className="project-card-item flex-shrink-0" key={project.id || idx}>
                     <Link
-                      to={project.link || '/about#landmark-sec'}
+                      to={project.link || '/about#locations-sec'}
                       className="text-decoration-none text-dark d-block h-100"
                       onClick={(e) => {
                         if (isDraggingRef.current) {
@@ -138,12 +138,12 @@ export default function LandmarkProjectsSection({ config }) {
                           <h6 className="fw-bold text-dark mb-1 project-card-title text-truncate" title={project.title}>
                             {project.title}
                           </h6>
-                          {project.location && (
+                          {project.location ? (
                             <div className="text-muted project-card-location">
                               <i className="fas fa-map-marker-alt me-1 project-card-loc-icon"></i>
                               {project.location}
                             </div>
-                          )}
+                          ) : null}
                         </div>
                       </div>
                     </Link>
@@ -157,4 +157,3 @@ export default function LandmarkProjectsSection({ config }) {
     </div>
   );
 }
-

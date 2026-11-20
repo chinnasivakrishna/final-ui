@@ -8,12 +8,16 @@ export default function PageHeroBanner({
   alt = 'TAITON Architectural Hardware',
 }) {
   return (
-    <div className="page-hero-banner-wrap w-100 overflow-hidden" style={{ height: '20vh', minHeight: '140px', maxHeight: '20vh' }}>
+    <div className="page-hero-banner-wrap w-100 overflow-hidden">
       <img
         src={imageUrl}
         alt={alt}
-        className="w-100 h-100 page-hero-banner-img"
-        style={{ height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }}
+        className="w-100 page-hero-banner-img"
+        style={{
+          width: '100%',
+          height: 'auto',
+          display: 'block',
+        }}
       />
     </div>
   );

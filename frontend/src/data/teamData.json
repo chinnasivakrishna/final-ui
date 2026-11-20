@@ -156,7 +156,7 @@
     { "dept": "Design", "name": "Arun Patel", "role": "Design Lead", "image": "/images/team_member_4.png" },
     { "dept": "CRM", "name": "Sneha Iyer", "role": "CRM Manager", "image": "/images/team_member_5.png" },
     { "dept": "Technical", "name": "Vikram Singh", "role": "Technical Lead", "image": "/images/team_member_6.png" },
-    { "dept": "Customer Support", "name": "Ananya Das", "role": "Support Manager", "image": "/images/team_member_7.png" }
+    { "dept": "Customer Support", "name": "Ananya Das", "role": "Support Manager", "image": "/images/contact_support_assistant.png" }
   ],
   "stats": [
     { "value": "25+", "label": "Branches" },

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Breadcrumb from '../components/Breadcrumb';
 import PageHeroBanner from '../components/PageHeroBanner';
 import videosData from '../data/videosData.json';
@@ -8,6 +8,18 @@ export default function VideosPage() {
   const [activeSubCategory, setActiveSubCategory] = useState(videosData.subCategories[0]);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+
+  useEffect(() => {
+    if (mobileFilterOpen) {
+      document.body.classList.add('mobile-filter-open');
+    } else {
+      document.body.classList.remove('mobile-filter-open');
+    }
+    return () => {
+      document.body.classList.remove('mobile-filter-open');
+    };
+  }, [mobileFilterOpen]);
 
   const openVideo = (video) => {
     setSelectedVideo(video);
@@ -266,9 +278,15 @@ export default function VideosPage() {
       <section className="pt-2 pb-5 bg-white">
         <div className="site-container">
           <div className="row g-4">
-            {/* Left Sub-Categories List */}
-            <div className="col-12 col-lg-3">
-              <div className="bg-white overflow-hidden" style={{ border: '1px solid #e2e8f0', borderRadius: '6px' }}>
+            {/* Left Sub-Categories List (Desktop Only) */}
+            <div className="col-12 col-lg-3 d-none d-lg-block">
+              <div className="bg-white overflow-hidden shadow-xs" style={{ border: '1px solid #e2e8f0', borderRadius: '8px' }}>
+                <div
+                  className="sidebar-cat-heading fw-bold px-3 py-2 text-uppercase"
+                  style={{ backgroundColor: '#f0f4f8', color: '#003875', fontSize: '0.9rem' }}
+                >
+                  Glass Fittings
+                </div>
                 {videosData.subCategories.map((sub, idx) => {
                   const isSubActive = activeSubCategory === sub;
                   return (
@@ -404,6 +422,85 @@ export default function VideosPage() {
           </div>
         </div>
       </section>
+
+      {/* Mobile Floating Filter Button */}
+      <div className="d-lg-none position-fixed start-50 translate-middle-x" style={{ bottom: '24px', zIndex: 1020 }}>
+        <button
+          type="button"
+          className="btn btn-dark rounded-pill px-4 py-2 shadow-lg d-flex align-items-center gap-2 fw-semibold"
+          style={{ backgroundColor: '#002b5c', borderColor: '#002b5c', fontSize: '0.88rem' }}
+          onClick={() => setMobileFilterOpen(true)}
+          aria-label="Open Video Filters"
+        >
+          <i className="fas fa-filter text-warning"></i>
+          <span>Filters</span>
+        </button>
+      </div>
+
+      {/* Mobile Filter Bottom Sheet Drawer */}
+      <div
+        className={`mobile-filter-backdrop ${mobileFilterOpen ? 'open' : ''}`}
+        onClick={() => setMobileFilterOpen(false)}
+        aria-hidden="true"
+      />
+
+      <div
+        className={`mobile-filter-drawer ${mobileFilterOpen ? 'open' : ''}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Filter Videos"
+      >
+        <div className="mobile-filter-handle" />
+
+        <div className="mobile-filter-header">
+          <div className="d-flex align-items-center gap-2">
+            <i className="fas fa-filter text-primary"></i>
+            <h5 className="mb-0 fw-bold text-dark" style={{ fontSize: '1.05rem' }}>Filters</h5>
+          </div>
+        </div>
+
+        <div className="mobile-filter-body">
+          <div className="mb-3">
+            <div
+              className="fw-bold text-uppercase mb-2 text-dark"
+              style={{ fontSize: '0.82rem', letterSpacing: '0.5px' }}
+            >
+              Glass Fittings
+            </div>
+            <div className="d-flex flex-column gap-1">
+              {videosData.subCategories.map((sub, idx) => {
+                const isSubActive = activeSubCategory === sub;
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    className={`btn text-start w-100 py-2 px-3 rounded-2 border-0 ${
+                      isSubActive ? 'bg-primary text-white fw-bold' : 'bg-light text-dark'
+                    }`}
+                    style={{ fontSize: '0.88rem' }}
+                    onClick={() => {
+                      setActiveSubCategory(sub);
+                      setMobileFilterOpen(false);
+                    }}
+                  >
+                    {sub}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        <div className="mobile-filter-footer p-3 border-top bg-white d-flex gap-2">
+          <button
+            type="button"
+            className="btn btn-primary flex-fill fw-bold"
+            onClick={() => setMobileFilterOpen(false)}
+          >
+            Apply Filters
+          </button>
+        </div>
+      </div>
 
       {/* Video Player Modal */}
       {selectedVideo && (

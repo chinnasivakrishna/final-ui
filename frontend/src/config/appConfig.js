@@ -3,15 +3,25 @@
  * Reads configuration from Vite environment variables with safe production-ready fallbacks
  */
 
+const isProd = typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PROD;
+
 const getEnv = (key, fallback = '') => {
-  return (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[key]) || fallback;
+  if (typeof import.meta !== 'undefined' && import.meta.env && key in import.meta.env) {
+    const val = import.meta.env[key];
+    if (val !== undefined && val !== null) {
+      return val;
+    }
+  }
+  return fallback;
 };
 
 export const APP_CONFIG = Object.freeze({
   /**
-   * Base URL for Web Backend API (defaults to empty string for relative paths or proxy)
+   * Base URL for Web Backend API.
+   * In single-domain production deployment, an empty string '' sends all requests to the same origin
+   * (e.g. /api/... on https://yellow-walrus-609845.hostingersite.com), eliminating CORS and port issues.
    */
-  apiBaseUrl: getEnv('VITE_API_BASE_URL', getEnv('VITE_WEB_API_BASE', getEnv('VITE_API_BASE', 'http://localhost:8789'))),
+  apiBaseUrl: getEnv('VITE_API_BASE_URL', isProd ? '' : 'http://localhost:8789'),
 
   /**
    * Default Organization Code for catalog queries
@@ -26,8 +36,10 @@ export const APP_CONFIG = Object.freeze({
   /**
    * Google OAuth Client ID for One Tap and Google Sign In
    */
-  googleClientId: getEnv('VITE_GOOGLE_CLIENT_ID', ''),
+  googleClientId: getEnv(
+    'VITE_GOOGLE_CLIENT_ID',
+    '636119438704-7ndhah8h9basjsbofppl7m78i65grhdr.apps.googleusercontent.com'
+  ),
 });
 
 export default APP_CONFIG;
-

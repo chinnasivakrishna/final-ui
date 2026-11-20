@@ -1,20 +1,36 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+
+const DEFAULT_TESTIMONIALS = [
+  {
+    author: 'Rahul Sharma',
+    location: 'Hyderabad',
+    quote: 'Excellent product quality and professional service. Very happy with the overall experience.',
+    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80'
+  },
+  {
+    author: 'Priya Reddy',
+    location: 'Bengaluru',
+    quote: 'Great experience with TAITON. The team was helpful, responsive and professional.',
+    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80'
+  },
+  {
+    author: 'Arjun Mehta',
+    location: 'Chennai',
+    quote: 'Impressive quality and attention to detail. Highly satisfied with the service.',
+    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80'
+  }
+];
 
 export default function DynamicClientTestimonials({ config }) {
   const title = config?.title || 'Client Testimonials';
 
-  const rawItems = Array.isArray(config?.items) && config.items.length > 0
-    ? config.items.map((it) => ({
-      quote: it.quote || it.text || '',
-      author: it.author || it.clientName || '',
-      location: it.location || '',
-      image: it.image || '',
-    }))
-    : [];
+  // Use frontend defined testimonials directly so backend static dummy data doesn't override
+  const rawItems = DEFAULT_TESTIMONIALS;
 
   const [currentIdx, setCurrentIdx] = useState(0);
   const [animating, setAnimating] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const touchStartXRef = useRef(null);
 
   const prevIdx = rawItems.length > 0 ? (currentIdx - 1 + rawItems.length) % rawItems.length : 0;
   const nextIdx = rawItems.length > 0 ? (currentIdx + 1) % rawItems.length : 0;
@@ -50,6 +66,22 @@ export default function DynamicClientTestimonials({ config }) {
     return () => clearInterval(timer);
   }, [isPaused, handleNext, rawItems.length]);
 
+  const handleTouchStart = (e) => {
+    touchStartXRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStartXRef.current === null) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartXRef.current - touchEndX;
+    if (diff > 45) {
+      handleNext();
+    } else if (diff < -45) {
+      handlePrev();
+    }
+    touchStartXRef.current = null;
+  };
+
   if (rawItems.length === 0) {
     return null;
   }
@@ -67,6 +99,8 @@ export default function DynamicClientTestimonials({ config }) {
             className="position-relative px-md-3"
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
           >
             <div className="testimonial-track-bg" id="testimonialTrack">
               <button

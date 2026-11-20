@@ -35,7 +35,7 @@ export default function Preloader() {
       <div className="preloader-content-box">
         <div className="preloader-brand-logo mb-3">
           <img
-            src="/images/header-logo.png"
+            src="/Taiton/Taiton Logo without Tagline.png"
             alt="TAITON"
             className="preloader-logo-img"
             onError={(e) => {

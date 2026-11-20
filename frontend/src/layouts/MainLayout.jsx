@@ -12,6 +12,26 @@ export default function MainLayout({ children }) {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const location = useLocation();
+  const headerRef = React.useRef(null);
+
+  React.useEffect(() => {
+    const updateHeaderHeight = () => {
+      if (headerRef.current) {
+        const height = headerRef.current.offsetHeight;
+        document.documentElement.style.setProperty('--header-height', `${height}px`);
+      }
+    };
+    updateHeaderHeight();
+    const observer = new ResizeObserver(updateHeaderHeight);
+    if (headerRef.current) {
+      observer.observe(headerRef.current);
+    }
+    window.addEventListener('resize', updateHeaderHeight);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', updateHeaderHeight);
+    };
+  }, []);
 
   const isCatalogueViewer =
     location.pathname.startsWith('/catalogue-view') ||
@@ -24,7 +44,7 @@ export default function MainLayout({ children }) {
   return (
     <div className="d-flex flex-column min-vh-100">
       <Preloader />
-      <header className="header taiton-header shadow-sm bg-white sticky-top">
+      <header className="header taiton-header shadow-sm bg-white sticky-top" ref={headerRef}>
         <Header onOpenSearch={() => setIsSearchOpen(true)} />
         <Navbar
           isMobileNavOpen={isMobileNavOpen}

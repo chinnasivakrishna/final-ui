@@ -110,17 +110,19 @@ export default function HomePage() {
         <section id="contact-sec" className="w-100 py-5 contact-section-wrap bg-white">
           <div className="site-container">
             <div className="row g-0 align-items-stretch contact-attached-row">
-              <div className="col-12 col-lg-5">
-                <div className="contact-left-card overflow-hidden border shadow-sm h-100 bg-white position-relative">
+              {/* Left Column: Support Assistant Image (Desktop Only, hidden in mobile view) */}
+              <div className="col-12 col-lg-5 d-none d-lg-block">
+                <div className="contact-left-card overflow-hidden border shadow-sm h-100 bg-white position-relative d-flex align-items-center justify-content-center p-3">
                   <img
-                    src="/images/contact_us_left.jpg"
-                    alt="Contact Taiton - Let's Build Something Exceptional"
+                    src="/images/contact_support_assistant.png"
+                    alt="TAITON Customer Support - How can I help you? Please share your requirements."
                     className="w-100 h-100"
-                    style={{ objectFit: 'cover', display: 'block', minHeight: '560px' }}
+                    style={{ objectFit: 'contain', maxHeight: '580px', display: 'block' }}
                   />
                 </div>
               </div>
 
+              {/* Right Column: Contact Form */}
               <div className="col-12 col-lg-7">
                 <div className="contact-form-card border shadow-sm p-4 p-md-5 h-100 bg-white d-flex flex-column justify-content-between">
                   {formSubmitted && (
@@ -132,14 +134,14 @@ export default function HomePage() {
                   )}
 
                   <form onSubmit={handleContactSubmit}>
-                    <h5 className="fw-bold text-dark text-uppercase mb-3" style={{ fontSize: '0.98rem', letterSpacing: '0.5px' }}>
-                      YOUR DETAILS
+                    <h5 className="fw-bold text-dark text-uppercase mb-2" style={{ fontSize: '1.05rem', letterSpacing: '0.5px' }}>
+                      CONTACT US
                     </h5>
 
-                    <div className="mb-3">
+                    <div className="mb-2">
                       <input
                         type="text"
-                        className="form-control form-control-lg contact-input"
+                        className="form-control contact-input"
                         placeholder="Your Name *"
                         required
                         value={contactForm.name}
@@ -147,10 +149,10 @@ export default function HomePage() {
                       />
                     </div>
 
-                    <div className="mb-3">
+                    <div className="mb-2">
                       <input
                         type="email"
-                        className="form-control form-control-lg contact-input"
+                        className="form-control contact-input"
                         placeholder="Email Address *"
                         required
                         value={contactForm.email}
@@ -158,10 +160,10 @@ export default function HomePage() {
                       />
                     </div>
 
-                    <div className="mb-3">
+                    <div className="mb-2">
                       <input
                         type="tel"
-                        className="form-control form-control-lg contact-input"
+                        className="form-control contact-input"
                         placeholder="Phone Number *"
                         required
                         value={contactForm.phone}
@@ -169,9 +171,9 @@ export default function HomePage() {
                       />
                     </div>
 
-                    <div className="mb-4">
+                    <div className="mb-3">
                       <textarea
-                        rows={4}
+                        rows={3}
                         className="form-control contact-input"
                         placeholder="Your Message / Requirements"
                         value={contactForm.message}

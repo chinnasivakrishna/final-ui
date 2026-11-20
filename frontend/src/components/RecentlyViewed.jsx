@@ -67,7 +67,10 @@ export default function RecentlyViewed() {
                             src={image || '/placeholder-hardware.png'}
                             alt={`${code} ${title}`}
                             className="product-listing-card-img"
-                            onError={(e) => { e.currentTarget.src = '/placeholder-hardware.png'; }}
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = '/placeholder-hardware.png';
+                            }}
                           />
                         </Link>
                       </div>

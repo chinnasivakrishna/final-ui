@@ -11,21 +11,21 @@ const LEADERSHIP_MEMBERS = [
 ];
 
 const ACHIEVEMENT_STATS = [
-  { value: '2500+', label: 'Products' },
-  { value: '500+', label: 'Projects' },
-  { value: '100+', label: 'Dealers' },
-  { value: '50+', label: 'Cities' },
-  { value: '10+', label: 'Years Experience' },
-  { value: '25+', label: 'Industry Partnerships' }
+  { value: '35,000', label: 'Total Products' },
+  { value: '500+', label: 'Completed Projects' },
+  { value: '800+', label: 'Total Dealers' },
+  { value: '50+', label: 'Cities Covered' },
+  { value: '10+', label: 'Years of Experience' },
+  { value: '50+', label: 'Industry Partnerships' }
 ];
 
 const COMMITMENTS = [
-  { title: 'Quality', subtitle: 'Products that you can trust', image: '/images/about_commit_quality.webp' },
-  { title: 'Innovation', subtitle: 'Solutions for a better tomorrow', image: '/images/about_commit_innovation.webp' },
-  { title: 'Customer Focus', subtitle: 'Your Success is our Priority', image: '/images/about_commit_customer_focus.webp' },
-  { title: 'Partnership', subtitle: 'Growing together always', image: '/images/about_commit_partnership.webp' },
-  { title: 'Reliability', subtitle: 'Engineered for exceptional endurance', image: '/images/about_commit_reliability.webp' },
-  { title: 'Excellence', subtitle: 'Raising standards in every detail', image: '/images/about_commit_excellence.webp' }
+  { title: 'QUALITY', subtitle: 'Maintaining high standards in every product.', image: '/images/about_commit_quality.webp' },
+  { title: 'INNOVATION', subtitle: 'Creating better solutions through new ideas and technology.', image: '/images/about_commit_innovation.webp' },
+  { title: 'CUSTOMER FOCUS', subtitle: 'Prioritising customer needs and satisfaction.', image: '/images/about_commit_customer_focus.webp' },
+  { title: 'PARTNERSHIP', subtitle: 'Building lasting relationships through trust and collaboration.', image: '/images/about_commit_partnership.webp' },
+  { title: 'RELIABILITY', subtitle: 'Delivering dependable products and services.', image: '/images/about_commit_reliability.webp' },
+  { title: 'EXCELLENCE', subtitle: 'Continuously improving products and services.', image: '/images/about_commit_excellence.webp' }
 ];
 
 const CERTIFICATIONS = [
@@ -57,13 +57,6 @@ const PlayCircleOutlineIcon = () => (
   </svg>
 );
 
-const DownloadOutlineIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-    <polyline points="7 10 12 15 17 10" />
-    <line x1="12" y1="15" x2="12" y2="3" />
-  </svg>
-);
 
 export default function AboutPage() {
   const [showVideoModal, setShowVideoModal] = useState(false);
@@ -73,6 +66,9 @@ export default function AboutPage() {
       <PageHeroBanner
         imageUrl="/images/about_hero_banner.webp"
         alt="About TAITON Architectural Hardware"
+        title="ABOUT US"
+        tagline="Engineering Quality. Creating Better Spaces."
+        description="TAITON offers premium architectural hardware and glass solutions for modern spaces, combining quality, innovative technology, functionality and elegant design to enhance everyday living."
       />
 
       <Breadcrumb items={[{ label: 'About us' }]} />
@@ -91,11 +87,8 @@ export default function AboutPage() {
               <h2 className="section-main-title fw-bold mb-3" style={{ color: '#004282' }}>
                 What Does TAITON Do?
               </h2>
-              <p className="mb-3" style={{ color: '#334155', fontSize: '0.96rem', lineHeight: 1.65 }}>
-                TAITON Architectural Hardware is a growing brand delivering premium architectural hardware glass solutions and access systems for residential, commercial and hospitality spaces.
-              </p>
               <p className="mb-4" style={{ color: '#334155', fontSize: '0.96rem', lineHeight: 1.65 }}>
-                Our focus is to deliver innovation, reliability and value through quality products and professional service.
+                TAITON offers a comprehensive range of architectural hardware, aluminium profiles and glass solutions for modern spaces. With a focus on premium quality, innovative technology and expert support, we deliver reliable and elegant solutions for residential, commercial and hospitality environments.
               </p>
 
               <div className="d-flex flex-wrap gap-3 pt-1">
@@ -193,7 +186,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* OUR SUB-COMPANIES MIND MAP (Dynamic HTML/CSS/SVG UI matching backup/ui screens/02 - About Us.png) */}
+      {/* OUR SUB-COMPANIES */}
       <section className="py-5 bg-white">
         <div className="site-container">
           <div className="text-center mb-4">
@@ -204,135 +197,13 @@ export default function AboutPage() {
             </h2>
           </div>
 
-          <div className="table-responsive border-0 overflow-x-auto text-center py-2">
-            <div
-              className="position-relative mx-auto my-3"
-              style={{ minWidth: '850px', maxWidth: '1000px', minHeight: '440px' }}
-            >
-              {/* Connecting SVG Lines */}
-              <svg
-                className="position-absolute top-0 start-0 w-100 h-100"
-                style={{ zIndex: 1, pointerEvents: 'none' }}
-                viewBox="0 0 1000 440"
-                preserveAspectRatio="none"
-              >
-                {/* Center (500, 220) to Top-Left (280, 85) */}
-                <path d="M 445 165 L 360 85 L 290 85" stroke="#cbd5e1" strokeWidth="2" fill="none" />
-                {/* Center (500, 220) to Bottom-Left (280, 355) */}
-                <path d="M 445 275 L 360 355 L 280 355" stroke="#cbd5e1" strokeWidth="2" fill="none" />
-                {/* Center (500, 220) to Top-Right (720, 85) */}
-                <path d="M 555 165 L 640 85 L 720 85" stroke="#cbd5e1" strokeWidth="2" fill="none" />
-                {/* Center (500, 220) to Bottom-Right (720, 355) */}
-                <path d="M 555 275 L 640 355 L 720 355" stroke="#cbd5e1" strokeWidth="2" fill="none" />
-              </svg>
-
-              {/* Center Main Taiton Circle Badge */}
-              <div
-                className="position-absolute top-50 start-50 translate-middle bg-white rounded-circle shadow d-flex flex-column align-items-center justify-content-center p-3 text-center border border-2 border-light hover-lift"
-                style={{
-                  width: '165px',
-                  height: '165px',
-                  zIndex: 2,
-                  boxShadow: '0 12px 28px rgba(0, 56, 117, 0.12)'
-                }}
-              >
-                <div className="d-flex align-items-center justify-content-center mb-1">
-                  <svg width="34" height="30" viewBox="0 0 36 32" fill="none">
-                    <polygon points="18,2 34,30 2,30" stroke="#003875" strokeWidth="2.5" fill="none" />
-                    <text x="18" y="24" fontSize="16" fontWeight="900" fill="#003875" textAnchor="middle" fontFamily="sans-serif">T</text>
-                  </svg>
-                </div>
-                <span className="fw-black mb-0" style={{ color: '#003875', fontSize: '1.25rem', letterSpacing: '1px', lineHeight: 1.05 }}>
-                  TAITON
-                </span>
-                <span className="fw-semibold text-muted" style={{ fontSize: '0.62rem', letterSpacing: '0.4px', marginTop: '3px' }}>
-                  Architectural Hardware
-                </span>
-              </div>
-
-              {/* Sub-Company 1: TRILLIONS (Top-Left) */}
-              <div
-                className="position-absolute bg-white rounded-pill shadow-sm px-4 py-3 border border-light text-center hover-lift d-flex align-items-center justify-content-center gap-2"
-                style={{
-                  top: '52px',
-                  left: '70px',
-                  zIndex: 2,
-                  width: '230px',
-                  boxShadow: '0 6px 18px rgba(0, 0, 0, 0.06)'
-                }}
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#003875" strokeWidth="2">
-                  <rect x="3" y="3" width="8" height="18" rx="1" />
-                  <rect x="13" y="3" width="8" height="18" rx="1" />
-                </svg>
-                <div className="text-start">
-                  <div className="fw-bold fs-5 mb-0" style={{ color: '#003875', letterSpacing: '0.5px', lineHeight: 1.1 }}>
-                    TRILLIONS
-                  </div>
-                  <div style={{ fontSize: '0.58rem', fontWeight: 700, color: '#64748b', letterSpacing: '0.4px' }}>
-                    ALUMINIUM DOORS &amp; WINDOWS
-                  </div>
-                </div>
-              </div>
-
-              {/* Sub-Company 2: maxía (Bottom-Left) */}
-              <div
-                className="position-absolute bg-white rounded-pill shadow-sm px-4 py-3 border border-light text-center hover-lift d-flex align-items-center justify-content-center"
-                style={{
-                  top: '320px',
-                  left: '80px',
-                  zIndex: 2,
-                  width: '200px',
-                  boxShadow: '0 6px 18px rgba(0, 0, 0, 0.06)'
-                }}
-              >
-                <div className="fw-bold mb-0" style={{ color: '#003875', fontSize: '1.5rem', letterSpacing: '0.5px' }}>
-                  maxía<sup style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0054a6' }}>&reg;</sup>
-                </div>
-              </div>
-
-              {/* Sub-Company 3: TAVIC (Top-Right) */}
-              <div
-                className="position-absolute bg-white rounded-pill shadow-sm px-4 py-3 border border-light text-center hover-lift d-flex align-items-center justify-content-center"
-                style={{
-                  top: '52px',
-                  right: '70px',
-                  zIndex: 2,
-                  width: '200px',
-                  boxShadow: '0 6px 18px rgba(0, 0, 0, 0.06)'
-                }}
-              >
-                <div className="fw-extrabold mb-0" style={{ color: '#004282', fontSize: '1.55rem', letterSpacing: '2px', display: 'flex', alignItems: 'center' }}>
-                  TAV<span style={{ position: 'relative', display: 'inline-block' }}>I<span style={{ position: 'absolute', top: '2px', left: '50%', transform: 'translateX(-50%)', width: '4px', height: '4px', backgroundColor: '#e11d48', borderRadius: '50%' }}></span></span>C
-                </div>
-              </div>
-
-              {/* Sub-Company 4: TIMES GLASS (Bottom-Right) */}
-              <div
-                className="position-absolute bg-white rounded-pill shadow-sm px-4 py-3 border border-light text-center hover-lift d-flex align-items-center justify-content-center gap-2"
-                style={{
-                  top: '320px',
-                  right: '70px',
-                  zIndex: 2,
-                  width: '230px',
-                  boxShadow: '0 6px 18px rgba(0, 0, 0, 0.06)'
-                }}
-              >
-                <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
-                  <path d="M4 8h16l-8 16H4z" fill="#003875" />
-                  <path d="M14 8h14v6h-8v10h-6z" fill="#0284c7" />
-                </svg>
-                <div className="text-start">
-                  <div className="fw-bold fs-5 mb-0" style={{ color: '#003875', letterSpacing: '0.5px', lineHeight: 1.1 }}>
-                    TIMES GLASS
-                  </div>
-                  <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#64748b', letterSpacing: '1px' }}>
-                    INDUSTRIES
-                  </div>
-                </div>
-              </div>
-
-            </div>
+          <div className="d-flex justify-content-center align-items-center py-2">
+            <img
+              src="/images/about_sub_companies_mindmap.png"
+              alt="TAITON Sub-Companies - Trillions, Tavic, Maxia, Times Glass Industries"
+              className="img-fluid"
+              style={{ maxWidth: '850px', width: '100%', height: 'auto', objectFit: 'contain' }}
+            />
           </div>
         </div>
       </section>
@@ -346,25 +217,25 @@ export default function AboutPage() {
                 OUR PRESENCE
               </h2>
               <p className="mb-3" style={{ color: '#1e293b', fontSize: '0.96rem', lineHeight: 1.55, maxWidth: '330px' }}>
-                Delivering our solutions across india and growth globally
+                Delivering our solutions across India and growing globally.
               </p>
               <div style={{ width: '118px', height: '1.5px', backgroundColor: '#475569' }} className="mb-4" />
 
               <div className="d-flex flex-wrap align-items-start gap-5 mb-4">
                 <div>
                   <div className="fw-semibold mb-1" style={{ color: '#004282', fontSize: '2.1rem', lineHeight: 1.05 }}>
-                    25+
+                    15+
                   </div>
                   <div className="fw-medium" style={{ color: '#004282', fontSize: '0.9rem' }}>
-                    Branches
+                    Total Branches
                   </div>
                 </div>
                 <div>
                   <div className="fw-semibold mb-1" style={{ color: '#004282', fontSize: '2.1rem', lineHeight: 1.05 }}>
-                    15+
+                    10+
                   </div>
                   <div className="fw-medium" style={{ color: '#004282', fontSize: '0.9rem' }}>
-                    Experience Centers
+                    Experience Centres
                   </div>
                 </div>
               </div>
@@ -413,13 +284,6 @@ export default function AboutPage() {
               padding: '22px 32px'
             }}
           >
-            <img
-              src="/images/about_achieve_blueprint_right.png"
-              alt=""
-              aria-hidden="true"
-              className="position-absolute top-0 end-0 h-100 d-none d-md-block"
-              style={{ objectFit: 'cover', opacity: 0.9, pointerEvents: 'none' }}
-            />
             <div className="position-relative z-1">
               <div
                 className="text-uppercase fw-semibold mb-3"
@@ -541,7 +405,7 @@ export default function AboutPage() {
                       Our Vision
                     </h3>
                     <p className="mb-0" style={{ color: '#e2e8f0', fontSize: '0.96rem', lineHeight: 1.55 }}>
-                      To become India's most trusted provider of innovative architectural hardware and glass solutions.
+                      To become one of India's most trusted providers of architectural hardware, glass solutions and aluminium profiles, creating better spaces through quality, technology and continuous innovation.
                     </p>
                   </div>
                 </div>
@@ -585,7 +449,7 @@ export default function AboutPage() {
                       Our Mission
                     </h3>
                     <p className="mb-0" style={{ color: '#004282', fontSize: '0.96rem', lineHeight: 1.55 }}>
-                      To deliver quality products, technical expertise, and dependable support that help customers create exceptional spaces.
+                      To provide quality architectural hardware, glass solutions and aluminium profiles through modern technology and innovative thinking, while ensuring reliable customer service and satisfaction.
                     </p>
                   </div>
                 </div>
@@ -603,7 +467,7 @@ export default function AboutPage() {
               OUR COMMITMENT
             </h2>
             <p className="mb-0" style={{ color: '#1e293b', fontSize: '0.96rem' }}>
-              We are committed to creating long-term value for our customers and partners.
+              Delivering quality products, innovative solutions and reliable customer-focused service.
             </p>
           </div>
 
@@ -727,7 +591,7 @@ export default function AboutPage() {
                   </p>
                 </div>
 
-                <div className="d-flex align-items-end justify-content-between flex-wrap gap-3 mt-4 ps-md-4">
+                <div className="d-flex align-items-center justify-content-between flex-wrap gap-3 mt-4 ps-md-4">
                   <div>
                     <div className="fw-bold" style={{ color: '#004282', fontSize: '0.95rem' }}>
                       - S. NAGESWARA REDDY
@@ -736,11 +600,13 @@ export default function AboutPage() {
                       Managing Director, TAITON Hardware Pvt. Ltd.
                     </div>
                   </div>
-                  <img
-                    src="/images/about_md_signature.webp"
-                    alt="S. Nageswara Reddy Signature"
-                    style={{ height: '48px', width: 'auto', mixBlendMode: 'multiply' }}
-                  />
+                  <div className="ms-auto text-end">
+                    <img
+                      src="/images/about_md_signature.webp"
+                      alt="S. Nageswara Reddy Signature"
+                      style={{ height: '48px', width: 'auto', mixBlendMode: 'multiply', display: 'inline-block' }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -777,16 +643,16 @@ export default function AboutPage() {
           <p className="mb-4" style={{ color: '#e2e8f0', fontSize: '0.98rem' }}>
             Let&apos;s build innovative spaces together.
           </p>
-          <div className="d-flex flex-wrap justify-content-center gap-3">
+          <div className="d-flex justify-content-center align-items-center gap-2 gap-sm-3">
             <Link
               to="/#contact-sec"
               className="btn bg-white fw-semibold hover-lift"
               style={{
                 color: '#004282',
                 borderRadius: '6px',
-                minWidth: '175px',
-                padding: '10px 22px',
-                fontSize: '0.88rem'
+                padding: '9px 18px',
+                fontSize: '0.86rem',
+                whiteSpace: 'nowrap'
               }}
             >
               Contact Sales
@@ -798,27 +664,12 @@ export default function AboutPage() {
                 border: '1px solid rgba(255, 255, 255, 0.78)',
                 backgroundColor: 'rgba(0, 38, 82, 0.45)',
                 borderRadius: '6px',
-                minWidth: '175px',
-                padding: '10px 22px',
-                fontSize: '0.88rem'
+                padding: '9px 18px',
+                fontSize: '0.86rem',
+                whiteSpace: 'nowrap'
               }}
             >
               Become a Dealer
-            </Link>
-            <Link
-              to="/catalogues"
-              className="btn fw-semibold text-white hover-lift d-inline-flex align-items-center justify-content-center gap-2"
-              style={{
-                border: '1px solid rgba(255, 255, 255, 0.78)',
-                backgroundColor: 'rgba(0, 38, 82, 0.45)',
-                borderRadius: '6px',
-                minWidth: '185px',
-                padding: '10px 22px',
-                fontSize: '0.88rem'
-              }}
-            >
-              <DownloadOutlineIcon />
-              <span>Download Catalogue</span>
             </Link>
           </div>
         </div>

@@ -66,7 +66,7 @@ export default function OperationsPage() {
       <Breadcrumb items={[{ label: 'Operations & Logistics' }]} />
 
       {/* 3. Operations Overview */}
-      <section className="py-5 bg-white">
+      <section className="pt-3 pb-4 pt-md-4 pb-md-5 bg-white">
         <div className="site-container">
           <div className="row g-4 align-items-center">
             {/* Left Column */}
@@ -95,7 +95,7 @@ export default function OperationsPage() {
 
               <a
                 href="/catalogues"
-                className="btn text-white px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2"
+                className="btn text-white px-4 py-2 fw-semibold d-inline-flex align-items-center justify-content-center gap-2 w-100 w-sm-auto"
                 style={{ backgroundColor: '#002b5c', borderRadius: '6px', fontSize: '0.85rem' }}
               >
                 <span>Download Company Profile</span> <i className="fas fa-download"></i>
@@ -188,7 +188,8 @@ export default function OperationsPage() {
                       alt={card.title}
                       className="w-100 h-100 object-fit-cover"
                       onError={(e) => {
-                        e.target.src = 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=600&q=80';
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=600&q=80';
                       }}
                     />
                   </div>
@@ -207,20 +208,21 @@ export default function OperationsPage() {
       </section>
 
       {/* 6. Our Fleet & Coverage - Pure Complete Banner Only */}
-      <section className="py-5 bg-white border-top">
-        <div className="site-container">
-          <div className="overflow-hidden" style={{ borderRadius: '16px', boxShadow: '0 8px 24px rgba(15, 23, 42, 0.08)' }}>
+      <section className="py-2 py-md-3 bg-white">
+        <div className="site-container px-2 px-md-4">
+          <div className="rounded-4 overflow-hidden shadow-sm">
             <img
               src="/images/our_fleet_banner_complete.png"
               alt="Our Fleet & Coverage - Pan India Distribution"
               className="w-100 h-auto d-block"
+              style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
             />
           </div>
         </div>
       </section>
 
-                                {/* 7. Gallery & Videos */}
-                                <section className="py-5 bg-white border-top">
+      {/* 7. Gallery & Videos */}
+      <section className="pt-3 pt-md-4 pb-5 bg-white">
                                   <div className="site-container">
                                     <div className="text-center mb-5">
                                       <h2 className="section-main-title text-center text-uppercase">GALLERY &amp; VIDEOS</h2>
@@ -319,30 +321,36 @@ export default function OperationsPage() {
                                             Join our growing network of dealers, architects, builders and business partners.
                                           </p>
 
-                                          <div className="d-flex flex-wrap justify-content-center gap-3">
-                                            <Link
-                                              to="/contact"
-                                              className="btn fw-bold px-4 py-2 d-inline-flex align-items-center gap-2"
-                                              style={{ backgroundColor: '#e0a638', borderColor: '#e0a638', color: '#000', borderRadius: '4px', fontSize: '0.85rem' }}
-                                            >
-                                              <span>BECOME A DEALER</span> <i className="fas fa-arrow-right"></i>
-                                            </Link>
+                                          <div className="row g-2 g-sm-3 justify-content-center mx-auto" style={{ maxWidth: '680px' }}>
+                                            <div className="col-6 col-md-auto">
+                                              <Link
+                                                to="/contact"
+                                                className="btn w-100 fw-bold px-3 px-sm-4 py-2 d-inline-flex align-items-center justify-content-center gap-1 gap-sm-2 text-nowrap"
+                                                style={{ backgroundColor: '#e0a638', borderColor: '#e0a638', color: '#000', borderRadius: '4px', fontSize: '0.82rem' }}
+                                              >
+                                                <span>BECOME A DEALER</span> <i className="fas fa-arrow-right"></i>
+                                              </Link>
+                                            </div>
 
-                                            <Link
-                                              to="/contact"
-                                              className="btn btn-outline-light fw-semibold px-4 py-2 d-inline-flex align-items-center gap-2"
-                                              style={{ borderRadius: '4px', fontSize: '0.85rem', borderColor: '#ffffff' }}
-                                            >
-                                              <span>CONTACT SALES</span> <i className="fas fa-arrow-right"></i>
-                                            </Link>
+                                            <div className="col-6 col-md-auto">
+                                              <Link
+                                                to="/contact"
+                                                className="btn w-100 btn-outline-light fw-semibold px-3 px-sm-4 py-2 d-inline-flex align-items-center justify-content-center gap-1 gap-sm-2 text-nowrap"
+                                                style={{ borderRadius: '4px', fontSize: '0.82rem', borderColor: '#ffffff' }}
+                                              >
+                                                <span>CONTACT SALES</span> <i className="fas fa-arrow-right"></i>
+                                              </Link>
+                                            </div>
 
-                                            <Link
-                                              to="/contact"
-                                              className="btn btn-outline-light fw-semibold px-4 py-2 d-inline-flex align-items-center gap-2"
-                                              style={{ borderRadius: '4px', fontSize: '0.85rem', borderColor: '#ffffff' }}
-                                            >
-                                              <span>REQUEST A QUOTE</span> <i className="fas fa-arrow-right"></i>
-                                            </Link>
+                                            <div className="col-12 col-md-auto">
+                                              <Link
+                                                to="/contact"
+                                                className="btn w-100 btn-outline-light fw-semibold px-3 px-sm-4 py-2 d-inline-flex align-items-center justify-content-center gap-1 gap-sm-2 text-nowrap"
+                                                style={{ borderRadius: '4px', fontSize: '0.82rem', borderColor: '#ffffff' }}
+                                              >
+                                                <span>REQUEST A QUOTE</span> <i className="fas fa-arrow-right"></i>
+                                              </Link>
+                                            </div>
                                           </div>
                                         </div>
                                       </section>

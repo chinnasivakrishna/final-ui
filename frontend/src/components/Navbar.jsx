@@ -79,7 +79,10 @@ export default function Navbar({
               <Link to="/" className="d-flex align-items-center text-decoration-none">
                 <img
                   src="/assets/images/taiton-logo.png"
-                  onError={(e) => { e.target.src = '/Taiton/Taiton Logo without Tagline.png'; }}
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = '/Taiton/Taiton Logo without Tagline.png';
+                  }}
                   alt="TAITON Architectural Hardware"
                   className="mobile-logo-img"
                 />
@@ -495,10 +498,10 @@ export default function Navbar({
 
               </ul>
 
-              <div className="d-none d-lg-flex align-items-center py-2 py-lg-0 m-0 border-0 ms-auto gap-3">
+              <div className="d-none d-lg-flex align-items-center py-2 py-lg-0 m-0 border-0 ms-auto gap-3 mr-5">
                 <Link
                   to="/products"
-                  className="btn rounded-pill px-3 py-1 d-flex align-items-center gap-2 text-white border border-light nav-new-arrivals-btn"
+                  className="btn rounded-pill px-3 pr-5 py-1 d-flex align-items-center gap-2 text-white border border-light nav-new-arrivals-btn"
                 >
                   <span className="rounded-circle d-inline-block nav-badge-dot"></span>
                   <span className="fw-semibold">New Arrivals</span>

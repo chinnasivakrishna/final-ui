@@ -1,12 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { fetchCategories } from '../api/catalogApi';
+import { Link, useLocation } from 'react-router-dom';
+import { fetchCategories, fetchSpaces } from '../api/catalogApi';
+import { useAuth } from '../context/AuthContext';
 
 export default function MobileSideNav({ isOpen, onClose }) {
+  const location = useLocation();
+  const currentSpaceParam = new URLSearchParams(location.search).get('spaceId');
+  const { user, isAuthenticated, openLoginModal, logout } = useAuth();
   const [categoriesList, setCategoriesList] = useState([]);
+  const [spacesList, setSpacesList] = useState([]);
   const [openSection, setOpenSection] = useState('products');
   const [openCategory, setOpenCategory] = useState(null);
   const [openSubcategory, setOpenSubcategory] = useState(null);
+
+  useEffect(() => {
+    let mounted = true;
+    fetchSpaces().then((spList) => {
+      if (mounted && Array.isArray(spList) && spList.length > 0) {
+        setSpacesList(spList);
+      }
+    });
+    return () => { mounted = false; };
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -98,16 +113,70 @@ export default function MobileSideNav({ isOpen, onClose }) {
         </div>
 
         <div className="mobile-side-nav-body p-3 overflow-y-auto flex-grow-1">
-          <div className="d-flex align-items-center gap-3 p-3 rounded-3 mb-3 bg-light border shadow-sm">
-            <div className="rounded-circle text-white d-flex align-items-center justify-content-center overflow-hidden flex-shrink-0 drawer-user-avatar">
-              <i className="fas fa-user fs-5"></i>
+          {isAuthenticated && user ? (
+            <div className="d-flex align-items-center gap-3 p-3 rounded-3 mb-3 bg-light border shadow-sm">
+              <div
+                className="rounded-circle text-white d-flex align-items-center justify-content-center overflow-hidden flex-shrink-0 drawer-user-avatar"
+                style={{ width: '42px', height: '42px', backgroundColor: '#002b5c' }}
+              >
+                {user.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt={user.name || 'User'}
+                    className="w-100 h-100 object-fit-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <i className="fas fa-user fs-5"></i>
+                )}
+              </div>
+              <div className="flex-grow-1 text-truncate">
+                <div className="fw-bold text-dark text-truncate profile-name-highlight">
+                  {user.name || user.email?.split('@')[0] || 'User'}
+                </div>
+                <div className="text-muted small text-truncate profile-role-text">
+                  {user.mobile || user.email || 'Customer'}
+                </div>
+              </div>
+              <button
+                type="button"
+                className="btn btn-outline-danger btn-sm rounded-pill px-2 py-1 flex-shrink-0"
+                style={{ fontSize: '0.75rem' }}
+                onClick={() => {
+                  logout();
+                }}
+                title="Logout"
+              >
+                <i className="fas fa-sign-out-alt me-1"></i>Logout
+              </button>
             </div>
-            <div className="flex-grow-1">
-              <div className="fw-bold text-dark profile-name-highlight">B. Rajesh</div>
-              <div className="text-muted small profile-role-text">Architect Consultant</div>
+          ) : (
+            <div className="d-flex align-items-center justify-content-between p-3 rounded-3 mb-3 bg-light border shadow-sm">
+              <div className="d-flex align-items-center gap-2">
+                <div
+                  className="rounded-circle bg-secondary bg-opacity-10 text-primary d-flex align-items-center justify-content-center flex-shrink-0"
+                  style={{ width: '38px', height: '38px' }}
+                >
+                  <i className="fas fa-user-circle fs-4"></i>
+                </div>
+                <div>
+                  <div className="fw-bold text-dark small">Welcome to TAITON</div>
+                  <div className="text-muted" style={{ fontSize: '0.75rem' }}>Architectural Hardware</div>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="btn btn-primary btn-sm rounded-pill px-3 fw-semibold flex-shrink-0"
+                style={{ backgroundColor: '#0054a6', borderColor: '#0054a6' }}
+                onClick={() => {
+                  onClose();
+                  openLoginModal();
+                }}
+              >
+                Sign In
+              </button>
             </div>
-            <span className="badge rounded-pill bg-primary px-2 py-1 badge-active-user">Active</span>
-          </div>
+          )}
 
           <div className="mb-3">
             <Link
@@ -185,48 +254,78 @@ export default function MobileSideNav({ isOpen, onClose }) {
             </div>
 
             <div className="accordion-item border-bottom">
-              <h2 className="accordion-header">
-                <button
-                  className={`accordion-button py-3 fw-bold text-dark ${openSection === 'products' ? '' : 'collapsed'}`}
-                  type="button"
-                  onClick={() => toggleSection('products')}
-                  aria-expanded={openSection === 'products'}
+              <div className="d-flex align-items-center justify-content-between">
+                <Link
+                  to="/products"
+                  onClick={handleLinkClick}
+                  className="py-3 ps-3 fw-bold text-dark text-decoration-none d-flex align-items-center flex-grow-1"
+                  style={{ fontSize: '1rem' }}
                 >
-                  <i className="fas fa-th-large me-3 text-primary drawer-nav-icon"></i> Products
+                  <i className="fas fa-th-large me-3 text-primary drawer-nav-icon"></i>
+                  <span>Products</span>
+                </Link>
+                <button
+                  type="button"
+                  className="btn btn-link p-3 text-secondary text-decoration-none d-flex align-items-center justify-content-center"
+                  onClick={() => toggleSection('products')}
+                  aria-label="Toggle Products dropdown"
+                  style={{ width: '48px', height: '48px' }}
+                >
+                  <i className={`fas fa-chevron-down transition-transform ${openSection === 'products' ? 'rotate-180 text-primary' : ''}`}></i>
                 </button>
-              </h2>
+              </div>
               {openSection === 'products' && (
                 <div className="accordion-collapse show">
                   <div className="accordion-body py-2 px-2 bg-light rounded-2 mb-2">
                     <div className="accordion accordion-flush" id="mobileCatAccordion">
                       {categoriesList.map((cat) => (
                         <div className="accordion-item bg-transparent border-0 mb-1" key={cat.id}>
-                          <button
-                            className={`accordion-button py-2 px-2 rounded-2 mobile-drilldown-btn ${
-                              openCategory === cat.id ? '' : 'collapsed'
-                            }`}
-                            type="button"
-                            onClick={() => toggleCategory(cat.id)}
-                            aria-expanded={openCategory === cat.id}
-                          >
-                            <span className="fw-semibold">{cat.name || cat.title}</span>
-                          </button>
+                          <div className="d-flex align-items-center justify-content-between rounded-2 bg-white border mb-1">
+                            <Link
+                              to={`/product-category?catId=${cat.id}`}
+                              onClick={handleLinkClick}
+                              className="py-2 px-3 text-dark text-decoration-none fw-semibold flex-grow-1"
+                              style={{ fontSize: '0.88rem' }}
+                            >
+                              {cat.name || cat.title}
+                            </Link>
+                            {Array.isArray(cat.subcategories) && cat.subcategories.length > 0 && (
+                              <button
+                                type="button"
+                                className="btn btn-link py-2 px-3 text-secondary text-decoration-none"
+                                onClick={() => toggleCategory(cat.id)}
+                                aria-label={`Toggle ${cat.name || cat.title}`}
+                              >
+                                <i className={`fas fa-chevron-down fs-8 transition-transform ${openCategory === cat.id ? 'rotate-180 text-primary' : ''}`}></i>
+                              </button>
+                            )}
+                          </div>
                           
                           {openCategory === cat.id && Array.isArray(cat.subcategories) && (
                             <div className="ps-3 py-1">
                               <div className="accordion accordion-flush">
                                 {cat.subcategories.map((sub) => (
                                   <div className="accordion-item bg-transparent border-0 mb-1" key={sub.id}>
-                                    <button
-                                      className={`accordion-button py-1 px-2 rounded-2 mobile-subdrilldown-btn ${
-                                        openSubcategory === sub.id ? '' : 'collapsed'
-                                      }`}
-                                      type="button"
-                                      onClick={() => toggleSubcategory(sub.id)}
-                                      aria-expanded={openSubcategory === sub.id}
-                                    >
-                                      <span>{sub.name || sub.title}</span>
-                                    </button>
+                                    <div className="d-flex align-items-center justify-content-between rounded-2 bg-white border mb-1">
+                                      <Link
+                                        to={`/product-category?catId=${cat.id}&subId=${sub.id}`}
+                                        onClick={handleLinkClick}
+                                        className="py-1 px-2 text-dark text-decoration-none fw-medium flex-grow-1"
+                                        style={{ fontSize: '0.82rem' }}
+                                      >
+                                        {sub.name || sub.title}
+                                      </Link>
+                                      {Array.isArray(sub.items) && sub.items.length > 0 && (
+                                        <button
+                                          type="button"
+                                          className="btn btn-link py-1 px-2 text-secondary text-decoration-none"
+                                          onClick={() => toggleSubcategory(sub.id)}
+                                          aria-label={`Toggle ${sub.name || sub.title}`}
+                                        >
+                                          <i className={`fas fa-chevron-down fs-8 transition-transform ${openSubcategory === sub.id ? 'rotate-180 text-primary' : ''}`}></i>
+                                        </button>
+                                      )}
+                                    </div>
 
                                     {openSubcategory === sub.id && (
                                       <ul className="list-unstyled mb-0 ps-3 py-1">
@@ -286,14 +385,68 @@ export default function MobileSideNav({ isOpen, onClose }) {
               </Link>
             </div>
 
-            <div className="border-bottom">
-              <Link
-                to="/explore-spaces"
-                onClick={handleLinkClick}
-                className="d-flex align-items-center drawer-direct-link"
-              >
-                <i className="fas fa-cube me-3 text-primary drawer-nav-icon"></i> Explore Spaces
-              </Link>
+            <div className="accordion-item border-bottom">
+              <div className="d-flex align-items-center justify-content-between">
+                <Link
+                  to="/explore-spaces"
+                  onClick={handleLinkClick}
+                  className="py-3 ps-3 fw-bold text-dark text-decoration-none d-flex align-items-center flex-grow-1"
+                  style={{ fontSize: '1rem' }}
+                >
+                  <i className="fas fa-cube me-3 text-primary drawer-nav-icon"></i>
+                  <span>Explore Spaces</span>
+                </Link>
+                <button
+                  type="button"
+                  className="btn btn-link p-3 text-secondary text-decoration-none d-flex align-items-center justify-content-center"
+                  onClick={() => toggleSection('spaces')}
+                  aria-label="Toggle Explore Spaces dropdown"
+                  style={{ width: '48px', height: '48px' }}
+                >
+                  <i className={`fas fa-chevron-down fs-8 transition-transform ${openSection === 'spaces' ? 'rotate-180 text-primary' : ''}`}></i>
+                </button>
+              </div>
+
+              {openSection === 'spaces' && (
+                <div className="accordion-collapse show">
+                  <div className="accordion-body py-2 px-3 bg-light rounded-2 mb-2">
+                    <ul className="list-unstyled mb-0 ms-2">
+                      <li className="py-1">
+                        <Link
+                          to="/explore-spaces"
+                          onClick={handleLinkClick}
+                          className="text-decoration-none text-dark d-flex align-items-center gap-2 fw-semibold"
+                        >
+                          <i className="fas fa-layer-group text-primary fs-8"></i> All Spaces
+                        </Link>
+                      </li>
+                      {(spacesList.length > 0 ? spacesList : [
+                        { id: 1, name: 'Living Room & Glass Partitions' },
+                        { id: 2, name: 'Modern Shower Enclosure' }
+                      ]).map((sp) => {
+                        const isSpaceActive = location.pathname.startsWith('/explore-spaces') && String(sp.id) === String(currentSpaceParam);
+                        return (
+                          <li className="py-1" key={sp.id}>
+                            <Link
+                              to={`/explore-spaces?spaceId=${encodeURIComponent(sp.id)}`}
+                              onClick={handleLinkClick}
+                              className={`text-decoration-none d-flex align-items-center justify-content-between py-1 px-2 rounded-2 ${
+                                isSpaceActive ? 'text-primary fw-bold bg-white border shadow-xs' : 'text-dark'
+                              }`}
+                            >
+                              <div className="d-flex align-items-center gap-2">
+                                <i className={`fas fa-chevron-right fs-8 ${isSpaceActive ? 'text-primary' : 'text-muted'}`}></i>
+                                <span>{sp.name || sp.title}</span>
+                              </div>
+                              {isSpaceActive && <span className="badge bg-primary rounded-pill px-2 py-1" style={{ fontSize: '0.65rem' }}>Selected</span>}
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="border-bottom">

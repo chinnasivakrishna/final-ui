@@ -108,21 +108,22 @@ export default function ContactPage() {
       <section className="py-4" style={{ backgroundColor: '#edf2f7' }}>
         <div className="site-container">
           <div className="row g-0 align-items-stretch contact-attached-row mb-4">
-            
-            <div className="col-12 col-lg-5">
-              <div className="contact-left-card overflow-hidden border shadow-sm h-100 bg-white position-relative">
+            {/* Left Column: Support Assistant Image (Desktop Only, hidden in mobile view) */}
+            <div className="col-12 col-lg-5 d-none d-lg-block">
+              <div className="contact-left-card overflow-hidden border shadow-sm h-100 bg-white position-relative d-flex align-items-center justify-content-center p-3">
                 <img
-                  src="/images/contact_us_left.jpg"
-                  alt="Contact Taiton - Let's Build Something Exceptional"
+                  src="/images/contact_support_assistant.png"
+                  alt="TAITON Customer Support - How can I help you? Please share your requirements."
                   className="w-100 h-100"
-                  style={{ objectFit: 'cover', display: 'block', minHeight: '560px' }}
+                  style={{ objectFit: 'contain', maxHeight: '580px', display: 'block' }}
                 />
               </div>
             </div>
 
+            {/* Right Column: Contact Form */}
             <div className="col-12 col-lg-7">
               <div className="contact-form-card border shadow-sm p-4 p-md-5 h-100 bg-white d-flex flex-column justify-content-between">
-                
+
                 {submitted && (
                   <div className="alert alert-success alert-dismissible fade show mb-4 rounded-3" role="alert">
                     <i className="fas fa-check-circle me-2"></i>
@@ -132,15 +133,15 @@ export default function ContactPage() {
                 )}
 
                 <form onSubmit={handleSubmit}>
-                  
-                  <h5 className="fw-bold text-dark text-uppercase mb-3" style={{ fontSize: '0.98rem', letterSpacing: '0.5px' }}>
-                    YOUR DETAILS
+
+                  <h5 className="fw-bold text-dark text-uppercase mb-2" style={{ fontSize: '1.05rem', letterSpacing: '0.5px' }}>
+                    CONTACT US
                   </h5>
 
-                  <div className="mb-3">
+                  <div className="mb-2">
                     <input
                       type="text"
-                      className="form-control form-control-lg contact-input"
+                      className="form-control contact-input"
                       placeholder="Your Name *"
                       required
                       value={formData.name}
@@ -148,10 +149,10 @@ export default function ContactPage() {
                     />
                   </div>
 
-                  <div className="mb-3">
+                  <div className="mb-2">
                     <input
                       type="email"
-                      className="form-control form-control-lg contact-input"
+                      className="form-control contact-input"
                       placeholder="Email Address *"
                       required
                       value={formData.email}
@@ -159,10 +160,10 @@ export default function ContactPage() {
                     />
                   </div>
 
-                  <div className="mb-3">
+                  <div className="mb-2">
                     <input
                       type="tel"
-                      className="form-control form-control-lg contact-input"
+                      className="form-control contact-input"
                       placeholder="Phone Number *"
                       required
                       value={formData.phone}
@@ -170,9 +171,9 @@ export default function ContactPage() {
                     />
                   </div>
 
-                  <div className="mb-4">
+                  <div className="mb-3">
                     <textarea
-                      rows={4}
+                      rows={3}
                       className="form-control contact-input"
                       placeholder="Your Message / Requirements"
                       value={formData.message}
@@ -191,9 +192,8 @@ export default function ContactPage() {
                         <div className="col-12 col-sm-6 col-md-4" key={idx}>
                           <button
                             type="button"
-                            className={`contact-interest-box w-100 text-start py-2 px-3 rounded-2 border d-flex align-items-center justify-content-start text-truncate ${
-                              isSelected ? 'active bg-light border-primary text-primary fw-bold' : 'bg-white text-secondary'
-                            }`}
+                            className={`contact-interest-box w-100 text-start py-2 px-3 rounded-2 border d-flex align-items-center justify-content-start text-truncate ${isSelected ? 'active bg-light border-primary text-primary fw-bold' : 'bg-white text-secondary'
+                              }`}
                             onClick={() => toggleInterest(item)}
                             title={item}
                             style={{ fontSize: '0.78rem', transition: 'all 0.15s ease' }}
@@ -230,7 +230,6 @@ export default function ContactPage() {
 
               </div>
             </div>
-
           </div>
 
           <div className="border rounded-4 p-4 p-md-5 mb-5 bg-white shadow-sm">
@@ -238,9 +237,8 @@ export default function ContactPage() {
               {BRANCH_LOCATIONS.map((b, idx) => (
                 <div
                   key={idx}
-                  className={`col-12 col-sm-6 col-lg-3 ${
-                    (idx + 1) % 4 !== 0 ? 'border-lg-end' : ''
-                  } ${idx < 4 ? 'border-lg-bottom pb-4' : 'pt-lg-2'}`}
+                  className={`col-12 col-sm-6 col-lg-3 ${(idx + 1) % 4 !== 0 ? 'border-lg-end' : ''
+                    } ${idx < 4 ? 'border-lg-bottom pb-4' : 'pt-lg-2'}`}
                   style={{ borderColor: '#e2e8f0' }}
                 >
                   <h5 className="fw-bold mb-2 text-taiton-navy" style={{ fontSize: '1.05rem', color: '#003875' }}>
@@ -267,7 +265,7 @@ export default function ContactPage() {
 
           <div className="border rounded-4 p-4 p-md-5 my-5 bg-white shadow-sm">
             <div className="row align-items-center gy-4">
-              
+
               <div className="col-12 col-lg-6">
                 <h2 className="display-6 fw-bold text-dark mb-3 lh-sm">
                   With you,<br />
@@ -276,7 +274,7 @@ export default function ContactPage() {
                 <p className="text-secondary fs-6 mb-4 lh-base" style={{ maxWidth: '440px' }}>
                   Download our app on your smartphone to get latest product information and installation guidance.
                 </p>
-                
+
                 <div className="d-flex flex-wrap align-items-center gap-3">
                   <a
                     href="#playstore"
@@ -309,14 +307,11 @@ export default function ContactPage() {
                   </a>
                 </div>
 
-                <div className="text-danger fw-semibold mt-4" style={{ fontSize: '1.15rem' }}>
-                  Any Ideas on this section
-                </div>
               </div>
 
               <div className="col-12 col-lg-6 text-center">
                 <div className="d-flex align-items-center justify-content-center position-relative py-3" style={{ minHeight: '340px' }}>
-                  
+
                   <div
                     className="phone-mockup-frame shadow-lg bg-dark text-white rounded-4 overflow-hidden border border-3 border-dark position-relative"
                     style={{
@@ -370,7 +365,10 @@ export default function ContactPage() {
                           alt="Showcase"
                           className="w-100 h-100"
                           style={{ objectFit: 'cover' }}
-                          onError={(e) => { e.currentTarget.src = '/Taiton/banners/1.webp'; }}
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = '/Taiton/banners/1.webp';
+                          }}
                         />
                         <div className="position-absolute bottom-0 start-0 p-1 text-white fw-bold" style={{ fontSize: '0.6rem', background: 'rgba(0,0,0,0.5)', width: '100%' }}>
                           Enhancing Spaces

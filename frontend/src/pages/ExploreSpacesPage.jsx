@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { fetchSpaces, fetchProducts, resolveImageUrl } from '../api/catalogApi';
 import './ExploreSpaces.css';
 
@@ -28,6 +28,9 @@ const getSpecIcon = (label) => {
 };
 
 export default function ExploreSpacesPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
+
   const [spaces, setSpaces] = useState([]);
   const [productsList, setProductsList] = useState([]);
   const [curSpaceId, setCurSpaceId] = useState(null);
@@ -58,9 +61,16 @@ export default function ExploreSpacesPage() {
 
         if (Array.isArray(apiSpaces) && apiSpaces.length > 0) {
           setSpaces(apiSpaces);
-          setCurSpaceId(apiSpaces[0].id);
-          if (Array.isArray(apiSpaces[0].pts) && apiSpaces[0].pts.length > 0) {
-            setCurProdCode(apiSpaces[0].pts[0].c);
+          const currentUrlParam = new URLSearchParams(window.location.search).get('spaceId');
+          const matchedSpace = currentUrlParam
+            ? apiSpaces.find((s) => String(s.id) === String(currentUrlParam))
+            : null;
+          const targetSpace = matchedSpace || apiSpaces[0];
+          setCurSpaceId(targetSpace.id);
+          if (Array.isArray(targetSpace.pts) && targetSpace.pts.length > 0) {
+            setCurProdCode(targetSpace.pts[0].c);
+          } else {
+            setCurProdCode('');
           }
         }
 
@@ -142,8 +152,26 @@ export default function ExploreSpacesPage() {
     ? findProd(curProdCode)
     : (currentSpaceProductCodes.length > 0 ? findProd(currentSpaceProductCodes[0]) : null);
 
+  useEffect(() => {
+    const spaceIdFromUrl = new URLSearchParams(location.search).get('spaceId');
+    if (spaceIdFromUrl && spaces.length > 0) {
+      const sp = spaces.find((s) => String(s.id) === String(spaceIdFromUrl));
+      if (sp) {
+        setCurSpaceId(sp.id);
+        if (Array.isArray(sp.pts) && sp.pts.length > 0) {
+          setCurProdCode(sp.pts[0].c);
+          setCurAngle(0);
+          setCurFinish(0);
+        } else {
+          setCurProdCode('');
+        }
+      }
+    }
+  }, [location.search, spaces]);
+
   const handleSelectSpace = (spaceId) => {
     setCurSpaceId(spaceId);
+    setSearchParams({ spaceId: String(spaceId) });
     const sp = spaces.find((s) => String(s.id) === String(spaceId));
     if (sp && Array.isArray(sp.pts) && sp.pts.length > 0) {
       setCurProdCode(sp.pts[0].c);
@@ -151,6 +179,18 @@ export default function ExploreSpacesPage() {
       setCurFinish(0);
     } else {
       setCurProdCode('');
+    }
+  };
+
+  const handleSelectProduct = (code) => {
+    setCurProdCode(code);
+    setCurAngle(0);
+    setCurFinish(0);
+    if (rowRef.current) {
+      const cardEl = rowRef.current.querySelector(`[data-prod-code="${code}"]`);
+      if (cardEl) {
+        cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
     }
   };
 
@@ -278,8 +318,8 @@ export default function ExploreSpacesPage() {
 
       <div className="taiton-layout-container">
         <main className="explore-spaces-wrap">
-          {/* Left Spaces Sidebar */}
-          <nav className="spaces-nav box" aria-label="Spaces">
+          {/* Left Spaces Sidebar (Desktop only; on mobile, spaces are accessed directly from main menu bar) */}
+          <nav className="spaces-nav box d-none d-lg-block" aria-label="Spaces">
             <h2>Explore Spaces</h2>
             <div>
               {spaces.map((sp) => {
@@ -298,193 +338,194 @@ export default function ExploreSpacesPage() {
             </div>
           </nav>
 
-        {/* Center Room Image with Hotspots */}
-        <section className="explore-imgbox box">
-          {currentSpace ? (
-            <>
-              <img
-                src={resolveImageUrl(currentSpace.img || currentSpace.image) || currentSpace.image}
-                alt={currentSpace.name || currentSpace.title}
-              />
-              {(currentSpace.pts || []).map((pt, idx) => {
-                const pData = findProd(pt.c);
-                const isSelected = curProdCode === pt.c;
-                const labelText = pt.label || pData?.label || pData?.name || pt.c;
-                const isNearBottom = Number(pt.y) > 80;
-                return (
-                  <div
-                    key={idx}
-                    className={`explore-hotspot-pin ${isSelected ? 'on' : ''} ${isNearBottom ? 'badge-top' : ''}`}
-                    style={{ left: `${pt.x}%`, top: `${pt.y}%` }}
-                    onClick={() => setCurProdCode(pt.c)}
-                    role="button"
-                    tabIndex={0}
-                    aria-label={labelText}
-                  >
-                    <div className="hotspot-target-dot">
-                      <div className="hotspot-target-inner"></div>
-                    </div>
-                    <div className="hotspot-target-badge">
-                      {labelText}
-                    </div>
-                  </div>
-                );
-              })}
-            </>
-          ) : (
-            <div style={{ padding: '60px 20px', textAlign: 'center', color: '#6b7487' }}>
-              No spaces configured yet.
-            </div>
-          )}
-        </section>
-
-        {/* Products Used in This Space - spans grid-column: 1 / 3 */}
-        <section className="explore-prods">
-          <h3>Products Used in This Space</h3>
-          <div className="explore-row-wrap">
-            <div className="explore-row" ref={rowRef}>
-              {currentSpaceProductCodes.length > 0 ? (
-                currentSpaceProductCodes.map((code) => {
-                  const prod = findProd(code);
-                  if (!prod) return null;
-                  const isSelected = curProdCode === code;
-                  return (
-                    <button
-                      key={code}
-                      className={`explore-pc ${isSelected ? 'on' : ''}`}
-                      onClick={() => setCurProdCode(code)}
-                    >
-                      <div className="explore-pc-img">
-                        {prod.img ? (
-                          <img src={resolveImageUrl(prod.img)} alt={prod.name} />
-                        ) : (
-                          renderArt(prod.type, 'M')
-                        )}
-                      </div>
-                      <b>{prod.c}</b>
-                      <small title={prod.name}>{prod.name}</small>
-                    </button>
-                  );
-                })
-              ) : (
-                <div className="text-muted small py-3 px-2">No products attached to this space.</div>
-              )}
-            </div>
-            {currentSpaceProductCodes.length > 3 && (
-              <button
-                className="explore-nx"
-                onClick={scrollProductsRow}
-                aria-label="Show more products"
-              >
-                <i className="fas fa-chevron-right text-dark fs-8"></i>
-              </button>
-            )}
-          </div>
-        </section>
-
-        {/* Right Detail Panel */}
-        <aside className="explore-det box" aria-live="polite">
-          {activeProduct && (
-            <>
-              <button
-                className={`det-heart ${isFavorite ? 'on' : ''}`}
-                onClick={() => {
-                  setIsFavorite(!isFavorite);
-                  showToast(isFavorite ? 'Removed from favourites' : 'Saved to favourites');
-                }}
-                aria-label="Save to favourites"
-              >
-                <i className={`${isFavorite ? 'fas text-danger' : 'far'} fa-heart fs-5`}></i>
-              </button>
-
-              <div className="det-tp">
-                <div className="det-thumbs">
-                  {[0, 1, 2].map((k) => (
-                    <button
-                      key={k}
-                      className={`det-th ${curAngle === k ? 'on' : ''}`}
-                      onClick={() => setCurAngle(k)}
-                      aria-label={`Angle ${k + 1}`}
-                    >
-                      {activeProduct.img ? (
-                        <img src={resolveImageUrl(activeProduct.img)} alt="" />
-                      ) : (
-                        renderArt(activeProduct.type, 'G')
-                      )}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="det-big">
-                  {activeProduct.img ? (
-                    <img src={resolveImageUrl(activeProduct.img)} alt={activeProduct.name} />
-                  ) : (
-                    renderArt(activeProduct.type, 'G')
-                  )}
-                </div>
-              </div>
-
-              <h1 className="det-code">{activeProduct.c}</h1>
-              <div className="det-name">{activeProduct.name}</div>
-              <p className="det-desc">{activeProduct.d}</p>
-
-              <div className="det-finishes-title">Available Finishes</div>
-              <div className="det-fins-row">
-                {finishPalette.map((item, idx) => {
-                  const isFinOn = curFinish === idx;
+          {/* Center Room Image with Hotspots */}
+          <section className="explore-imgbox box">
+            {currentSpace ? (
+              <div className="explore-img-canvas">
+                <img
+                  src={resolveImageUrl(currentSpace.img || currentSpace.image) || currentSpace.image}
+                  alt={currentSpace.name || currentSpace.title}
+                />
+                {(currentSpace.pts || []).map((pt, idx) => {
+                  const pData = findProd(pt.c);
+                  const isSelected = curProdCode === pt.c;
+                  const labelText = pt.label || pData?.label || pData?.name || pt.c;
+                  const isNearBottom = Number(pt.y) > 80;
                   return (
                     <div
                       key={idx}
-                      className={`det-fin-item ${isFinOn ? 'on' : ''}`}
-                      onClick={() => setCurFinish(idx)}
+                      className={`explore-hotspot-pin ${isSelected ? 'on' : ''} ${isNearBottom ? 'badge-top' : ''}`}
+                      style={{ left: `${pt.x}%`, top: `${pt.y}%` }}
+                      onClick={() => handleSelectProduct(pt.c)}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={labelText}
                     >
-                      <div
-                        className="det-fin-swatch"
-                        style={{ backgroundColor: item[1] }}
-                      ></div>
-                      <span className="det-fin-label">{item[0]}</span>
+                      <div className="hotspot-target-dot">
+                        <div className="hotspot-target-inner"></div>
+                      </div>
+                      <div className="hotspot-target-badge">
+                        {labelText}
+                      </div>
                     </div>
                   );
                 })}
               </div>
-
-              <div className="det-actions-row">
-                <Link
-                  to={`/product-detail?sku=${encodeURIComponent(activeProduct.c)}`}
-                  className="btn-det-view-more"
-                >
-                  View More <i className="fas fa-arrow-right fs-8"></i>
-                </Link>
-                <Link to="/contact-us" className="btn-det-get-quote">
-                  Get a Quote
-                </Link>
+            ) : (
+              <div style={{ padding: '60px 20px', textAlign: 'center', color: '#6b7487' }}>
+                No spaces configured yet.
               </div>
+            )}
+          </section>
 
-              {activeProduct.s && activeProduct.s.length > 0 && (
-                <div className="det-specs-list">
-                  {activeProduct.s.map((spec, idx) => {
-                    const label = Array.isArray(spec) ? spec[0] : (spec.key || spec.label || '');
-                    const val = Array.isArray(spec) ? spec[1] : (spec.value || spec.val || '');
-                    const iconClass = getSpecIcon(label);
+          {/* Products Used in This Space - spans grid-column: 1 / 3 */}
+          <section className="explore-prods">
+            <h3>Products Used in This Space</h3>
+            <div className="explore-row-wrap">
+              <div className="explore-row" ref={rowRef}>
+                {currentSpaceProductCodes.length > 0 ? (
+                  currentSpaceProductCodes.map((code) => {
+                    const prod = findProd(code);
+                    if (!prod) return null;
+                    const isSelected = curProdCode === code;
                     return (
-                      <div className="det-spec-row" key={idx}>
-                        <div className="det-spec-label">
-                          <i className={`${iconClass} det-spec-icon`}></i>
-                          <span>{label}</span>
+                      <button
+                        key={code}
+                        data-prod-code={code}
+                        className={`explore-pc ${isSelected ? 'on' : ''}`}
+                        onClick={() => handleSelectProduct(code)}
+                      >
+                        <div className="explore-pc-img">
+                          {prod.img ? (
+                            <img src={resolveImageUrl(prod.img)} alt={prod.name} />
+                          ) : (
+                            renderArt(prod.type, 'M')
+                          )}
                         </div>
-                        <div className="det-spec-val">{val}</div>
+                        <b>{prod.c}</b>
+                        <small title={prod.name}>{prod.name}</small>
+                      </button>
+                    );
+                  })
+                ) : (
+                  <div className="text-muted small py-3 px-2">No products attached to this space.</div>
+                )}
+              </div>
+              {currentSpaceProductCodes.length > 3 && (
+                <button
+                  className="explore-nx"
+                  onClick={scrollProductsRow}
+                  aria-label="Show more products"
+                >
+                  <i className="fas fa-chevron-right text-dark fs-8"></i>
+                </button>
+              )}
+            </div>
+          </section>
+
+          {/* Right Detail Panel */}
+          <aside className="explore-det box" aria-live="polite">
+            {activeProduct && (
+              <>
+                <button
+                  className={`det-heart ${isFavorite ? 'on' : ''}`}
+                  onClick={() => {
+                    setIsFavorite(!isFavorite);
+                    showToast(isFavorite ? 'Removed from favourites' : 'Saved to favourites');
+                  }}
+                  aria-label="Save to favourites"
+                >
+                  <i className={`${isFavorite ? 'fas text-danger' : 'far'} fa-heart fs-5`}></i>
+                </button>
+
+                <div className="det-tp">
+                  <div className="det-thumbs">
+                    {[0, 1, 2].map((k) => (
+                      <button
+                        key={k}
+                        className={`det-th ${curAngle === k ? 'on' : ''}`}
+                        onClick={() => setCurAngle(k)}
+                        aria-label={`Angle ${k + 1}`}
+                      >
+                        {activeProduct.img ? (
+                          <img src={resolveImageUrl(activeProduct.img)} alt="" />
+                        ) : (
+                          renderArt(activeProduct.type, 'G')
+                        )}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="det-big">
+                    {activeProduct.img ? (
+                      <img src={resolveImageUrl(activeProduct.img)} alt={activeProduct.name} />
+                    ) : (
+                      renderArt(activeProduct.type, 'G')
+                    )}
+                  </div>
+                </div>
+
+                <h1 className="det-code">{activeProduct.c}</h1>
+                <div className="det-name">{activeProduct.name}</div>
+                <p className="det-desc">{activeProduct.d}</p>
+
+                <div className="det-finishes-title">Available Finishes</div>
+                <div className="det-fins-row">
+                  {finishPalette.map((item, idx) => {
+                    const isFinOn = curFinish === idx;
+                    return (
+                      <div
+                        key={idx}
+                        className={`det-fin-item ${isFinOn ? 'on' : ''}`}
+                        onClick={() => setCurFinish(idx)}
+                      >
+                        <div
+                          className="det-fin-swatch"
+                          style={{ backgroundColor: item[1] }}
+                        ></div>
+                        <span className="det-fin-label">{item[0]}</span>
                       </div>
                     );
                   })}
                 </div>
-              )}
-            </>
-          )}
-        </aside>
-      </main>
-    </div>
 
-    {toastMsg && <div className="det-toast">{toastMsg}</div>}
-  </div>
+                <div className="det-actions-row">
+                  <Link
+                    to={`/product-detail?sku=${encodeURIComponent(activeProduct.c)}`}
+                    className="btn-det-view-more"
+                  >
+                    View More <i className="fas fa-arrow-right fs-8"></i>
+                  </Link>
+                  <Link to="/contact-us" className="btn-det-get-quote">
+                    Get a Quote
+                  </Link>
+                </div>
+
+                {activeProduct.s && activeProduct.s.length > 0 && (
+                  <div className="det-specs-list">
+                    {activeProduct.s.map((spec, idx) => {
+                      const label = Array.isArray(spec) ? spec[0] : (spec.key || spec.label || '');
+                      const val = Array.isArray(spec) ? spec[1] : (spec.value || spec.val || '');
+                      const iconClass = getSpecIcon(label);
+                      return (
+                        <div className="det-spec-row" key={idx}>
+                          <div className="det-spec-label">
+                            <i className={`${iconClass} det-spec-icon`}></i>
+                            <span>{label}</span>
+                          </div>
+                          <div className="det-spec-val">{val}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </>
+            )}
+          </aside>
+        </main>
+      </div>
+
+      {toastMsg && <div className="det-toast">{toastMsg}</div>}
+    </div>
   );
 }

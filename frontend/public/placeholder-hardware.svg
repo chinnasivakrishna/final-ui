@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <rect width="500" height="500" fill="#f8fafc"/>
+  <rect x="20" y="20" width="460" height="460" rx="16" fill="none" stroke="#e2e8f0" stroke-width="2"/>
+  
+  <!-- Hardware Patch Fitting Silhouette -->
+  <!-- Base plate -->
+  <rect x="175" y="160" width="150" height="24" rx="4" fill="#64748b"/>
+  <!-- Clamp Body -->
+  <rect x="195" y="184" width="110" height="100" rx="6" fill="#00356b"/>
+  <!-- Glass slot cutout -->
+  <rect x="215" y="200" width="70" height="70" rx="2" fill="#f8fafc"/>
+  <!-- Fastener bolts -->
+  <circle cx="207" cy="200" r="5" fill="#ffffff"/>
+  <circle cx="293" cy="200" r="5" fill="#ffffff"/>
+  <circle cx="207" cy="260" r="5" fill="#ffffff"/>
+  <circle cx="293" cy="260" r="5" fill="#ffffff"/>
+  <!-- Bottom pivot pin -->
+  <rect x="230" y="284" width="40" height="30" rx="4" fill="#64748b"/>
+
+  <!-- Brand Text -->
+  <text x="250" y="355" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="20" font-weight="bold" fill="#00356b" text-anchor="middle" letter-spacing="2">TAITON</text>
+  <text x="250" y="380" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="500" fill="#64748b" text-anchor="middle" letter-spacing="1">ARCHITECTURAL HARDWARE</text>
+</svg>
+

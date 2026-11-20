@@ -20,8 +20,24 @@ export default function ProductListPage() {
   const [loading, setLoading] = useState(true);
   const [activeSub, setActiveSub] = useState('All');
   const [selectedColors, setSelectedColors] = useState([]);
-  const [activeView, setActiveView] = useState('3x3');
+  const [activeView, setActiveView] = useState(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 992) {
+      return '2row';
+    }
+    return '3x3';
+  });
+  const [isMobileView, setIsMobileView] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth < 992 : false
+  );
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileView(window.innerWidth < 992);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (mobileFilterOpen) {
@@ -355,27 +371,9 @@ export default function ProductListPage() {
                 </h3>
 
                 <div className="d-flex align-items-center gap-1">
-                  {hasSidebar && (
-                    <button
-                      type="button"
-                      className="btn btn-outline-dark rounded-pill d-lg-none d-inline-flex align-items-center gap-2 py-1 px-3 fw-semibold shadow-xs me-2"
-                      style={{ fontSize: '0.85rem', borderColor: '#cbd5e1' }}
-                      onClick={() => setMobileFilterOpen(true)}
-                      aria-label="Open Filters"
-                    >
-                      <i className="fas fa-filter text-primary"></i>
-                      <span>Filters</span>
-                      {activeSelectedColors.length > 0 && (
-                        <span className="badge bg-primary text-white rounded-pill px-2 py-0" style={{ fontSize: '0.7rem' }}>
-                          {activeSelectedColors.length}
-                        </span>
-                      )}
-                    </button>
-                  )}
-
                   <button
                     type="button"
-                    className={`view-switch-btn ${activeView === '2x2' ? 'active' : ''}`}
+                    className={`view-switch-btn ${activeView === '2x2' ? 'active' : ''} d-none d-lg-inline-flex`}
                     title="2x2 View"
                     onClick={() => setActiveView('2x2')}
                     aria-label="2x2 Grid View"
@@ -384,7 +382,7 @@ export default function ProductListPage() {
                   </button>
                   <button
                     type="button"
-                    className={`view-switch-btn ${activeView === '3x3' ? 'active' : ''}`}
+                    className={`view-switch-btn ${activeView === '3x3' ? 'active' : ''} d-none d-lg-inline-flex`}
                     title="3x3 View"
                     onClick={() => setActiveView('3x3')}
                     aria-label="3x3 Grid View"
@@ -393,7 +391,7 @@ export default function ProductListPage() {
                   </button>
                   <button
                     type="button"
-                    className={`view-switch-btn ${activeView === '4x4' ? 'active' : ''}`}
+                    className={`view-switch-btn ${activeView === '4x4' ? 'active' : ''} d-none d-lg-inline-flex`}
                     title="4x4 View"
                     onClick={() => setActiveView('4x4')}
                     aria-label="4x4 Grid View"
@@ -402,7 +400,7 @@ export default function ProductListPage() {
                   </button>
                   <button
                     type="button"
-                    className={`view-switch-btn ${activeView === '5x5' ? 'active' : ''}`}
+                    className={`view-switch-btn ${activeView === '5x5' ? 'active' : ''} d-none d-lg-inline-flex`}
                     title="5x5 View"
                     onClick={() => setActiveView('5x5')}
                     aria-label="5x5 Grid View"
@@ -411,7 +409,7 @@ export default function ProductListPage() {
                   </button>
                   <button
                     type="button"
-                    className={`view-switch-btn ${activeView === '2row' ? 'active' : ''}`}
+                    className={`view-switch-btn ${activeView === '2row' || (activeView !== 'list' && isMobileView) ? 'active' : ''}`}
                     title="2-Row Grid View"
                     onClick={() => setActiveView('2row')}
                     aria-label="2-Row Grid View"
@@ -488,67 +486,72 @@ export default function ProductListPage() {
                 </div>
               ) : (
                 <div className="row g-2 g-sm-3 g-md-4 mb-4">
-                  {displayedProducts.map((prod, pIdx) => (
-                    <div className={getGridColumnClass()} key={prod.id || pIdx}>
-                      <div className={`product-listing-card ${activeView === 'list' ? 'list-layout' : ''}`}>
-                        {(() => {
-                          const isFav = isWishlisted(prod.id) || isWishlisted(prod.code);
-                          return (
-                            <button
-                              type="button"
-                              className={`product-listing-card-fav ${isFav ? 'active' : ''}`}
-                              aria-label={isFav ? 'Remove from Wishlist' : 'Add to Wishlist'}
-                              onClick={() => toggleFavorite(prod)}
+                  {displayedProducts.map((prod, pIdx) => {
+                    return (
+                      <div className={getGridColumnClass()} key={prod.id || pIdx}>
+                        <div className={`product-listing-card ${activeView === 'list' ? 'list-layout' : ''}`}>
+                          {(() => {
+                            const isFav = isWishlisted(prod.id) || isWishlisted(prod.code);
+                            return (
+                              <button
+                                type="button"
+                                className={`product-listing-card-fav ${isFav ? 'active' : ''}`}
+                                aria-label={isFav ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                                onClick={() => toggleFavorite(prod)}
+                              >
+                                <i className={`${isFav ? 'fas text-danger' : 'far'} fa-heart`}></i>
+                              </button>
+                            );
+                          })()}
+
+                          <div className="product-listing-card-img-wrap">
+                            <Link
+                              to={`/product-detail?code=${encodeURIComponent(prod.code)}`}
+                              className="text-decoration-none d-flex align-items-center justify-content-center w-100 h-100"
                             >
-                              <i className={`${isFav ? 'fas text-danger' : 'far'} fa-heart`}></i>
-                            </button>
-                          );
-                        })()}
+                              <img
+                                src={prod.img}
+                                alt={`${prod.code} ${prod.title}`}
+                                className="product-listing-card-img"
+                                onError={(e) => {
+                                  e.currentTarget.onerror = null;
+                                  e.currentTarget.src = '/placeholder-hardware.png';
+                                }}
+                              />
+                            </Link>
+                          </div>
 
-                        <div className="product-listing-card-img-wrap">
-                          <Link
-                            to={`/product-detail?code=${encodeURIComponent(prod.code)}`}
-                            className="text-decoration-none d-flex align-items-center justify-content-center w-100 h-100"
-                          >
-                            <img
-                              src={prod.img}
-                              alt={`${prod.code} ${prod.title}`}
-                              className="product-listing-card-img"
-                              onError={(e) => { e.currentTarget.src = '/placeholder-hardware.png'; }}
-                            />
-                          </Link>
+                          <div className="product-listing-card-body">
+                            <Link to={`/product-detail?code=${encodeURIComponent(prod.code)}`} className="text-decoration-none">
+                              <div className="product-listing-card-code">{prod.code}</div>
+                              <div className="product-listing-card-title" title={prod.title}>
+                                {prod.title}
+                              </div>
+                            </Link>
+
+                            {prod.visibleSwatches.length > 0 && (
+                              <div className="product-listing-card-swatches">
+                                {prod.visibleSwatches.map((sw) => (
+                                  <span
+                                    key={sw.name}
+                                    className={`product-listing-swatch ${sw.dotClass}`}
+                                    title={sw.label}
+                                    style={sw.style || {}}
+                                  />
+                                ))}
+                                {prod.moreCount && (
+                                  <span className="product-listing-swatch-count">
+                                    {prod.moreCount}
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </div>
+
                         </div>
-
-                        <div className="product-listing-card-body">
-                          <Link to={`/product-detail?code=${encodeURIComponent(prod.code)}`} className="text-decoration-none">
-                            <div className="product-listing-card-code">{prod.code}</div>
-                            <div className="product-listing-card-title" title={prod.title}>
-                              {prod.title}
-                            </div>
-                          </Link>
-
-                          {prod.visibleSwatches.length > 0 && (
-                            <div className="product-listing-card-swatches">
-                              {prod.visibleSwatches.map((sw) => (
-                                <span
-                                  key={sw.name}
-                                  className={`product-listing-swatch ${sw.dotClass}`}
-                                  title={sw.label}
-                                  style={sw.style || {}}
-                                />
-                              ))}
-                              {prod.moreCount && (
-                                <span className="product-listing-swatch-count">
-                                  {prod.moreCount}
-                                </span>
-                              )}
-                            </div>
-                          )}
-                        </div>
-
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
 
@@ -626,24 +629,16 @@ export default function ProductListPage() {
                 <i className="fas fa-filter text-primary"></i>
                 <h5 className="mb-0 fw-bold text-dark" style={{ fontSize: '1.05rem' }}>Filters</h5>
               </div>
-              <div className="d-flex align-items-center gap-2">
-                {activeSelectedColors.length > 0 && (
-                  <button
-                    type="button"
-                    className="btn btn-link text-danger text-decoration-none small p-0 fw-bold"
-                    onClick={clearAllFilters}
-                    style={{ fontSize: '0.85rem' }}
-                  >
-                    Clear All
-                  </button>
-                )}
+              {activeSelectedColors.length > 0 && (
                 <button
                   type="button"
-                  className="btn-close"
-                  aria-label="Close filters"
-                  onClick={() => setMobileFilterOpen(false)}
-                />
-              </div>
+                  className="btn btn-link text-danger text-decoration-none small p-0 fw-bold"
+                  onClick={clearAllFilters}
+                  style={{ fontSize: '0.85rem' }}
+                >
+                  Clear All
+                </button>
+              )}
             </div>
 
             <div className="mobile-filter-body">
@@ -784,28 +779,27 @@ export default function ProductListPage() {
       {/* Dynamic Recently Viewed Products (for authenticated users with history) */}
       <RecentlyViewed />
 
-      <section className="py-4 bg-white">
+      {/* Download Catalogue Section - 100% Full Screen Width as per UI screens */}
+      <section className="cat-download-fullwidth-section">
         <div className="site-container">
-          <div className="cat-download-banner">
-            <div className="row align-items-center gy-4">
-              <div className="col-12 col-lg-7">
-                <h3 className="section-main-title mb-2 text-uppercase" style={{ fontSize: '1.5rem' }}>
-                  DOWNLOAD OUR LATEST CATALOGUE
-                </h3>
-                <p className="text-secondary mb-4">
-                  Explore the complete range of TAITON architectural hardware.
-                </p>
-                <Link to="/catalogues" className="btn-taiton-pill">
-                  Download Catalogue <i className="fas fa-arrow-right ms-1"></i>
-                </Link>
-              </div>
-              <div className="col-12 col-lg-5 text-center">
-                <img
-                  src="/images/catalogues_hero_stack.png"
-                  alt="Catalogue Stack"
-                  className="img-fluid catalogue-stack-img"
-                />
-              </div>
+          <div className="row align-items-center">
+            <div className="col-12 col-lg-7 py-4 py-lg-5">
+              <h3 className="section-main-title mb-2 text-uppercase" style={{ fontSize: '1.5rem' }}>
+                DOWNLOAD OUR LATEST CATALOGUE
+              </h3>
+              <p className="text-secondary mb-4">
+                Explore the complete range of TAITON architectural hardware.
+              </p>
+              <Link to="/catalogues" className="btn-taiton-pill">
+                Download Catalogue <i className="fas fa-arrow-right ms-1"></i>
+              </Link>
+            </div>
+            <div className="col-12 col-lg-5 text-center text-lg-end cat-download-img-col">
+              <img
+                src="/images/cat_download_hero_book.png"
+                alt="TAITON Architectural Hardware Catalogue"
+                className="img-fluid cat-download-book-img"
+              />
             </div>
           </div>
         </div>

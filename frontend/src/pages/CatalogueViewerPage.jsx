@@ -156,7 +156,7 @@ export default function CatalogueViewerPage() {
     if (pageNum < 1 || pageNum > TOTAL_PAGES) return '';
     const src = getPageImgSrc(pageNum);
     const pad4 = String(pageNum).padStart(4, '0');
-    return `<img class="cv-page-img" src="${src}" onerror="if(!this.dataset.t1){this.dataset.t1=1;this.src='/Portrait view/${pad4}.webp'}else if(!this.dataset.t2){this.dataset.t2=1;this.src='/catalogues/Portrait view/FINAL MASTER CATALOGUE %23EDITION 11 FEB-26_page-${pad4}.webp'}else{this.src='/catalogues/Portrait view/0001.webp'}" alt="Page ${pageNum}">`;
+    return `<img class="cv-page-img" src="${src}" onerror="if(!this.dataset.t1){this.dataset.t1=1;this.src='/Portrait view/${pad4}.webp'}else if(!this.dataset.t2){this.dataset.t2=1;this.src='/catalogues/Portrait view/FINAL MASTER CATALOGUE %23EDITION 11 FEB-26_page-${pad4}.webp'}else{this.onerror=null;this.src='/catalogues/Portrait view/0001.webp'}" alt="Page ${pageNum}">`;
   }, []);
 
   // Realistic 3D flip animation matching Taiton Catalogue Viewer.html
@@ -374,6 +374,7 @@ export default function CatalogueViewerPage() {
                     e.currentTarget.dataset.t2 = '1';
                     e.currentTarget.src = `/catalogues/Portrait view/FINAL MASTER CATALOGUE %23EDITION 11 FEB-26_page-${pad4}.webp`;
                   } else {
+                    e.currentTarget.onerror = null;
                     e.currentTarget.src = `/catalogues/Portrait view/0001.webp`;
                   }
                 }}
@@ -393,6 +394,7 @@ export default function CatalogueViewerPage() {
                     e.currentTarget.dataset.t2 = '1';
                     e.currentTarget.src = `/catalogues/Portrait view/FINAL MASTER CATALOGUE %23EDITION 11 FEB-26_page-${pad4}.webp`;
                   } else {
+                    e.currentTarget.onerror = null;
                     e.currentTarget.src = `/catalogues/Portrait view/0002.webp`;
                   }
                 }}
