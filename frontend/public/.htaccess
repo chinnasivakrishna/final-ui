@@ -1,0 +1,16 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Forward /cpanel-api and /uploads to Node.js backend
+  RewriteRule ^cpanel-api/(.*)$ http://127.0.0.1:8788/cpanel-api/$1 [P,L]
+  RewriteRule ^uploads/(.*)$ http://127.0.0.1:8788/uploads/$1 [P,L]
+
+  # Don't rewrite actual files or directories
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+
+  # SPA fallback for React Router
+  RewriteRule . /index.html [L]
+</IfModule>

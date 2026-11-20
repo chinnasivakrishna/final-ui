@@ -1,990 +1,661 @@
-import React, { useState } from 'react';
-import careersData from '../data/careersData.json';
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useAuth } from '../context/authContext.js';
+import { enterpriseApi } from '../api/enterpriseApi.js';
+import { PERMISSIONS } from '../constants/permissions.js';
+import { PermissionRoute } from '../routes/PermissionRoute.jsx';
+import { PermissionGate } from '../components/PermissionGate.jsx';
+import { PageBreadcrumb } from '../components/PageBreadcrumb.jsx';
+import { notify } from '../utils/notify.js';
+import { emitUnreadRefresh } from '../utils/events.js';
+import { TableFilters } from '../components/TableFilters.jsx';
+import { TablePagination } from '../components/TablePagination.jsx';
+import { HistoryAuditDrawer } from '../components/HistoryAuditDrawer.jsx';
 
-export default function CareersPage() {
-  const [expandedJobId, setExpandedJobId] = useState(careersData.openPositions[0]?.id || null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedJob, setSelectedJob] = useState(null);
-  const [currentStep, setCurrentStep] = useState(1);
-  const [applicationSubmitted, setApplicationSubmitted] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
+export function CareersPage() {
+  const { token } = useAuth();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  
+  const [jobs, setJobs] = useState([]);
+  const [applications, setApplications] = useState([]);
+  const [activeTab, setActiveTab] = useState(tabParam === 'applications' ? 'applications' : 'postings');
+  const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  
+  // Pagination states
+  const [jobsPage, setJobsPage] = useState(1);
+  const [appsPage, setAppsPage] = useState(1);
 
-  // Form State matching all 4 steps
-  const [formData, setFormData] = useState({
-    // Step 1: Personal Details
-    fullName: '',
-    phoneNumber: '',
-    emailAddress: '',
-    currentLocation: '',
-    permanentLocation: '',
+  // History / Audit Drawer state
+  const [historyTarget, setHistoryTarget] = useState(null);
+  const [auditLogs, setAuditLogs] = useState([]);
+  const [loadingAudit, setLoadingAudit] = useState(false);
 
-    // Step 2: Experience & Education
-    highestQualification: '',
-    experienceType: 'Experienced',
-    totalWorkExperience: '',
-    currentLastCompany: '',
+  // Reset page when queries/filters change
+  useEffect(() => {
+    setJobsPage(1);
+    setAppsPage(1);
+  }, [searchQuery, statusFilter, activeTab]);
 
-    // Step 3: Job & Salary Details
-    joiningAvailability: 'Immediate',
-    noticePeriod: 'Immediate',
-    stepMessage: '',
-    currentSalary: '',
-    expectedSalary: '',
+  // Sync tab state from query parameter
+  useEffect(() => {
+    if (tabParam === 'tracking') {
+      setActiveTab('tracking');
+    } else {
+      setActiveTab('postings');
+    }
+  }, [tabParam]);
 
-    // Step 4: Portfolio & Documents
-    portfolioUrl: '',
-    additionalMessage: '',
-  });
+  // Candidate apply modal states
+  const [showApplyModal, setShowApplyModal] = useState(false);
+  const [candidateName, setCandidateName] = useState('');
+  const [candidateEmail, setCandidateEmail] = useState('');
+  const [candidatePhone, setCandidatePhone] = useState('');
+  const [selectedJobId, setSelectedJobId] = useState('');
+  const [coverMessage, setCoverMessage] = useState('');
+  const [submittingApp, setSubmittingApp] = useState(false);
 
-  const toggleJob = (id) => {
-    setExpandedJobId(expandedJobId === id ? null : id);
-  };
+  // Load all jobs and application requests
+  const loadData = useCallback(async () => {
+    if (!token) return;
+    setLoading(true);
+    try {
+      const [jobsRes, appsRes] = await Promise.all([
+        enterpriseApi.contentList(token, 'career', { limit: 500 }),
+        enterpriseApi.customerRequestsList(token, { limit: 100 })
+      ]);
+      
+      const activeJobs = jobsRes.items ?? [];
+      setJobs(activeJobs);
 
-  const openApplicationModal = (job = null) => {
-    setSelectedJob(job || { title: 'General Application' });
-    setCurrentStep(1);
-    setApplicationSubmitted(false);
-    setIsModalOpen(true);
-  };
+      // Filter requests by type = 'job_application'
+      const appItems = (appsRes.items ?? []).filter(
+        (req) => req.requestType === 'job_application' || req.payload?.request_type === 'job_application'
+      );
+      setApplications(appItems);
+    } catch (e) {
+      console.error('Failed to load data:', e);
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleFileChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setSelectedFile(e.target.files[0].name);
+  // Action Functions
+  const handleToggleView = async (item) => {
+    try {
+      const nextView = item.view === 'hide' ? 'view' : 'hide';
+      const updatedPayload = { ...(item.payload || {}), view: nextView };
+      await enterpriseApi.contentUpdate(token, 'career', item.id, {
+        title: item.title,
+        summary: item.summary,
+        status: item.status,
+        view: nextView,
+        payload: updatedPayload,
+      });
+      notify.success(
+        nextView === 'view' ? 'Website Visibility Enabled' : 'Website Visibility Hidden',
+        `"${item.title || 'Job Opening'}" is now ${nextView === 'view' ? 'visible on website' : 'hidden from website'}.`
+      );
+      loadData();
+    } catch (err) {
+      notify.apiError(err, 'Failed to update website visibility');
     }
   };
 
-  const handleNextStep = (e) => {
+  const handleSoftDelete = async (item) => {
+    if (!window.confirm(`Are you sure you want to set job opening "${item.title}" as Inactive?`)) return;
+    try {
+      const updatedPayload = { ...(item.payload || {}), status: 'inactive' };
+      await enterpriseApi.contentUpdate(token, 'career', item.id, {
+        title: item.title,
+        summary: item.summary,
+        status: 'inactive',
+        payload: updatedPayload,
+      });
+      notify.success('Deactivated', `Job opening "${item.title}" marked as Inactive.`);
+      loadData();
+    } catch (err) {
+      notify.apiError(err, 'Failed to deactivate job opening');
+    }
+  };
+
+  const openHistoryDrawer = (item) => {
+    setHistoryTarget(item);
+    setLoadingAudit(true);
+    setAuditLogs([]);
+
+    if (token && item) {
+      enterpriseApi.getAuditLogs(token, {
+        record_id: item.id,
+        table_name: 'tb_web_careers',
+        type: 'career'
+      })
+        .then((res) => {
+          setAuditLogs(res.data || []);
+        })
+        .catch((err) => console.error('Failed to fetch audit logs:', err))
+        .finally(() => setLoadingAudit(false));
+    } else {
+      setLoadingAudit(false);
+    }
+  };
+
+  // Handle mock candidate apply form submit
+  const handleApplySubmit = async (e) => {
     e.preventDefault();
-    if (currentStep < 4) {
-      setCurrentStep(currentStep + 1);
+    if (!token) return;
+    if (!candidateName.trim() || !candidateEmail.trim() || !selectedJobId) {
+      notify.formWarning('Name, Email, and Job target selection are required.');
+      return;
+    }
+    if (candidatePhone && candidatePhone.length !== 10) {
+      notify.formWarning('Phone number must be exactly 10 digits.');
+      return;
+    }
+
+    setSubmittingApp(true);
+    try {
+      await enterpriseApi.createCustomerRequest(token, {
+        customerName: candidateName.trim(),
+        email: candidateEmail.trim(),
+        phone: candidatePhone.trim() || null,
+        subject: selectedJobId,
+        message: coverMessage.trim(),
+        type: 'job_application',
+      });
+      notify.success('Application Received', 'Candidate application has been submitted successfully.');
+      setCandidateName('');
+      setCandidateEmail('');
+      setCandidatePhone('');
+      setSelectedJobId('');
+      setCoverMessage('');
+      setShowApplyModal(false);
+      emitUnreadRefresh();
+      await loadData();
+    } catch (err) {
+      notify.apiError(err, 'Failed to submit candidate application');
+    } finally {
+      setSubmittingApp(false);
     }
   };
 
-  const handlePrevStep = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
+  // Update candidate review status
+  const handleUpdateStatus = async (appId, nextStatus) => {
+    if (!token) return;
+    try {
+      await enterpriseApi.updateCustomerRequestStatus(token, appId, nextStatus);
+      notify.success('Status Updated', `Application status has been changed to ${nextStatus.toUpperCase()}`);
+      await loadData();
+    } catch (err) {
+      notify.apiError(err, 'Failed to update application status');
     }
   };
 
-  const handleSubmitApplication = (e) => {
-    e.preventDefault();
-    setApplicationSubmitted(true);
+  const getStatusTag = (status) => {
+    const s = String(status || 'live').toLowerCase();
+    let style = { background: '#fef3c7', color: '#b45309', borderColor: '#fcd34d' };
+    let text = s.toUpperCase();
+
+    if (s === 'active' || s === 'live' || s === 'responded') {
+      style = { background: '#dcfce7', color: '#15803d', borderColor: '#86efac' };
+    } else if (s === 'inactive' || s === 'rejected' || s === 'closed') {
+      style = { background: '#fee2e2', color: '#b91c1c', borderColor: '#fca5a5' };
+    }
+
+    const label = status === 'responded' ? 'SHORTLISTED' : status === 'closed' ? 'REJECTED' : text;
+    return (
+      <span className="cp-tag" style={{ ...style, fontWeight: '600', padding: '4px 10px', borderRadius: '12px', fontSize: '11px', display: 'inline-block' }}>
+        {label}
+      </span>
+    );
+  };
+
+  // Find job title helper
+  const getJobTitle = (jobId) => {
+    const job = jobs.find((j) => (j.payload?.job_id === jobId || String(j.id) === String(jobId)));
+    return job ? job.title : jobId || 'Unknown job posting';
   };
 
   return (
-    <div className="careers-page-wrap bg-white">
-      {/* 1. Hero Banner with Overlay Text and Actions */}
-      <section
-        className="careers-hero-section position-relative overflow-hidden text-white d-flex align-items-center"
-        style={{
-          background: "linear-gradient(rgba(10, 30, 60, 0.72), rgba(10, 30, 60, 0.72)), url('/images/career_hero_bg.png') center/cover no-repeat",
-          minHeight: '440px',
-        }}
-      >
-        <div className="site-container py-5">
-          <div className="col-12 col-lg-7">
-            <span
-              className="text-uppercase fw-bold d-block mb-2"
-              style={{ letterSpacing: '0.12em', fontSize: '0.88rem', color: '#60a5fa' }}
-            >
-              CAREERS
-            </span>
-            <h1
-              className="fw-bold mb-3 text-white"
-              style={{
-                fontFamily: 'var(--taiton-font-heading)',
-                fontSize: '2.8rem',
-                lineHeight: 1.15,
-                letterSpacing: '-0.02em',
+    <PermissionRoute permission={PERMISSIONS.UI_WRITE}>
+      <div className="cp-stack" style={{ position: 'relative' }}>
+        <PageBreadcrumb current="Careers" />
+        <div className="cp-page-head">
+          <div>
+            <h1 className="cp-page-title">Careers & Job Openings</h1>
+            <p className="cp-muted">Configure job specifications, post vacancy postings, toggle visibility and track candidate submissions.</p>
+          </div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              type="button"
+              className="cp-btn cp-btn-secondary"
+              onClick={() => {
+                const liveJobs = jobs.filter((j) => j.payload?.job_id);
+                if (liveJobs.length > 0) {
+                  setSelectedJobId(liveJobs[0].payload.job_id);
+                }
+                setShowApplyModal(true);
               }}
             >
-              Build Your Future with TAITON
-            </h1>
-            <p
-              className="mb-4 text-light"
-              style={{ fontSize: '1.05rem', lineHeight: '1.6', maxWidth: '520px', opacity: 0.95 }}
-            >
-              Join a growing team shaping better spaces through innovation, architecture, and design.
-            </p>
-            <div className="d-flex flex-wrap align-items-center gap-3">
-              <a
-                href="#open-positions"
-                className="btn btn-primary rounded-2 px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2"
-                style={{ backgroundColor: '#0066cc', borderColor: '#0066cc', fontSize: '0.92rem', padding: '10px 24px' }}
-              >
-                View Open Positions <i className="fas fa-arrow-right fs-8"></i>
-              </a>
-              <a
-                href="#life-at-taiton"
-                className="btn btn-outline-light rounded-2 px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2"
-                style={{ fontSize: '0.92rem', padding: '10px 24px' }}
-              >
-                Life at TAITON <i className="fas fa-arrow-right fs-8"></i>
-              </a>
-            </div>
+              Mock Apply Candidate
+            </button>
+            <button type="button" className="cp-btn cp-btn-secondary" onClick={loadData}>
+              Refresh
+            </button>
           </div>
         </div>
-      </section>
 
-      {/* 2. Why Build Your Career With TAITON? */}
-      <section className="py-5 bg-white">
-        <div className="site-container">
-          <div className="text-center mb-5">
-            <h2
-              className="section-main-title text-center mb-2"
-              style={{ fontSize: '2.1rem', fontWeight: 600, color: '#002b5c', letterSpacing: '-0.01em' }}
-            >
-              Why Build Your Career With TAITON?
-            </h2>
-            <p className="mx-auto mb-0" style={{ maxWidth: '640px', fontSize: '0.98rem', color: '#475569', lineHeight: '1.6' }}>
-              We combine growth, opportunities and innovation so you can do your best work and build a lasting career.
-            </p>
-          </div>
-
-          <div className="row g-0 align-items-stretch text-center border-top border-bottom py-3">
-            {/* 1. Personal Learning */}
-            <div className="col-12 col-md border-end-md py-3 px-3">
-              <div className="mb-3 d-flex justify-content-center">
-                <i className="fas fa-chart-line fs-1" style={{ color: '#0054a6' }}></i>
-              </div>
-              <h6 className="fw-bold mb-2" style={{ fontFamily: 'var(--taiton-font-heading)', fontSize: '1.05rem', color: '#002b5c' }}>
-                Personal Learning
-              </h6>
-              <p className="mb-0" style={{ fontSize: '0.88rem', lineHeight: '1.5', color: '#64748b' }}>
-                Continuous learning and growth opportunities.
-              </p>
-            </div>
-
-            {/* 2. Innovation */}
-            <div className="col-12 col-md border-end-md py-3 px-3">
-              <div className="mb-3 d-flex justify-content-center">
-                <i className="far fa-lightbulb fs-1" style={{ color: '#0054a6' }}></i>
-              </div>
-              <h6 className="fw-bold mb-2" style={{ fontFamily: 'var(--taiton-font-heading)', fontSize: '1.05rem', color: '#002b5c' }}>
-                Innovation
-              </h6>
-              <p className="mb-0" style={{ fontSize: '0.88rem', lineHeight: '1.5', color: '#64748b' }}>
-                Work with ideas, solutions and future-ready technologies.
-              </p>
-            </div>
-
-            {/* 3. Professional Culture */}
-            <div className="col-12 col-md border-end-md py-3 px-3">
-              <div className="mb-3 d-flex justify-content-center">
-                <i className="fas fa-users fs-1" style={{ color: '#0054a6' }}></i>
-              </div>
-              <h6 className="fw-bold mb-2" style={{ fontFamily: 'var(--taiton-font-heading)', fontSize: '1.05rem', color: '#002b5c' }}>
-                Professional Culture
-              </h6>
-              <p className="mb-0" style={{ fontSize: '0.88rem', lineHeight: '1.5', color: '#64748b' }}>
-                A respectful, inclusive and performance-driven environment.
-              </p>
-            </div>
-
-            {/* 4. Team Collaboration */}
-            <div className="col-12 col-md border-end-md py-3 px-3">
-              <div className="mb-3 d-flex justify-content-center">
-                <i className="fas fa-hands-helping fs-1" style={{ color: '#0054a6' }}></i>
-              </div>
-              <h6 className="fw-bold mb-2" style={{ fontFamily: 'var(--taiton-font-heading)', fontSize: '1.05rem', color: '#002b5c' }}>
-                Team Collaboration
-              </h6>
-              <p className="mb-0" style={{ fontSize: '0.88rem', lineHeight: '1.5', color: '#64748b' }}>
-                Work with talented people and achieve great things together.
-              </p>
-            </div>
-
-            {/* 5. Career Opportunities */}
-            <div className="col-12 col-md py-3 px-3">
-              <div className="mb-3 d-flex justify-content-center">
-                <i className="fas fa-chart-pie fs-1" style={{ color: '#0054a6' }}></i>
-              </div>
-              <h6 className="fw-bold mb-2" style={{ fontFamily: 'var(--taiton-font-heading)', fontSize: '1.05rem', color: '#002b5c' }}>
-                Career Opportunities
-              </h6>
-              <p className="mb-0" style={{ fontSize: '0.88rem', lineHeight: '1.5', color: '#64748b' }}>
-                Explore diverse roles and build a lasting career with TAITON.
-              </p>
-            </div>
-          </div>
+        {/* Tab Selection */}
+        <div className="cp-tabs" style={{ marginBottom: '16px', display: 'flex', gap: '8px', borderBottom: '1px solid var(--cp-border)', paddingBottom: '8px' }}>
+          <button
+            type="button"
+            className={`cp-tab-btn ${activeTab === 'postings' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('postings'); setSearchQuery(''); setStatusFilter(''); }}
+            style={{
+              padding: '8px 16px',
+              borderRadius: '6px',
+              background: activeTab === 'postings' ? 'var(--cp-primary-10)' : 'transparent',
+              color: activeTab === 'postings' ? 'var(--cp-primary)' : 'var(--cp-text-muted)',
+              fontWeight: '600',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            Job Postings
+          </button>
+          <button
+            type="button"
+            className={`cp-tab-btn ${activeTab === 'tracking' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('tracking'); setSearchQuery(''); setStatusFilter(''); }}
+            style={{
+              padding: '8px 16px',
+              borderRadius: '6px',
+              background: activeTab === 'tracking' ? 'var(--cp-primary-10)' : 'transparent',
+              color: activeTab === 'tracking' ? 'var(--cp-primary)' : 'var(--cp-text-muted)',
+              fontWeight: '600',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            Applications Tracking ({applications.length})
+          </button>
         </div>
-      </section>
 
-      {/* 3. Life at TAITON */}
-      <section id="life-at-taiton" className="py-5 bg-white">
-        <div className="site-container">
-          <div className="row g-5 align-items-center">
-            <div className="col-12 col-lg-5">
-              <h2
-                className="section-main-title mb-2"
-                style={{ fontSize: '2.25rem', fontWeight: 700, color: '#002b5c', letterSpacing: '-0.01em' }}
-              >
-                Life at TAITON
-              </h2>
-              <p className="mb-3" style={{ fontSize: '1.15rem', color: '#1e293b', lineHeight: '1.5' }}>
-                See how our culture comes to life across offices and project sites.
-              </p>
-              <div style={{ width: '44px', height: '3px', backgroundColor: '#0084B4' }}></div>
-            </div>
-
-            <div className="col-12 col-lg-7">
-              <img
-                src="/images/career_life_collage.png"
-                alt="Life at TAITON"
-                className="img-fluid w-100"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 4. People Make TAITON */}
-      <section className="py-4 bg-white">
-        <div className="site-container">
-          <div className="p-4 p-md-5 rounded-4" style={{ backgroundColor: '#edf5ff' }}>
-            <div className="row g-5 align-items-center">
-              <div className="col-12 col-lg-5">
-                <h2
-                  className="section-main-title mb-2"
-                  style={{ fontSize: '2.25rem', fontWeight: 700, color: '#002b5c', letterSpacing: '-0.01em' }}
+        {/* Tab 1: Job Postings */}
+        {activeTab === 'postings' && (
+          <section className="cp-card cp-card-pad">
+            <div className="cp-list-head" style={{ marginBottom: '16px' }}>
+              <h2 className="cp-section-title">All Job Openings</h2>
+              <PermissionGate permission={PERMISSIONS.UI_WRITE}>
+                <button
+                  type="button"
+                  className="cp-btn cp-btn-primary"
+                  onClick={() => navigate('/app/careers/create')}
                 >
-                  People Make TAITON
-                </h2>
-                <p className="mb-3" style={{ fontSize: '1.02rem', color: '#334155', lineHeight: '1.65' }}>
-                  Our culture is rooted in respect, collaboration, and learning. Discover stories from the team about life, growth, and what makes working here special.
-                </p>
-                <div style={{ width: '44px', height: '3px', backgroundColor: '#0084B4' }}></div>
-              </div>
-
-              <div className="col-12 col-lg-7">
-                <img
-                  src="/images/career_people_collage.png"
-                  alt="People Make TAITON"
-                  className="img-fluid w-100"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 6. Explore Career Opportunities */}
-      <section id="open-positions" className="py-5 bg-white">
-        <div className="site-container">
-          <div className="text-center mb-5">
-            <h2
-              className="section-main-title text-center mb-2"
-              style={{ fontSize: '2.1rem', fontWeight: 700, color: '#002b5c', letterSpacing: '-0.01em' }}
-            >
-              Explore Career Opportunities
-            </h2>
-          </div>
-
-          <div className="col-12 col-lg-10 mx-auto">
-            <div className="row g-3">
-              {/* Left Column with circular briefcase indicators */}
-              <div className="col-auto d-none d-md-flex flex-column gap-3 pt-1">
-                {careersData.openPositions.map((job) => {
-                  const isCurrent = expandedJobId === job.id;
-                  return (
-                    <button
-                      key={job.id}
-                      type="button"
-                      className="rounded-circle d-flex align-items-center justify-content-center p-0"
-                      style={{
-                        width: '38px',
-                        height: '38px',
-                        backgroundColor: isCurrent ? '#edf5ff' : '#ffffff',
-                        border: isCurrent ? '1.5px solid #0054a6' : '1px solid #dbeafe',
-                        color: '#0054a6',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                      }}
-                      onClick={() => toggleJob(job.id)}
-                      title={job.title}
-                    >
-                      <i className="fas fa-briefcase" style={{ fontSize: '0.88rem' }}></i>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Right Accordion List */}
-              <div className="col">
-                <div className="d-flex flex-column gap-3 mb-5">
-                  {careersData.openPositions.map((job) => {
-                    const isExpanded = expandedJobId === job.id;
-                    return (
-                      <div
-                        key={job.id}
-                        className="border rounded-2 bg-white overflow-hidden"
-                        style={{ borderColor: isExpanded ? '#0054a6' : '#e2e8f0', boxShadow: '0 1px 4px rgba(0,0,0,0.03)' }}
-                      >
-                        <div
-                          className="d-flex align-items-center justify-content-between p-3 px-4 cursor-pointer"
-                          onClick={() => toggleJob(job.id)}
-                          role="button"
-                          tabIndex={0}
-                          style={{ backgroundColor: '#ffffff' }}
-                        >
-                          <h5
-                            className="fw-bold text-dark mb-0"
-                            style={{ fontFamily: 'var(--taiton-font-heading)', fontSize: '1.18rem', letterSpacing: '-0.01em' }}
-                          >
-                            {job.title}
-                          </h5>
-                          <i
-                            className={`fas fa-chevron-${isExpanded ? 'up' : 'down'} text-muted`}
-                            style={{ fontSize: '0.95rem' }}
-                          ></i>
-                        </div>
-
-                        {isExpanded && (
-                          <div className="p-4 pt-2 border-top bg-white">
-                            <div className="mb-3" style={{ fontSize: '0.92rem', color: '#1e293b', lineHeight: '1.85' }}>
-                              <div><strong className="fw-semibold text-dark">Department :</strong> {job.department}</div>
-                              <div><strong className="fw-semibold text-dark">Operations Location :</strong> {job.location}</div>
-                              <div><strong className="fw-semibold text-dark">Qualification :</strong> {job.qualification}</div>
-                            </div>
-
-                            <div className="mb-3">
-                              <h6
-                                className="fw-bold text-dark mb-2"
-                                style={{ fontFamily: 'var(--taiton-font-heading)', fontSize: '1.05rem', color: '#000000', marginTop: '14px' }}
-                              >
-                                Job Description :
-                              </h6>
-                              <ul className="list-unstyled mb-0" style={{ fontSize: '0.88rem', lineHeight: '1.75', color: '#334155' }}>
-                                {job.jobDescriptions.map((desc, idx) => (
-                                  <li key={idx} className="mb-1 d-flex align-items-start gap-2">
-                                    <span style={{ color: '#000', fontSize: '0.7rem', marginTop: '3px' }}>▶</span>
-                                    <span>{desc}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-
-                            <div className="mb-4">
-                              <h6
-                                className="fw-bold text-dark mb-2"
-                                style={{ fontFamily: 'var(--taiton-font-heading)', fontSize: '1.05rem', color: '#000000', marginTop: '16px' }}
-                              >
-                                Required Skill Set :
-                              </h6>
-                              <ul className="list-unstyled mb-0" style={{ fontSize: '0.88rem', lineHeight: '1.75', color: '#334155' }}>
-                                {job.requiredSkills.map((skill, idx) => (
-                                  <li key={idx} className="mb-1 d-flex align-items-start gap-2">
-                                    <span style={{ color: '#000', fontSize: '0.7rem', marginTop: '3px' }}>▶</span>
-                                    <span>{skill}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-
-                            <div className="d-flex justify-content-end pt-2">
-                              <button
-                                type="button"
-                                className="btn text-white rounded-pill px-4 py-2 fw-semibold"
-                                style={{ backgroundColor: '#3b2314', fontSize: '0.92rem', padding: '9px 36px', borderRadius: '50px' }}
-                                onClick={() => openApplicationModal(job)}
-                              >
-                                Apply Now
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+                  Add Job Opening
+                </button>
+              </PermissionGate>
             </div>
 
-            {/* Didn't Find the Right Opportunity? Card */}
-            <div
-              className="p-4 p-md-4 mb-5 rounded-3 d-flex flex-column flex-md-row align-items-center justify-content-between gap-4"
-              style={{ backgroundColor: '#edf5ff', border: '1px solid #dbeafe' }}
-            >
-              <div className="d-flex align-items-center gap-3">
-                <img
-                  src="/images/career_mail_icon.png"
-                  alt="Mail"
-                  style={{ width: '85px', height: '85px', objectFit: 'contain' }}
-                  className="flex-shrink-0"
-                />
-                <div>
-                  <h5 className="fw-bold mb-1" style={{ fontFamily: 'var(--taiton-font-heading)', fontSize: '1.3rem', color: '#002b5c' }}>
-                    Didn't Find the Right Opportunity?
-                  </h5>
-                  <p className="mb-0" style={{ fontSize: '0.92rem', color: '#334155', lineHeight: '1.5' }}>
-                    We're always interested in meeting talented people who can contribute to our journey.
-                  </p>
-                </div>
-              </div>
+            <TableFilters
+              searchVal={searchQuery}
+              onSearchChange={setSearchQuery}
+              statusVal={statusFilter}
+              onStatusChange={setStatusFilter}
+              searchPlaceholder="Search jobs by title, department, or location..."
+              onReset={() => { setSearchQuery(''); setStatusFilter(''); }}
+            />
 
-              <button
-                type="button"
-                className="btn btn-primary rounded-2 px-4 py-2 fw-semibold flex-shrink-0 d-inline-flex align-items-center gap-2"
-                style={{ backgroundColor: '#0054a6', borderColor: '#0054a6', fontSize: '0.92rem', padding: '10px 24px', borderRadius: '6px' }}
-                onClick={() => openApplicationModal({ title: 'General Application' })}
-              >
-                Send Your Resume <i className="fas fa-arrow-right fs-7"></i>
-              </button>
-            </div>
+            {loading ? (
+              <p className="cp-muted">Loading job openings…</p>
+            ) : (() => {
+              const filtered = jobs.filter((row) => {
+                const titleStr = (row.title || row.payload?.title || row.summary || '').toLowerCase();
+                const jobIdStr = (row.payload?.job_id || `job-${row.id}`).toLowerCase();
+                const deptStr = (row.payload?.department || row.department || '').toLowerCase();
+                const q = searchQuery.toLowerCase();
+                const matchesSearch = !q || titleStr.includes(q) || jobIdStr.includes(q) || deptStr.includes(q);
 
-            {/* Employee Testimonial Quote */}
-            <div className="py-4 bg-white mb-5">
-              <div className="row g-4 align-items-center">
-                <div className="col-12 col-lg-6">
-                  <div style={{ fontSize: '5rem', color: '#0070e0', lineHeight: '0.7', fontFamily: 'Georgia, serif' }}>
-                    “
+                const normFilter = (statusFilter || '').toLowerCase();
+                const normStatus = (row.status || '').toLowerCase();
+                const matchesStatus = !normFilter || normFilter === 'all' || normFilter === 'any' || normStatus === normFilter;
+                return matchesSearch && matchesStatus;
+              });
+
+              if (filtered.length === 0) {
+                return <p className="cp-muted">No job openings match your filters.</p>;
+              }
+
+              const sliced = filtered.slice((jobsPage - 1) * 10, jobsPage * 10);
+
+              return (
+                <>
+                  <div className="cp-accounts-table-wrap">
+                    <table className="cp-accounts-table">
+                      <thead>
+                        <tr>
+                          <th>Job ID</th>
+                          <th>Title</th>
+                          <th>Department</th>
+                          <th>Location</th>
+                          <th>Type</th>
+                          <th>Status</th>
+                          <th>Added By</th>
+                          <th>Created Date</th>
+                          <th aria-label="Actions">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {sliced.map((row) => {
+                          const isPending = row.status === 'pending_approval';
+                          return (
+                          <tr key={row.id}>
+                            <td><code>{row.payload?.job_id || `job-${row.id}`}</code></td>
+                            <td><strong>{row.title}</strong></td>
+                            <td>{row.payload?.department || '—'}</td>
+                            <td>{row.payload?.location || '—'}</td>
+                            <td>
+                              {row.payload?.employment_type ? (
+                                <span className="cp-tag cp-tag-info" style={{ textTransform: 'none' }}>
+                                  {row.payload.employment_type}
+                                </span>
+                              ) : (
+                                '—'
+                              )}
+                            </td>
+                            <td>{getStatusTag(row.status)}</td>
+                            <td>{row.created_by_name || row.createdBy || 'Creator'}</td>
+                            <td>{row.createdAt ? new Date(row.createdAt).toLocaleDateString() : '—'}</td>
+                            <td>
+                              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                <PermissionGate permission={PERMISSIONS.UI_WRITE}>
+                                  {/* 1. Website Visibility Toggle Button */}
+                                  <button
+                                    type="button"
+                                    className="cp-btn-icon"
+                                    disabled={isPending}
+                                    onClick={() => !isPending && handleToggleView(row)}
+                                    style={{
+                                      minWidth: '32px',
+                                      height: '32px',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      borderRadius: '6px',
+                                      border: '1px solid var(--cp-border)',
+                                      background: row.view === 'hide' ? '#f1f5f9' : '#eff6ff',
+                                      borderColor: row.view === 'hide' ? '#cbd5e1' : '#bfdbfe',
+                                      color: row.view === 'hide' ? '#64748b' : '#2563eb',
+                                      opacity: isPending ? 0.35 : 1,
+                                      cursor: isPending ? 'not-allowed' : 'pointer',
+                                    }}
+                                    title={isPending ? 'Record is locked while pending approval' : (row.view === 'hide' ? 'Hidden on Website (Click to View)' : 'Visible on Website (Click to Hide)')}
+                                  >
+                                    {row.view === 'hide' ? (
+                                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                                        <line x1="1" y1="1" x2="23" y2="23" />
+                                      </svg>
+                                    ) : (
+                                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                        <circle cx="12" cy="12" r="3" />
+                                      </svg>
+                                    )}
+                                  </button>
+
+                                  {/* 2. Audit History Button */}
+                                  <button
+                                    type="button"
+                                    className="cp-btn-icon"
+                                    onClick={() => openHistoryDrawer(row)}
+                                    style={{ minWidth: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '6px', border: '1px solid var(--cp-border)', background: '#F8FAFC', color: '#003E7E' }}
+                                    title="View History & Audit Timeline"
+                                  >
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                      <circle cx="12" cy="12" r="10" />
+                                      <polyline points="12 6 12 12 16 14" />
+                                    </svg>
+                                  </button>
+
+                                  {/* 3. Edit Button */}
+                                  <button
+                                    type="button"
+                                    className="cp-btn-icon cp-btn-icon--primary"
+                                    disabled={isPending}
+                                    onClick={() => !isPending && navigate(`/app/careers/create?editId=${row.id}`)}
+                                    style={{ minWidth: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '6px', border: '1px solid var(--cp-border)', opacity: isPending ? 0.35 : 1, cursor: isPending ? 'not-allowed' : 'pointer' }}
+                                    title={isPending ? 'Record is locked while pending approval' : 'Edit Job Opening'}
+                                  >
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                      <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                    </svg>
+                                  </button>
+
+                                  {/* 4. Delete / Deactivate Button */}
+                                  <button
+                                    type="button"
+                                    className="cp-btn-icon cp-btn-icon--danger"
+                                    disabled={isPending}
+                                    onClick={() => !isPending && handleSoftDelete(row)}
+                                    style={{ minWidth: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '6px', border: '1px solid var(--cp-border)', opacity: isPending ? 0.35 : 1, cursor: isPending ? 'not-allowed' : 'pointer' }}
+                                    title={isPending ? 'Record is locked while pending approval' : 'Set Inactive (Delete)'}
+                                  >
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                      <polyline points="3 6 5 6 21 6" />
+                                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                      <line x1="10" y1="11" x2="10" y2="17" />
+                                      <line x1="14" y1="11" x2="14" y2="17" />
+                                    </svg>
+                                  </button>
+                                </PermissionGate>
+                              </div>
+                            </td>
+                          </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
-                  <blockquote
-                    className="fst-italic my-3"
-                    style={{
-                      fontFamily: "'Playfair Display', Georgia, serif",
-                      fontSize: '1.55rem',
-                      fontWeight: 500,
-                      color: '#002b5c',
-                      lineHeight: '1.45',
-                    }}
-                  >
-                    At TAITON, every project gives us an opportunity to learn, contribute and grow.
-                  </blockquote>
-                  <div style={{ width: '42px', height: '3px', backgroundColor: '#0084B4', marginBottom: '20px' }}></div>
-                  <div className="d-flex align-items-center gap-3">
-                    <img
-                      src="/images/career_rohan_verma.png"
-                      alt="Rohan Verma"
-                      className="rounded-circle"
-                      style={{ width: '56px', height: '56px', objectFit: 'cover' }}
-                    />
-                    <div>
-                      <h6 className="fw-bold mb-0" style={{ fontFamily: 'var(--taiton-font-heading)', fontSize: '1.05rem', color: '#002b5c' }}>
-                        Rohan Verma
-                      </h6>
-                      <small style={{ fontSize: '0.85rem', color: '#64748b' }}>Senior Interior Designer</small>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="col-12 col-lg-6">
-                  <img
-                    src="/images/career_testimonial_team.png"
-                    alt="TAITON Team"
-                    className="w-100 rounded-3"
-                    style={{ objectFit: 'cover' }}
+                  <TablePagination
+                    page={jobsPage}
+                    onChange={setJobsPage}
+                    total={filtered.length}
+                    pageSize={10}
+                    labelSingle="job opening"
+                    labelPlural="job openings"
                   />
-                </div>
+                </>
+              );
+            })()}
+          </section>
+        )}
+
+        {/* Tab 2: Candidate Applications Tracking */}
+        {activeTab === 'tracking' && (
+          <section className="cp-card cp-card-pad">
+            <TableFilters
+              searchVal={searchQuery}
+              onSearchChange={setSearchQuery}
+              statusVal={statusFilter}
+              onStatusChange={setStatusFilter}
+              searchPlaceholder="Search candidate by name, email, or job target..."
+              onReset={() => { setSearchQuery(''); setStatusFilter(''); }}
+            />
+
+            {loading ? (
+              <p className="cp-muted">Loading applications…</p>
+            ) : (() => {
+              const filtered = applications.filter((app) => {
+                const name = app.customerName || app.payload?.customer_name || '';
+                const email = app.email || app.payload?.email || '';
+                const jobTarget = app.subject || app.payload?.subject || '';
+                const matchesSearch = name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                      email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                      jobTarget.toLowerCase().includes(searchQuery.toLowerCase());
+                const matchesStatus = !statusFilter || app.status === statusFilter;
+                return matchesSearch && matchesStatus;
+              });
+
+              if (filtered.length === 0) {
+                return <p className="cp-muted">No candidate applications match your filters.</p>;
+              }
+
+              const sliced = filtered.slice((appsPage - 1) * 10, appsPage * 10);
+
+              return (
+                <>
+                  <div className="cp-accounts-table-wrap">
+                    <table className="cp-accounts-table">
+                      <thead>
+                        <tr>
+                          <th>Candidate Name</th>
+                          <th>Contact Details</th>
+                          <th>Job Position</th>
+                          <th>Cover Note / Message</th>
+                          <th>Status</th>
+                          <th>Applied Date</th>
+                          <th aria-label="Review Actions">Review Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {sliced.map((app) => {
+                          const jobId = app.subject || app.payload?.subject;
+                          const name = app.customerName || app.payload?.customer_name || 'Candidate';
+                          const email = app.email || app.payload?.email || '—';
+                          const phone = app.phone || app.payload?.phone || '—';
+
+                          return (
+                            <tr key={app.id}>
+                              <td><strong>{name}</strong></td>
+                              <td>
+                                <div style={{ fontSize: '12px' }}>
+                                  <div>📧 {email}</div>
+                                  <div>📞 {phone}</div>
+                                </div>
+                              </td>
+                              <td>
+                                <span className="cp-tag cp-tag-info" style={{ textTransform: 'none' }}>
+                                  {getJobTitle(jobId)}
+                                </span>
+                              </td>
+                              <td style={{ maxWidth: '280px', fontSize: '12px', color: 'var(--cp-text-muted)' }}>
+                                {app.message || app.payload?.message || 'No cover letter attached.'}
+                              </td>
+                              <td>{getStatusTag(app.status)}</td>
+                              <td>{app.createdAt ? new Date(app.createdAt).toLocaleDateString() : '—'}</td>
+                              <td>
+                                <div style={{ display: 'flex', gap: '6px' }}>
+                                  <PermissionGate permission={PERMISSIONS.UI_WRITE}>
+                                    {app.status !== 'responded' && (
+                                      <button
+                                        type="button"
+                                        className="cp-btn cp-btn-primary"
+                                        onClick={() => handleUpdateStatus(app.id, 'responded')}
+                                        style={{ padding: '4px 8px', fontSize: '11px' }}
+                                      >
+                                        Shortlist
+                                      </button>
+                                    )}
+                                    {app.status !== 'closed' && (
+                                      <button
+                                        type="button"
+                                        className="cp-btn cp-btn-secondary"
+                                        onClick={() => handleUpdateStatus(app.id, 'closed')}
+                                        style={{ padding: '4px 8px', fontSize: '11px', color: '#ef4444' }}
+                                      >
+                                        Reject
+                                      </button>
+                                    )}
+                                  </PermissionGate>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                  <TablePagination
+                    page={appsPage}
+                    onChange={setAppsPage}
+                    total={filtered.length}
+                    pageSize={10}
+                    labelSingle="application"
+                    labelPlural="applications"
+                  />
+                </>
+              );
+            })()}
+          </section>
+        )}
+
+        {/* History & Audit Drawer */}
+        <HistoryAuditDrawer
+          target={historyTarget}
+          onClose={() => setHistoryTarget(null)}
+          auditLogs={auditLogs}
+          loading={loadingAudit}
+        />
+
+        {/* Mock Apply Modal */}
+        {showApplyModal && (
+          <div style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000
+          }}>
+            <div className="cp-card cp-card-pad" style={{ width: '480px', maxWidth: '90%' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <h3 className="cp-section-title" style={{ margin: 0 }}>Mock Apply Candidate</h3>
+                <button type="button" onClick={() => setShowApplyModal(false)} style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer' }}>✕</button>
               </div>
+              <form onSubmit={handleApplySubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <label className="cp-field">
+                  <span>Candidate Name *</span>
+                  <input type="text" className="cp-input" value={candidateName} onChange={(e) => setCandidateName(e.target.value)} required />
+                </label>
+                <label className="cp-field">
+                  <span>Candidate Email *</span>
+                  <input type="email" className="cp-input" value={candidateEmail} onChange={(e) => setCandidateEmail(e.target.value)} required />
+                </label>
+                <label className="cp-field">
+                  <span>Candidate Phone (10 digits)</span>
+                  <input type="tel" className="cp-input" value={candidatePhone} onChange={(e) => setCandidatePhone(e.target.value.replace(/\D/g, '').slice(0, 10))} maxLength={10} />
+                </label>
+                <label className="cp-field">
+                  <span>Job Target Opening *</span>
+                  <select className="cp-input" value={selectedJobId} onChange={(e) => setSelectedJobId(e.target.value)} required>
+                    <option value="">Select Job Opening</option>
+                    {jobs.map((j) => (
+                      <option key={j.id} value={j.payload?.job_id || j.id}>
+                        {j.title} ({j.payload?.department || 'General'})
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="cp-field">
+                  <span>Cover Note / Message</span>
+                  <textarea className="cp-input" rows={3} value={coverMessage} onChange={(e) => setCoverMessage(e.target.value)} />
+                </label>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '8px' }}>
+                  <button type="button" className="cp-btn cp-btn-secondary" onClick={() => setShowApplyModal(false)}>Cancel</button>
+                  <button type="submit" className="cp-btn cp-btn-primary" disabled={submittingApp}>
+                    {submittingApp ? 'Submitting…' : 'Submit Candidate Application'}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* 7. Bottom CTA Banner: Ready to Grow With TAITON? */}
-      <section
-        className="py-5 text-white text-center position-relative"
-        style={{
-          background: "linear-gradient(rgba(0, 35, 75, 0.88), rgba(0, 35, 75, 0.88)), url('/images/ready_to_work_cta_bg.png') center/cover no-repeat",
-        }}
-      >
-        <div className="site-container py-4">
-          <h2
-            className="fw-bold mb-2 text-white"
-            style={{ fontFamily: 'var(--taiton-font-heading)', fontSize: '2.25rem', letterSpacing: '-0.01em' }}
-          >
-            Ready to Grow With TAITON?
-          </h2>
-          <p className="lead mb-4 text-light mx-auto" style={{ maxWidth: '600px', fontSize: '1.05rem', opacity: 0.95, lineHeight: '1.5' }}>
-            Explore opportunities and become part of our journey.
-          </p>
-          <a
-            href="#open-positions"
-            className="btn btn-primary px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2"
-            style={{ backgroundColor: '#0070e0', borderColor: '#0070e0', fontSize: '0.92rem', padding: '10px 28px', borderRadius: '6px' }}
-          >
-            View Open Positions <i className="fas fa-arrow-right fs-7"></i>
-          </a>
-        </div>
-      </section>
-
-      {/* ==========================================================================
-          4-STEP JOB APPLICATION MODAL (Matching Uploaded Screenshots)
-          ========================================================================== */}
-      {isModalOpen && (
-        <div className="app-modal-backdrop" onClick={closeModal}>
-          <div
-            className="app-modal-dialog"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            style={{ borderRadius: '24px', overflow: 'hidden' }}
-          >
-            {/* Modal Content / Stepper Row */}
-            {applicationSubmitted ? (
-              <div className="p-5 text-center bg-white position-relative">
-                <button
-                  type="button"
-                  className="btn-close-circle position-absolute top-0 end-0 m-4"
-                  onClick={closeModal}
-                  aria-label="Close"
-                >
-                  <i className="fas fa-times"></i>
-                </button>
-                <div
-                  className="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center text-white shadow-sm"
-                  style={{ width: '64px', height: '64px', backgroundColor: '#10b981', fontSize: '1.8rem' }}
-                >
-                  <i className="fas fa-check"></i>
-                </div>
-                <h4 className="fw-bold text-dark mb-2">Application Submitted!</h4>
-                <p className="text-muted mx-auto mb-4" style={{ maxWidth: '420px', fontSize: '0.95rem' }}>
-                  Thank you for applying for <span className="fw-bold text-dark">{selectedJob?.title}</span>. Our recruitment team will review your profile and contact you shortly.
-                </p>
-                <button
-                  type="button"
-                  className="btn btn-primary rounded-pill px-5 py-2 fw-semibold"
-                  style={{ backgroundColor: 'var(--taiton-blue, #0054a6)', borderColor: 'var(--taiton-blue, #0054a6)' }}
-                  onClick={closeModal}
-                >
-                  Done
-                </button>
-              </div>
-            ) : (
-              <div className="row g-0 flex-fill">
-                {/* Left Stepper Column */}
-                <div className="col-12 col-md-5 app-modal-stepper-col position-relative d-flex flex-column justify-content-between p-4 p-lg-5" style={{ backgroundColor: '#edf5ff', borderRight: 'none' }}>
-                  <div>
-                    <h4 className="fw-bold mb-3" style={{ color: '#0b2545', fontSize: '1.45rem' }}>
-                      Apply for Position
-                    </h4>
-                    <div className="d-flex align-items-center gap-3 mb-4">
-                      <div
-                        className="rounded-2 d-flex align-items-center justify-content-center text-white flex-shrink-0"
-                        style={{ width: '32px', height: '32px', backgroundColor: '#0054a6' }}
-                      >
-                        <i className="fas fa-briefcase" style={{ fontSize: '0.9rem' }}></i>
-                      </div>
-                      <span className="fw-bold text-dark" style={{ fontSize: '1.05rem', lineHeight: '1.2' }}>
-                        {selectedJob?.title || 'Sales Executive'}
-                      </span>
-                    </div>
-
-                    {/* Stepper with connector line */}
-                    <div className="position-relative ps-1 pt-2">
-                      <div className="app-stepper-line d-none d-md-block" style={{ left: '16px', top: '16px', bottom: '24px', backgroundColor: '#cbd5e1' }}></div>
-
-                      {/* Step 1 Item */}
-                      <div className={`app-step-item ${currentStep === 1 ? 'active' : ''} ${currentStep > 1 ? 'completed' : ''}`}>
-                        <div className="app-step-circle">
-                          {currentStep > 1 ? <i className="fas fa-check"></i> : '1'}
-                        </div>
-                        <span className="app-step-label">Personal Details</span>
-                      </div>
-
-                      {/* Step 2 Item */}
-                      <div className={`app-step-item ${currentStep === 2 ? 'active' : ''} ${currentStep > 2 ? 'completed' : ''}`}>
-                        <div className="app-step-circle">
-                          {currentStep > 2 ? <i className="fas fa-check"></i> : '2'}
-                        </div>
-                        <span className="app-step-label">Experience &amp; Education</span>
-                      </div>
-
-                      {/* Step 3 Item */}
-                      <div className={`app-step-item ${currentStep === 3 ? 'active' : ''} ${currentStep > 3 ? 'completed' : ''}`}>
-                        <div className="app-step-circle">
-                          {currentStep > 3 ? <i className="fas fa-check"></i> : '3'}
-                        </div>
-                        <span className="app-step-label">Job &amp; Salary Details</span>
-                      </div>
-
-                      {/* Step 4 Item */}
-                      <div className={`app-step-item ${currentStep === 4 ? 'active' : ''}`}>
-                        <div className="app-step-circle">4</div>
-                        <span className="app-step-label">Portfolio &amp; Documents</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right Form Fields Column */}
-                <div className="col-12 col-md-7 app-modal-form-col p-4 p-lg-5 bg-white position-relative">
-                  <button
-                    type="button"
-                    className="btn-close-circle position-absolute top-0 end-0 m-4"
-                    onClick={closeModal}
-                    aria-label="Close"
-                  >
-                    <i className="fas fa-times"></i>
-                  </button>
-                  {/* STEP 1: Personal Details */}
-                  {currentStep === 1 && (
-                    <form onSubmit={handleNextStep}>
-                      <div className="mb-3">
-                        <label className="form-label small fw-semibold text-dark mb-1">
-                          Full Name <span className="text-danger">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          name="fullName"
-                          className="form-control app-input"
-                          placeholder="Enter Your Full Name"
-                          required
-                          value={formData.fullName}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-
-                      <div className="mb-3">
-                        <label className="form-label small fw-semibold text-dark mb-1">
-                          Phone Number <span className="text-danger">*</span>
-                        </label>
-                        <input
-                          type="tel"
-                          name="phoneNumber"
-                          className="form-control app-input"
-                          placeholder="Enter Your Phone Number"
-                          required
-                          value={formData.phoneNumber}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-
-                      <div className="mb-3">
-                        <label className="form-label small fw-semibold text-dark mb-1">
-                          Email Address
-                        </label>
-                        <input
-                          type="email"
-                          name="emailAddress"
-                          className="form-control app-input"
-                          placeholder="Enter Your Email address"
-                          value={formData.emailAddress}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-
-                      <div className="mb-3">
-                        <label className="form-label small fw-semibold text-dark mb-1">
-                          Current Location <span className="text-danger">*</span>
-                        </label>
-                        <select
-                          name="currentLocation"
-                          className="form-select app-input"
-                          required
-                          value={formData.currentLocation}
-                          onChange={handleInputChange}
-                        >
-                          <option value="">Select Your City / State</option>
-                          {careersData.locations.map((loc, idx) => (
-                            <option key={idx} value={loc}>{loc}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div className="mb-4">
-                        <label className="form-label small fw-semibold text-dark mb-1">
-                          Permanent Location
-                        </label>
-                        <select
-                          name="permanentLocation"
-                          className="form-select app-input"
-                          value={formData.permanentLocation}
-                          onChange={handleInputChange}
-                        >
-                          <option value="">Select Your City / State</option>
-                          {careersData.locations.map((loc, idx) => (
-                            <option key={idx} value={loc}>{loc}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div className="d-flex justify-content-end pt-2">
-                        <button
-                          type="submit"
-                          className="btn btn-primary px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2 rounded-2"
-                          style={{ backgroundColor: 'var(--taiton-blue, #0054a6)', borderColor: 'var(--taiton-blue, #0054a6)' }}
-                        >
-                          Next <i className="fas fa-arrow-right fs-8"></i>
-                        </button>
-                      </div>
-                    </form>
-                  )}
-
-                  {/* STEP 2: Experience & Education */}
-                  {currentStep === 2 && (
-                    <form onSubmit={handleNextStep}>
-                      <div className="mb-3">
-                        <label className="form-label small fw-semibold text-dark mb-1">
-                          Highest Qualification <span className="text-danger">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          name="highestQualification"
-                          className="form-control app-input"
-                          placeholder="Enter Your Highest Qualification"
-                          required
-                          value={formData.highestQualification}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-
-                      <div className="mb-3">
-                        <label className="form-label small fw-semibold text-dark mb-1">
-                          Experience <span className="text-danger">*</span>
-                        </label>
-                        <select
-                          name="experienceType"
-                          className="form-select app-input"
-                          required
-                          value={formData.experienceType}
-                          onChange={handleInputChange}
-                        >
-                          <option value="Fresher">Fresher</option>
-                          <option value="Experienced">Experienced</option>
-                        </select>
-                      </div>
-
-                      <div className="mb-3">
-                        <label className="form-label small fw-semibold text-dark mb-1">
-                          Total Work Experience <span className="text-danger">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          name="totalWorkExperience"
-                          className="form-control app-input"
-                          placeholder="Enter Your Total Work Experience Years"
-                          required
-                          value={formData.totalWorkExperience}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-
-                      <div className="mb-4">
-                        <label className="form-label small fw-semibold text-dark mb-1">
-                          Current / Last Company
-                        </label>
-                        <input
-                          type="text"
-                          name="currentLastCompany"
-                          className="form-control app-input"
-                          placeholder="Enter Your Company Name"
-                          value={formData.currentLastCompany}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-
-                      <div className="d-flex justify-content-end gap-2 pt-2">
-                        <button
-                          type="button"
-                          className="btn btn-secondary px-4 py-2 fw-semibold rounded-2"
-                          onClick={handlePrevStep}
-                        >
-                          &larr; Back
-                        </button>
-                        <button
-                          type="submit"
-                          className="btn btn-primary px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2 rounded-2"
-                          style={{ backgroundColor: 'var(--taiton-blue, #0054a6)', borderColor: 'var(--taiton-blue, #0054a6)' }}
-                        >
-                          Next <i className="fas fa-arrow-right fs-8"></i>
-                        </button>
-                      </div>
-                    </form>
-                  )}
-
-                  {/* STEP 3: Job & Salary Details */}
-                  {currentStep === 3 && (
-                    <form onSubmit={handleNextStep}>
-                      <div className="mb-3">
-                        <label className="form-label small fw-semibold text-dark mb-1">
-                          Joining Availability <span className="text-danger">*</span>
-                        </label>
-                        <select
-                          name="joiningAvailability"
-                          className="form-select app-input"
-                          required
-                          value={formData.joiningAvailability}
-                          onChange={handleInputChange}
-                        >
-                          <option value="Immediate">Immediate</option>
-                          <option value="Notice Period">Notice Period</option>
-                        </select>
-                      </div>
-
-                      <div className="mb-3">
-                        <label className="form-label small fw-semibold text-dark mb-1">
-                          Notice Period <span className="text-danger">*</span>
-                        </label>
-                        <select
-                          name="noticePeriod"
-                          className="form-select app-input"
-                          required
-                          value={formData.noticePeriod}
-                          onChange={handleInputChange}
-                        >
-                          <option value="Immediate">Immediate</option>
-                          <option value="Within 7 Days">Within 7 Days</option>
-                          <option value="Within 15 Days">Within 15 Days</option>
-                          <option value="Within 30 Days">Within 30 Days</option>
-                          <option value="Other">Other</option>
-                        </select>
-                      </div>
-
-                      <div className="mb-3">
-                        <label className="form-label small fw-semibold text-dark mb-1">
-                          Write You Message
-                        </label>
-                        <textarea
-                          name="stepMessage"
-                          rows="3"
-                          className="form-control app-input"
-                          placeholder="Write You Message"
-                          value={formData.stepMessage}
-                          onChange={handleInputChange}
-                        ></textarea>
-                      </div>
-
-                      <div className="mb-3">
-                        <label className="form-label small fw-semibold text-dark mb-1">
-                          Current / Previous Salary <span className="text-danger">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          name="currentSalary"
-                          className="form-control app-input"
-                          placeholder="Enter Your Salary per month"
-                          required
-                          value={formData.currentSalary}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-
-                      <div className="mb-4">
-                        <label className="form-label small fw-semibold text-dark mb-1">
-                          Expected Salary
-                        </label>
-                        <input
-                          type="text"
-                          name="expectedSalary"
-                          className="form-control app-input"
-                          placeholder="Enter Your Salary per month"
-                          value={formData.expectedSalary}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-
-                      <div className="d-flex justify-content-end gap-2 pt-2">
-                        <button
-                          type="button"
-                          className="btn btn-secondary px-4 py-2 fw-semibold rounded-2"
-                          onClick={handlePrevStep}
-                        >
-                          &larr; Back
-                        </button>
-                        <button
-                          type="submit"
-                          className="btn btn-primary px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2 rounded-2"
-                          style={{ backgroundColor: 'var(--taiton-blue, #0054a6)', borderColor: 'var(--taiton-blue, #0054a6)' }}
-                        >
-                          Next <i className="fas fa-arrow-right fs-8"></i>
-                        </button>
-                      </div>
-                    </form>
-                  )}
-
-                  {/* STEP 4: Portfolio & Documents */}
-                  {currentStep === 4 && (
-                    <form onSubmit={handleSubmitApplication}>
-                      <div className="mb-3">
-                        <label className="form-label small fw-semibold text-dark mb-1">
-                          Portfolio / LinkedIn URL
-                        </label>
-                        <input
-                          type="url"
-                          name="portfolioUrl"
-                          className="form-control app-input"
-                          placeholder="Enter you Portfolio / LinkedIn URL"
-                          value={formData.portfolioUrl}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-
-                      <div className="mb-3">
-                        <label className="form-label small fw-semibold text-dark mb-1">
-                          Resume / CV <span className="text-danger">*</span>
-                        </label>
-                        <label className="app-upload-box d-block w-100 mb-0">
-                          <input
-                            type="file"
-                            className="d-none"
-                            accept=".pdf,.doc,.docx"
-                            required
-                            onChange={handleFileChange}
-                          />
-                          <div className="text-muted small">
-                            <i className="fas fa-plus text-primary fs-5 mb-2 d-block"></i>
-                            {selectedFile ? (
-                              <span className="fw-bold text-success d-block">{selectedFile}</span>
-                            ) : (
-                              <span>Upload your Resume / CV</span>
-                            )}
-                            <span className="text-muted d-block mt-1" style={{ fontSize: '0.75rem' }}>
-                              (PDF, DOC, DOCX up to 5MB)
-                            </span>
-                          </div>
-                        </label>
-                      </div>
-
-                      <div className="mb-4">
-                        <label className="form-label small fw-semibold text-dark mb-1">
-                          Additional Message
-                        </label>
-                        <textarea
-                          name="additionalMessage"
-                          rows="3"
-                          className="form-control app-input"
-                          placeholder="Write you message"
-                          value={formData.additionalMessage}
-                          onChange={handleInputChange}
-                        ></textarea>
-                      </div>
-
-                      <div className="d-flex justify-content-end gap-2 pt-2">
-                        <button
-                          type="button"
-                          className="btn btn-secondary px-4 py-2 fw-semibold rounded-2"
-                          onClick={handlePrevStep}
-                        >
-                          &larr; Back
-                        </button>
-                        <button
-                          type="submit"
-                          className="btn btn-primary px-4 py-2 fw-semibold rounded-2"
-                          style={{ backgroundColor: 'var(--taiton-blue, #0054a6)', borderColor: 'var(--taiton-blue, #0054a6)' }}
-                        >
-                          Submit
-                        </button>
-                      </div>
-                    </form>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </PermissionRoute>
   );
 }
-

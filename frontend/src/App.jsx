@@ -1,175 +1,202 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import GoogleLoginModal from './components/GoogleLoginModal';
-import MainLayout from './layouts/MainLayout';
-import HomePage from './pages/HomePage';
-import AboutPage from './pages/AboutPage';
-import OperationsPage from './pages/OperationsPage';
-import CataloguesPage from './pages/CataloguesPage';
-import CatalogueViewerPage from './pages/CatalogueViewerPage';
-import ProductsPage from './pages/ProductsPage';
-import ProductListPage from './pages/ProductListPage';
-import ProductDetailPage from './pages/ProductDetailPage';
-import ProductCategoryPage from './pages/ProductCategoryPage';
-import ExploreSpacesPage from './pages/ExploreSpacesPage';
-import ContactPage from './pages/ContactPage';
-import ExperienceCenterPage from './pages/ExperienceCenterPage';
-import AwardsPage from './pages/AwardsPage';
-import EventsPage from './pages/EventsPage';
-import BlogsPage from './pages/BlogsPage';
-import BlogDetailPage from './pages/BlogDetailPage';
-import CareersPage from './pages/CareersPage';
-import VideosPage from './pages/VideosPage';
-import OurTeamPage from './pages/OurTeamPage';
-import ProfilePage from './pages/ProfilePage';
+import { lazy } from 'react';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { AuthProvider } from './context/AuthProvider.jsx';
+import { AppShell } from './layouts/AppShell.jsx';
+import { LoginPage } from './pages/LoginPage.jsx';
+import { ProtectedRoute } from './routes/ProtectedRoute.jsx';
 
-function ScrollToTop() {
-  const { pathname, hash } = useLocation();
-
-  useEffect(() => {
-    if (hash) {
-      const element = document.querySelector(hash);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-        return;
-      }
-    }
-    window.scrollTo(0, 0);
-  }, [pathname, hash]);
-
-  return null;
-}
+const DashboardPage = lazy(() =>
+  import('./pages/DashboardPage.jsx').then((m) => ({ default: m.DashboardPage })),
+);
+const NotificationsPage = lazy(() =>
+  import('./pages/NotificationsPage.jsx').then((m) => ({ default: m.NotificationsPage })),
+);
+const ProfilePage = lazy(() =>
+  import('./pages/ProfilePage.jsx').then((m) => ({ default: m.ProfilePage })),
+);
+const AccountsPage = lazy(() =>
+  import('./pages/AccountsPage.jsx').then((m) => ({ default: m.AccountsPage })),
+);
+const SettingsPage = lazy(() =>
+  import('./pages/SettingsPage.jsx').then((m) => ({ default: m.SettingsPage })),
+);
+const CustomerRequestsPage = lazy(() =>
+  import('./pages/CustomerRequestsPage.jsx').then((m) => ({ default: m.CustomerRequestsPage })),
+);
+const ProductsPage = lazy(() =>
+  import('./pages/ProductsPage.jsx').then((m) => ({ default: m.ProductsPage })),
+);
+const CreateCategoryPage = lazy(() =>
+  import('./pages/products/CreateCategoryPage.jsx').then((m) => ({ default: m.CreateCategoryPage })),
+);
+const CreateSubCategoryPage = lazy(() =>
+  import('./pages/products/CreateSubCategoryPage.jsx').then((m) => ({ default: m.CreateSubCategoryPage })),
+);
+const CreateProductPage = lazy(() =>
+  import('./pages/products/CreateProductPage.jsx').then((m) => ({ default: m.CreateProductPage })),
+);
+const CreateVariantPage = lazy(() =>
+  import('./pages/products/CreateVariantPage.jsx').then((m) => ({ default: m.CreateVariantPage })),
+);
+const SeoPage = lazy(() =>
+  import('./pages/SeoPage.jsx').then((m) => ({ default: m.SeoPage })),
+);
+const CreateSeoPage = lazy(() =>
+  import('./pages/seo/CreateSeoPage.jsx').then((m) => ({ default: m.CreateSeoPage })),
+);
+const BlogPage = lazy(() =>
+  import('./pages/BlogPage.jsx').then((m) => ({ default: m.BlogPage })),
+);
+const CreateBlogPage = lazy(() =>
+  import('./pages/blog/CreateBlogPage.jsx').then((m) => ({ default: m.CreateBlogPage })),
+);
+const UiElementsPage = lazy(() =>
+  import('./pages/UiElementsPage.jsx').then((m) => ({ default: m.UiElementsPage })),
+);
+const UiLayoutsPage = lazy(() =>
+  import('./pages/ui-layouts/UiLayoutsPage.jsx').then((m) => ({ default: m.UiLayoutsPage })),
+);
+const CreateUiElementPage = lazy(() =>
+  import('./pages/ui-elements/CreateUiElementPage.jsx').then((m) => ({ default: m.CreateUiElementPage })),
+);
+const ExploreSpacesPage = lazy(() =>
+  import('./pages/spaces/ExploreSpacesPage.jsx').then((m) => ({ default: m.ExploreSpacesPage })),
+);
+const OrganizationsOnboardingPage = lazy(() =>
+  import('./pages/onboarding/OrganizationsOnboardingPage.jsx').then((m) => ({
+    default: m.OrganizationsOnboardingPage,
+  })),
+);
+const RolesOnboardingPage = lazy(() =>
+  import('./pages/onboarding/RolesOnboardingPage.jsx').then((m) => ({ default: m.RolesOnboardingPage })),
+);
+const MembersOnboardingPage = lazy(() =>
+  import('./pages/onboarding/MembersOnboardingPage.jsx').then((m) => ({ default: m.MembersOnboardingPage })),
+);
+const NavOnboardingPage = lazy(() =>
+  import('./pages/onboarding/NavOnboardingPage.jsx').then((m) => ({ default: m.NavOnboardingPage })),
+);
+const UsersOnboardingPage = lazy(() =>
+  import('./pages/org/UsersOnboardingPage.jsx').then((m) => ({ default: m.UsersOnboardingPage })),
+);
+const ApprovalRulesPage = lazy(() =>
+  import('./pages/org/ApprovalRulesPage.jsx').then((m) => ({ default: m.ApprovalRulesPage })),
+);
+const AuditPage = lazy(() =>
+  import('./pages/org/AuditPage.jsx').then((m) => ({ default: m.AuditPage })),
+);
+const ApprovalsPage = lazy(() =>
+  import('./pages/org/ApprovalsPage.jsx').then((m) => ({ default: m.ApprovalsPage })),
+);
+const WebResponsesPage = lazy(() =>
+  import('./pages/WebResponsesPage.jsx').then((m) => ({ default: m.WebResponsesPage })),
+);
+const CareersPage = lazy(() =>
+  import('./pages/CareersPage.jsx').then((m) => ({ default: m.CareersPage })),
+);
+const CreateCareerPage = lazy(() =>
+  import('./pages/career/CreateCareerPage.jsx').then((m) => ({ default: m.CreateCareerPage })),
+);
+const CatalogsPage = lazy(() =>
+  import('./pages/CatalogsPage.jsx').then((m) => ({ default: m.CatalogsPage })),
+);
+const CreateCatalogPage = lazy(() =>
+  import('./pages/catalog/CreateCatalogPage.jsx').then((m) => ({ default: m.CreateCatalogPage })),
+);
+const EventsPage = lazy(() =>
+  import('./pages/EventsPage.jsx').then((m) => ({ default: m.EventsPage })),
+);
+const CustomNavPage = lazy(() =>
+  import('./pages/CustomNavPage.jsx').then((m) => ({ default: m.CustomNavPage })),
+);
+const ResetPasswordPage = lazy(() =>
+  import('./pages/ResetPasswordPage.jsx').then((m) => ({ default: m.ResetPasswordPage })),
+);
+const MaintenancePage = lazy(() =>
+  import('./pages/MaintenancePage.jsx').then((m) => ({ default: m.MaintenancePage })),
+);
+const ReleaseManagementPage = lazy(() =>
+  import('./pages/ReleaseManagementPage.jsx').then((m) => ({ default: m.ReleaseManagementPage })),
+);
+const NotFoundPage = lazy(() =>
+  import('./pages/NotFoundPage.jsx').then((m) => ({ default: m.NotFoundPage })),
+);
+const AccessDeniedPage = lazy(() =>
+  import('./pages/AccessDeniedPage.jsx').then((m) => ({ default: m.AccessDeniedPage })),
+);
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <ScrollToTop />
-        <GoogleLoginModal />
-        <MainLayout>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/index.html" element={<HomePage />} />
-
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/profile.html" element={<ProfilePage />} />
-            <Route path="/cart" element={<Navigate to="/profile?tab=cart" replace />} />
-            <Route path="/wishlist" element={<Navigate to="/profile?tab=wishlist" replace />} />
-            <Route path="/recently-viewed" element={<Navigate to="/profile?tab=recently-viewed" replace />} />
-
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/about.html" element={<AboutPage />} />
-          <Route path="/about-us" element={<AboutPage />} />
-          <Route path="/about-us.html" element={<AboutPage />} />
-
-          <Route path="/operations" element={<OperationsPage />} />
-          <Route path="/operations.html" element={<OperationsPage />} />
-
-          <Route path="/catalogues" element={<CataloguesPage />} />
-          <Route path="/catalogues.html" element={<CataloguesPage />} />
-          <Route path="/catalogue" element={<CataloguesPage />} />
-          <Route path="/catalogue.html" element={<CataloguesPage />} />
-
-          <Route path="/catalogue-view" element={<CatalogueViewerPage />} />
-          <Route path="/catalogue-view.html" element={<CatalogueViewerPage />} />
-          <Route path="/catalogue-viewer" element={<CatalogueViewerPage />} />
-          <Route path="/catalogue-viewer.html" element={<CatalogueViewerPage />} />
-
-          <Route path="/explore-spaces" element={<ExploreSpacesPage />} />
-          <Route path="/explore-spaces.html" element={<ExploreSpacesPage />} />
-
-          <Route path="/products" element={<ProductsPage />} />
-          <Route path="/products.html" element={<ProductsPage />} />
-
-          <Route path="/product-category" element={<ProductCategoryPage />} />
-          <Route path="/product-category.html" element={<ProductCategoryPage />} />
-
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route
-            path="/product-glass-hardware"
-            element={<ProductCategoryPage categoryKey="cat-glass" />}
-          />
-          <Route
-            path="/product-glass-hardware.html"
-            element={<ProductCategoryPage categoryKey="cat-glass" />}
-          />
-
-          <Route
-            path="/product-sliding-systems"
-            element={<ProductCategoryPage categoryKey="cat-sliding" />}
-          />
-          <Route
-            path="/product-sliding-systems.html"
-            element={<ProductCategoryPage categoryKey="cat-sliding" />}
-          />
-
-          <Route
-            path="/product-automatic-doors"
-            element={<ProductCategoryPage categoryKey="cat-doors" />}
-          />
-          <Route
-            path="/product-automatic-doors.html"
-            element={<ProductCategoryPage categoryKey="cat-doors" />}
-          />
-
-          <Route
-            path="/product-digital-locks"
-            element={<ProductCategoryPage categoryKey="cat-locks" />}
-          />
-          <Route
-            path="/product-digital-locks.html"
-            element={<ProductCategoryPage categoryKey="cat-locks" />}
-          />
-
-          <Route path="/product-list" element={<ProductListPage />} />
-          <Route path="/product-list.html" element={<ProductListPage />} />
-
-          <Route path="/product-detail" element={<ProductDetailPage />} />
-          <Route path="/product-detail.html" element={<ProductDetailPage />} />
-
-          <Route path="/experience-center" element={<ExperienceCenterPage />} />
-          <Route path="/experience-center.html" element={<ExperienceCenterPage />} />
-
-          <Route path="/operations-logistics" element={<OperationsPage />} />
-
-          <Route path="/awards" element={<AwardsPage />} />
-          <Route path="/awards.html" element={<AwardsPage />} />
-          <Route path="/awards-achievements" element={<AwardsPage />} />
-          <Route path="/awards-achievements.html" element={<AwardsPage />} />
-
-          <Route path="/exhibitions-events" element={<EventsPage />} />
-          <Route path="/exhibitions-events.html" element={<EventsPage />} />
-          <Route path="/events" element={<EventsPage />} />
-          <Route path="/events.html" element={<EventsPage />} />
-
-          <Route path="/blogs" element={<BlogsPage />} />
-          <Route path="/blogs.html" element={<BlogsPage />} />
-          <Route path="/articles" element={<BlogsPage />} />
-          <Route path="/articles.html" element={<BlogsPage />} />
-          <Route path="/blog-detail" element={<BlogDetailPage />} />
-          <Route path="/blog-detail.html" element={<BlogDetailPage />} />
-          <Route path="/blog-preview" element={<BlogDetailPage />} />
-
-          <Route path="/videos" element={<VideosPage />} />
-          <Route path="/videos.html" element={<VideosPage />} />
-
-          <Route path="/careers" element={<CareersPage />} />
-          <Route path="/careers.html" element={<CareersPage />} />
-
-          <Route path="/our-team" element={<OurTeamPage />} />
-          <Route path="/our-team.html" element={<OurTeamPage />} />
-          <Route path="/team" element={<OurTeamPage />} />
-          <Route path="/team.html" element={<OurTeamPage />} />
-
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/contact.html" element={<ContactPage />} />
-          <Route path="/contact-us" element={<ContactPage />} />
-          <Route path="/contact-us.html" element={<ContactPage />} />
-
-          <Route path="*" element={<Navigate to="/" replace />} />
+            path="/app"
+            element={
+              <ProtectedRoute>
+                <AppShell />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="dashboard" element={<DashboardPage />} />
+            <Route path="notifications" element={<NotificationsPage />} />
+            <Route path="profile" element={<ProfilePage />} />
+            <Route path="accounts" element={<AccountsPage />} />
+            <Route path="settings" element={<SettingsPage />} />
+            <Route path="platform" element={<Navigate to="/app/onboarding/organizations" replace />} />
+            <Route path="onboarding/organizations" element={<OrganizationsOnboardingPage />} />
+            <Route path="onboarding/roles" element={<RolesOnboardingPage />} />
+            <Route path="onboarding/members" element={<MembersOnboardingPage />} />
+            <Route path="onboarding/nav" element={<NavOnboardingPage />} />
+            <Route path="org/users" element={<UsersOnboardingPage />} />
+            <Route path="org/approval-rules" element={<ApprovalRulesPage />} />
+            <Route path="org/audit" element={<AuditPage />} />
+            <Route path="org/approvals" element={<ApprovalsPage />} />
+            <Route path="web-responses" element={<WebResponsesPage />} />
+            <Route path="careers" element={<CareersPage />} />
+            <Route path="careers/create" element={<CreateCareerPage />} />
+            <Route path="catalogs" element={<CatalogsPage />} />
+            <Route path="catalogs/create" element={<CreateCatalogPage />} />
+            <Route path="events" element={<EventsPage />} />
+            <Route path="accounts" element={<Navigate to="/app/org/users" replace />} />
+            <Route path="customer-requests" element={<CustomerRequestsPage title="Techtrole Customer Service" />} />
+            <Route path="customer-service" element={<CustomerRequestsPage title="Techtrole Customer Service" />} />
+            <Route path="support/tickets" element={<CustomerRequestsPage title="Techtrole Customer Service" />} />
+             <Route path="products" element={<ProductsPage />} />
+            <Route path="products/create-category" element={<CreateCategoryPage />} />
+            <Route path="products/create-subcategory" element={<Navigate to="/app/products/create-category" replace />} />
+            <Route path="products/create-product" element={<CreateProductPage />} />
+            <Route path="products/create-variant" element={<CreateVariantPage />} />
+            <Route path="seo" element={<SeoPage />} />
+            <Route path="seo/create" element={<CreateSeoPage />} />
+            <Route path="blog" element={<BlogPage />} />
+            <Route path="blog/create" element={<CreateBlogPage />} />
+            <Route path="ui-layouts" element={<UiLayoutsPage />} />
+            <Route path="ui-elements" element={<UiLayoutsPage />} />
+            <Route path="ui-elements/create" element={<CreateUiElementPage />} />
+            <Route path="explore-spaces" element={<ExploreSpacesPage />} />
+            <Route path="release" element={<ReleaseManagementPage />} />
+            <Route path="releases" element={<ReleaseManagementPage />} />
+             <Route path="admin/actor-registration" element={<Navigate to="/app/accounts" replace />} />
+             <Route path="*" element={<CustomNavPage />} />
+           </Route>
+           <Route
+             element={
+               <ProtectedRoute>
+                 <AppShell />
+               </ProtectedRoute>
+             }
+           >
+             <Route path="/maintenance" element={<MaintenancePage />} />
+             <Route path="/404" element={<NotFoundPage />} />
+             <Route path="/access-denied" element={<AccessDeniedPage />} />
+           </Route>
+           <Route path="/" element={<Navigate to="/app/dashboard" replace />} />
+           <Route path="*" element={<Navigate to="/app/dashboard" replace />} />
         </Routes>
-      </MainLayout>
+      </BrowserRouter>
     </AuthProvider>
-  </BrowserRouter>
   );
 }
